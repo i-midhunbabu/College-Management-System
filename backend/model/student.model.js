@@ -38,6 +38,14 @@ const studentaddparentSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    studentid: {
+        type: String,
+        required: true
+    },
+    studentname: {
+        type: String,
+        required: true
+    },
     relation: {
         type: String,
         required: true
