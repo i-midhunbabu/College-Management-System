@@ -29,12 +29,10 @@ function AdminParentView() {
                         <th>Parent Name</th>
                         <th>Student ID</th>
                         <th>Student Name</th>
-                        <th>Date of Birth</th>
-                        <th>Job</th>
-                        <th>Aadhaar No</th>
+                        {/* <th>Aadhaar No</th> */}
                         <th>Mobile No</th>
                         <th>Email ID</th>
-                        {/* <th>Action</th> */}
+                        <th>Block</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -44,22 +42,14 @@ function AdminParentView() {
                                     <td>{data.parentname}</td>
                                     <td>{data.studentid}</td>
                                     <td>{data.studentname}</td>
-                                    <td>{new Date(data.dateofbirth).toLocaleDateString()}</td>
-                                    <td>{data.job}</td>
-                                    <td>{data.aadhaar}</td>
+                                    {/* <td>{data.aadhaar}</td> */}
                                     <td>{data.mobile}</td>
                                     <td>{data.email}</td>
-                                    {/* <td>
-                                        <Link to="/adminteacheredit" state={{id: data._id}}>
-                                        <button type="button" className="btn btn-primary" style={{border:'none'}}> 
-                                        <i class='bx bxs-edit' undefined ></i> 
-                                        </button> 
-                                        </Link>
-                                        &nbsp;
-                                        <button type="button" className="btn btn-danger" onClick={() => handleDelete(data._id)} > 
-                                        <i class='bx bx-trash' undefined ></i>                                        
+                                    <td>
+                                        <button type="button" className="btn btn-danger"> 
+                                        <i class='bx bx-block' style={{color:'#ffffff'}}></i>                                       
                                         </button>
-                                    </td> */}
+                                    </td>
                                 </tr>
                         ))}
                     </tbody>
