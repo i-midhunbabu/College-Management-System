@@ -8,17 +8,17 @@ function AdminSidebar() {
     const [openSubMenu, setOpenSubMenu] = useState(null);
     const sidebarRef = useRef(null);
 
-        useEffect(() => {
-            // Fetch admin details from localStorage
-            const storedData = localStorage.getItem("get");
-            if (storedData) {
-                const adminData = JSON.parse(storedData);
-                if (adminData.adminDetails && adminData.adminDetails.adminname) {
-                    setAdminName(adminData.adminDetails.adminname);
-                }
+    useEffect(() => {
+        // Fetch admin details from localStorage
+        const storedData = localStorage.getItem("get");
+        if (storedData) {
+            const adminData = JSON.parse(storedData);
+            if (adminData.adminDetails && adminData.adminDetails.adminname) {
+                setAdminName(adminData.adminDetails.adminname);
             }
-        }, []);
-    
+        }
+    }, []);
+
 
     const handleLogout = () => {
         localStorage.clear();
@@ -52,9 +52,9 @@ function AdminSidebar() {
                     <span className="text"><img src='/logo2.png' width={200} /></span>
                 </a>
                 <ul className="side-menu top">
-                     <li className="teacher-name">
-                        <span style={{fontSize:'20px'}}>Welcome</span> 
-                        <span style={{fontSize:'20px', fontWeight:'bolder'}}> {adminName || "Admin"} </span>
+                    <li className="teacher-name">
+                        <span style={{ fontSize: '20px' }}>Welcome</span>
+                        <span style={{ fontSize: '20px', fontWeight: 'bolder' }}> {adminName || "Admin"} </span>
                     </li>
 
                     <li className={location.pathname === "/" ? "active" : ""}>
@@ -130,6 +130,29 @@ function AdminSidebar() {
                         )}
                     </li>
 
+                    <li className={location.pathname.startsWith("#") ? "active" : ""}>
+                        <a href="#" onClick={() => toggleSubMenu('department')}>
+                            <i class='bx bxs-school'></i>
+                            <span className="text">Department</span>
+                            <i className={`bx bx-caret-${openSubMenu === 'department' ? 'up' : 'down'}`}></i>
+                        </a>
+                        {openSubMenu === 'department' && (
+                            <ul className="sub-menu">
+                                <li className={location.pathname === "#" ? "active" : ""}>
+                                    <a href="#">
+                                        <i class='bx bxs-plus-square'></i>
+                                        <span className="text">Add Department</span>
+                                    </a>
+                                </li>
+                                <li className={location.pathname === "#" ? "active" : ""}>
+                                    <a href="#">
+                                        <i class='bx bx-list-check'></i>
+                                        <span className="text">Manage Department</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        )}
+                    </li>
 
                     <li className={location.pathname === "#" ? "active" : ""}>
                         <a href="#">
