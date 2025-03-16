@@ -1,0 +1,79 @@
+.loginPage * {
+    all: unset;
+ }
+ 
+.loginPage {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    background-color: white;
+}
+
+#id1 {
+    display: flex;
+    height: 100vh;
+}
+
+.loginPage .left {
+    width: 60%;
+    background: url('/public/clg1.jpg') no-repeat center center/cover;
+    position: relative;
+}
+
+.loginPage .right {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px;
+}
+
+.loginPage .logo img {
+    width: 80%;
+    margin-bottom: 20px;
+}
+
+.loginPage .loginBox {
+    width: 100%;
+    max-width: 416px;
+}
+
+.loginPage .loginBox button {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    width: 400px;
+    height: 54px;
+    padding: 15px;
+    margin: 10px 0;
+    border: none;
+    font-size: 25px;
+    cursor: pointer;
+    background: white;
+    color: black;
+    border: 1px;
+    text-align: left;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all ease-in-out 0.3s;
+}
+
+.loginPage .loginBox button:hover {
+    background: #ffffff;
+    transform: scale(1.02);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.loginPage .semiBold {
+    font-weight: 375;
+}
+
+.loginPage.lightText {
+    font-weight: 300;
+    opacity: 0.7;
+}
+/* .footer {
+    margin-top: 20px;
+    font-size: 12px;
+    color: gray;
+} */

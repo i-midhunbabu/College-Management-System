@@ -1,0 +1,412 @@
+const { adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel } = require('../model/admin.model');
+const { teacherlogmodel } = require('../model/teacher.model')
+const { studentlogmodel, addparentmodel } = require('../model/student.model');
+const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt'); //hashing passwords
+const saltRounds = 10; //complexity of the hashing (here 10)
+const crypto = require('crypto'); //generating tokens, creating hashes, encrypting data
+const { error } = require('console');
+
+exports.adminRegister = async (req, res) => {
+    try {
+        // const hashedPassword = await bcrypt.hash(req.body.password, saltRounds); //hashing the password
+        let adminlogparams = {
+            email: req.body.email,
+            // password: hashedPassword, //storing the hashed password
+            password: req.body.password,
+            adminname: req.body.adminname,
+            usertype: req.body.usertype
+        };
+        var key = await adminloginmodel.create(adminlogparams);
+        let adminregparams = {
+            adminname: req.body.adminname,
+            loginid: key._id
+        }
+        await adminregmodel.create(adminregparams);
+        res.json({ message: "Admin Registered" })
+    } catch (err) {
+        console.error("Admin not registered", err);
+        res.status(500).json({ message: "Registration failed" });
+    }
+}
+
+exports.adminRegisterView = async (req, res) => {
+    try {
+        const find = await adminregmodel.find();
+        res.json(find);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Failed to retrieve admin data" });
+    }
+}
+
+exports.adminLoginInsert = (async (req, res) => {
+    try {
+        let adminloginparams = {
+            email: req.body.email,
+            password: req.body.password
+        }
+        let admin = await adminloginmodel.findOne({ email: adminloginparams.email })
+        if (admin) {
+            if (admin.password == adminloginparams.password) {
+                if (admin.usertype == 1) {
+                    const adminDetails = await adminregmodel.findOne({ loginid: admin._id });
+                    if (adminDetails) {
+                        req.session.data = admin;
+                        res.json({ ...admin._doc, adminDetails: adminDetails });
+                        // res.json(admin)
+                    } else {
+                        console.log("Admin details not found");
+                    }
+                } else {
+                    console.log("Invalid Usertype (for admin)");
+
+                }
+            } else {
+                console.log("Invalid Password (for admin)");
+
+            }
+        } else {
+            console.log("Invalid Email (for admin)");
+
+        }
+    } catch (err) {
+        console.error("Error in admin login", err);
+    }
+})
+
+exports.adminForgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const admin = await adminloginmodel.findOne({ email });
+        if (!admin) {
+            return res.status(400).json({ message: "Email not registered" });
+        }
+
+        const resetToken = crypto.randomBytes(32).toString("hex");
+        admin.resetToken = resetToken;
+        admin.resetTokenExpiry = Date.now() + 3600000; // Token valid for 1 hour
+        await admin.save();
+
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: 'midhunbabu0474@gmail.com',
+                pass: 'haea jsez acef pmke'
+            }
+        });
+
+        const mailOptions = {
+            from: 'midhunbabu@gmail.com',
+            to: admin.email,
+            subject: 'Password Reset',
+            text: `Click the following link to reset your password: http://localhost:3000/resetpassword?token=${resetToken}`
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.json({ message: "Password reset link sent to your email" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Failed to send password reset email" });
+    }
+}
+
+exports.resetPassword = async (req, res) => {
+    try {
+        const { token, password } = req.body;
+
+        const admin = await adminloginmodel.findOne({ resetToken: token, resetTokenExpiry: { $gt: Date.now() } });
+        if (!admin) {
+            return res.status(400).json({ message: "Invalid or expired token" });
+        }
+
+        // const hashedPassword = await bcrypt.hash(password, saltRounds); // Hash new password
+        admin.password = password;
+        admin.resetToken = undefined; // Remove the token: After updating password, remove token
+        admin.resetTokenExpiry = undefined;
+        await admin.save();
+
+        res.json({ message: "Password reset successful" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Something went wrong" });
+    }
+};
+
+// Add Teacher- Admin
+exports.addTeacherCreate = async (req, res) => {
+    try {
+        //create teacher login entry
+        const teacherLoginParams = {
+            email: req.body.email,
+            password: req.body.password,
+            usertype: 2
+        };
+        const teacherLogin = await teacherlogmodel.create(teacherLoginParams);
+        const formattedDateofBirth = new Date(req.body.dateofbirth).toISOString().split('T')[0];
+
+        //teacher details with reference to login
+        const addteacher = {
+            teacherid: req.body.teacherid,
+            teachername: req.body.teachername,
+            designation: req.body.designation,
+            dateofbirth: formattedDateofBirth,
+            qualification: req.body.qualification,
+            email: req.body.email,
+            password: req.body.password,
+            salary: req.body.salary,
+            usertype: req.body.usertype,
+            loginid: teacherLogin._id // Reference to teacher login
+        };
+
+        await adminaddteachermodel.create(addteacher);
+
+        // Set up nodemailer transporter
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: 'midhunbabu0474@gmail.com',
+                pass: 'haea jsez acef pmke'
+            }
+        });
+
+        // Email options
+        const mailOptions = {
+            from: 'midhunbabu0474@gmail.com',
+            to: addteacher.email,
+            subject: 'Teacher Account Created',
+            text: `Your account has been created. Here are your login details:\nEmail: ${addteacher.email}\nPassword: ${addteacher.password}`
+        };
+
+        // Send email
+        await transporter.sendMail(mailOptions);
+
+        res.json({ message: 'Teacher created successfully' });
+    } catch (err) {
+        console.error("Error in addTeacherCreate:", err);
+        res.status(500).json({ error: 'Internal Server Error (addTeacherCreate)' })
+
+    }
+}
+
+exports.adminTeacherView = async (req, res) => {
+    try {
+        const viewTeacherList = await adminaddteachermodel.find();
+        res.json(viewTeacherList);
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+exports.adminTeacherDelete = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const teacher = await adminaddteachermodel.findById(id);
+
+        if (!teacher) {
+            return res.json({ success: false, message: "Teacher not found" });
+        }
+
+        await Promise.all([
+            adminaddteachermodel.findByIdAndDelete(id),
+            teacherlogmodel.findByIdAndDelete(teacher.loginid)
+        ]);
+        res.json({ success: true, message: "Teacher deleted successfully from both collections", data: teacher });
+
+    } catch (err) {
+        console.error("Error in teacher deletion:", err);
+        res.status(500).json({ success: false, message: "Error deleting student from collections" });
+
+    }
+};
+
+exports.adminTeacherEdit = async (req, res) => {
+    try {
+        const { teacherId } = req.params;
+        const teacher = await adminaddteachermodel.findById(teacherId);
+        if (!teacher) {
+            res.status(400).json({ error: "Teacher not found" });
+        }
+        res.json(teacher); //send the teacher data 
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+
+    }
+};
+
+exports.adminTeacherUpdate = async (req, res) => {
+    try {
+        const formattedDateofBirth = new Date(req.body.dateofbirth).toISOString().split('T')[0];
+
+        const params = {
+            teacherid: req.body.teacherid,
+            teachername: req.body.teachername,
+            designation: req.body.designation,
+            dateofbirth: formattedDateofBirth,
+            qualification: req.body.qualification,
+            email: req.body.email,
+            password: req.body.password,
+            salary: req.body.salary,
+        }
+
+        let upid = await adminaddteachermodel.findByIdAndUpdate(req.body.id, params);
+        res.json(upid);
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+//adminaddstudent 
+exports.addStudentCreate = async (req, res) => {
+    try {
+        const formattedDateofBirth = new Date(req.body.dateofbirth).toISOString().split('T')[0];
+        //create student login entry
+        const studentLoginParams = {
+            email: req.body.email,
+            password: req.body.password,
+            usertype: 3
+        };
+
+        const studentLogin = await studentlogmodel.create(studentLoginParams);
+
+        //student details with reference to login
+        const addStudent = {
+            studentid: req.body.studentid,
+            studentname: req.body.studentname,
+            dateofbirth: req.body.dateofbirth,
+            guardianname: req.body.guardianname,
+            guardianrelation: req.body.guardianrelation,
+            bloodgroup: req.body.bloodgroup,
+            tenth: req.body.tenth,
+            twelve: req.body.twelve,
+            email: req.body.email,
+            password: req.body.password,
+            usertype: req.body.usertype,
+            loginid: studentLogin._id // Reference to student login
+        };
+
+        await adminaddstudentmodel.create(addStudent);
+
+        //setup nodemailer transporter
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: 'midhunbabu0474@gmail.com',
+                pass: 'haea jsez acef pmke'
+            }
+        });
+
+        // Email options
+        const mailOptions = {
+            from: 'midhunbabu0474@gmail.com',
+            to: addStudent.email,
+            subject: 'Student Account Created',
+            text: `Your account has been created. Here are your login details:\nEmail: ${addStudent.email}\nPassword: ${addStudent.password}`
+        };
+        // Send email
+        await transporter.sendMail(mailOptions);
+
+        res.json({ message: 'Student created successfully' });
+    } catch (err) {
+        console.error("Error in adminAddStudent:", err);
+        res.status(500).json({ error: 'Internal Server Error (addStudentCreate)' })
+    }
+}
+
+exports.adminStudentView = async (req, res) => {
+    try {
+        const viewStudentList = await adminaddstudentmodel.find();
+        res.json(viewStudentList);
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+exports.adminStudentDelete = async (req, res) => {
+    try {
+        const { Id } = req.params;
+        const student = await adminaddstudentmodel.findById(Id);
+
+        if (!student) {
+            return res.json({ success: false, message: "Student not found" });
+        }
+
+        await Promise.all([
+            adminaddstudentmodel.findByIdAndDelete(Id),
+            studentlogmodel.findByIdAndDelete(student.loginid)
+        ]);
+
+        res.json({ success: true, message: "Student deleted successfully from both collections", data: student });
+    } catch (err) {
+        console.error("Error in student deletion:", err);
+        res.status(500).json({ success: false, message: "Error deleting student from collections" });
+    }
+};
+
+//         const delStudentList = await adminaddstudentmodel.findByIdAndDelete(Id);
+//         if (delStudentList) {
+//             // Delete from teacherlogmodel
+//             // await teacherlogmodel.findOneAndDelete({ email: delTeacherList.email });
+//             res.json({ success: true, message: "Student Deleted Successfully", data: delStudentList })
+//         } else {
+//             res.json({ success: false, message: "Student not found" });
+//         }
+
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ success: false, message: "Error deleting student" })
+
+//     }
+// };
+
+exports.adminStudentEdit = async (req, res) => {
+    try {
+        const { studentid } = req.params;
+        const student = await adminaddstudentmodel.findById(studentid);
+        if (!student) {
+            return res.status(404).json({ error: 'Student not found' });
+        }
+        res.json(student); //send the student data 
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+
+    }
+};
+
+exports.adminStudentUpdate = async (req, res) => {
+    try {
+        const formattedDateofBirth = new Date(req.body.dateofbirth).toISOString().split('T')[0];
+        const params = {
+            studentid: req.body.studentid,
+            studentname: req.body.studentname,
+            dateofbirth: formattedDateofBirth,
+            guardianname: req.body.guardianname,
+            guardianrelation: req.body.guardianrelation,
+            bloodgroup: req.body.bloodgroup,
+            tenth: req.body.tenth,
+            twelve: req.body.twelve,
+            email: req.body.email,
+            password: req.body.password,
+        }
+
+        let upid = await adminaddstudentmodel.findByIdAndUpdate(req.body.id, params);
+        res.json(upid);
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+exports.adminGetParents = async (req, res) => {
+    try {
+        const parents = await addparentmodel.find();
+        res.json(parents);
+    } catch (err) {
+        console.error("Error fetching parents:", err);
+        res.status(500).json({ message: "Error retrieving parents" });
+    }
+};
+
+

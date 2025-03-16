@@ -1,0 +1,258 @@
+/* General Styles */
+.student-module {
+    width: 100%;
+    left: 0;
+}
+
+.student-module nav {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    background: var(--light);
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+#content.student-module {
+    width: 100%;
+    left: 0;
+}
+
+/* Navbar Styles */
+#content nav {
+    height: 56px;
+    background: var(--light);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    grid-gap: 24px;
+    font-family: var(--lato);
+    position: sticky;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+    justify-content: space-between;
+}
+
+#content nav .right {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+#content nav a {
+    color: var(--dark);
+}
+
+#content nav .bx.bx-menu {
+    cursor: pointer;
+    color: var(--dark);
+}
+
+#content nav .nav-link {
+    font-size: 16px;
+    transition: 0.3s ease;
+}
+
+#content nav .nav-link:hover {
+    color: var(--blue);
+}
+
+#content nav form {
+    max-width: 400px;
+    width: 100%;
+    margin-right: auto;
+}
+
+#content nav form .form-input {
+    display: flex;
+    align-items: center;
+    height: 36px;
+}
+
+#content nav form .form-input input {
+    flex-grow: 1;
+    padding: 0 16px;
+    height: 100%;
+    border: none;
+    background: var(--grey);
+    border-radius: 36px 0 0 36px;
+    outline: none;
+    width: 100%;
+    color: var(--dark);
+}
+
+#content nav form .form-input button {
+    width: 36px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--blue);
+    color: var(--light);
+    font-size: 18px;
+    border: none;
+    outline: none;
+    border-radius: 0 36px 36px 0;
+    cursor: pointer;
+}
+
+#content nav .notification {
+    font-size: 20px;
+    position: relative;
+}
+
+#content nav .notification .num {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--light);
+    background: var(--red);
+    color: var(--light);
+    font-weight: 700;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#content nav .profile img {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+#content nav .switch-mode {
+    display: block;
+    min-width: 50px;
+    height: 25px;
+    border-radius: 25px;
+    background: var(--grey);
+    cursor: pointer;
+    position: relative;
+}
+
+#content nav .switch-mode::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    bottom: 2px;
+    width: calc(25px - 4px);
+    background: var(--blue);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+#content nav #switch-mode:checked + .switch-mode::before {
+    left: calc(100% - (25px - 4px) - 2px);
+}
+
+/* Profile Dropdown */
+.profile-container {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-container .dropdown-menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    min-width: 160px;
+    max-width: 220px;
+}
+
+.dropdown-menu a {
+    text-decoration: none;
+    color: black;
+    padding: 8px;
+    transition: background 0.3s;
+}
+
+.dropdown-menu a:hover {
+    background: #f1f1f1;
+}
+
+/* Submenu */
+.student-module li {
+    position: relative;
+}
+
+.student-module .sub-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    min-width: 150px;
+    max-width: 200px;
+    z-index: 1000;
+    display: block;
+}
+
+.student-module .sub-menu li {
+    margin: 5px 0;
+}
+
+/* Profile Page */
+.profile-container1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+}
+
+.profile-container1 .profile-box {
+    background: #C5CDE0;
+    padding: 30px;
+    border-radius: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    text-align: left;
+    width: 500px;
+}
+
+.profile-title {
+    text-align: center;
+    color: rgb(0, 0, 0);
+    font-weight: bolder;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    #content nav .right {
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .student-module nav {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+    }
+
+    .student-module .right {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}

@@ -1,0 +1,72 @@
+import React, {useState, useEffect} from "react";
+import AdminSidebar from "./adminsidebar";
+import AdminNav from "./adminnavbar";
+function AdminParentView() {
+    const [viewdata, setViewdata] = useState([]);
+    const [refresh, setRefresh] = useState('');
+        
+    useEffect(() => {
+        fetch('http://localhost:8000/adminrouter/admingetparent').then((res)=>res.json()).then((result)=>{
+            setViewdata(result)
+            })
+            .catch((err) => console.error(err));
+        },[refresh])
+    
+    return(
+        <>
+        <AdminSidebar/>
+        <section id="content">
+            <AdminNav/>
+            <main>
+            <div>
+                <h2 style={{textAlign:'center'}}>Parent List</h2>
+                <br/>
+            </div>
+            <table className="table table-bordered table-secondary table-hover">
+                    <thead>
+                        <tr>
+                        <th>Parent ID</th>
+                        <th>Parent Name</th>
+                        <th>Student ID</th>
+                        <th>Student Name</th>
+                        <th>Date of Birth</th>
+                        <th>Job</th>
+                        <th>Aadhaar No</th>
+                        <th>Mobile No</th>
+                        <th>Email ID</th>
+                        {/* <th>Action</th> */}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {viewdata.map((data, index)=> (
+                                <tr key={index}> 
+                                    <td>{data.parentid}</td>
+                                    <td>{data.parentname}</td>
+                                    <td>{data.studentid}</td>
+                                    <td>{data.studentname}</td>
+                                    <td>{new Date(data.dateofbirth).toLocaleDateString()}</td>
+                                    <td>{data.job}</td>
+                                    <td>{data.aadhaar}</td>
+                                    <td>{data.mobile}</td>
+                                    <td>{data.email}</td>
+                                    {/* <td>
+                                        <Link to="/adminteacheredit" state={{id: data._id}}>
+                                        <button type="button" className="btn btn-primary" style={{border:'none'}}> 
+                                        <i class='bx bxs-edit' undefined ></i> 
+                                        </button> 
+                                        </Link>
+                                        &nbsp;
+                                        <button type="button" className="btn btn-danger" onClick={() => handleDelete(data._id)} > 
+                                        <i class='bx bx-trash' undefined ></i>                                        
+                                        </button>
+                                    </td> */}
+                                </tr>
+                        ))}
+                    </tbody>
+                    </table>
+            </main>
+        </section>
+        </>
+    )
+}
+export default AdminParentView;

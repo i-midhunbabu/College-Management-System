@@ -1,0 +1,168 @@
+import React, { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
+import './admindashboard.css';
+
+function AdminSidebar() {
+    const [adminName, setAdminName] = useState("");
+    const location = useLocation();
+    const [openSubMenu, setOpenSubMenu] = useState(null);
+    const sidebarRef = useRef(null);
+
+        useEffect(() => {
+            // Fetch admin details from localStorage
+            const storedData = localStorage.getItem("get");
+            if (storedData) {
+                const adminData = JSON.parse(storedData);
+                if (adminData.adminDetails && adminData.adminDetails.adminname) {
+                    setAdminName(adminData.adminDetails.adminname);
+                }
+            }
+        }, []);
+    
+
+    const handleLogout = () => {
+        localStorage.clear();
+        window.location.href = '/';
+    };
+
+    //only one submenu open at a time 
+    const toggleSubMenu = (menu) => {
+        setOpenSubMenu(openSubMenu === menu ? null : menu);
+    };
+
+    // Handle clicks outside the sidebar
+    const handleClickOutside = (event) => {
+        if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+            setOpenSubMenu(null);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    return (
+        <>
+            {/* Sidebar */}
+            <section id="sidebar" ref={sidebarRef}>
+                <a href="/" className="brand">
+                    <span className="text"><img src='/logo2.png' width={200} /></span>
+                </a>
+                <ul className="side-menu top">
+                     <li className="teacher-name">
+                        <span style={{fontSize:'20px'}}>Welcome</span> 
+                        <span style={{fontSize:'20px', fontWeight:'bolder'}}> {adminName || "Admin"} </span>
+                    </li>
+
+                    <li className={location.pathname === "/" ? "active" : ""}>
+                        <a href="/">
+                            <i className='bx bxs-dashboard' />
+                            <span className="text">Dashboard</span>
+                        </a>
+                    </li>
+
+                    <li className={location.pathname.startsWith("#") ? "active" : ""}>
+                        <a href="#" onClick={() => toggleSubMenu('teacher')}>
+                            <i className='bx bxs-chalkboard'></i>
+                            <span className="text">Teacher</span>
+                            <i className={`bx bx-caret-${openSubMenu === 'teacher' ? 'up' : 'down'}`}></i>
+                        </a>
+                        {openSubMenu === 'teacher' && (
+                            <ul className="sub-menu">
+                                <li className={location.pathname === "/adminaddteacher" ? "active" : ""}>
+                                    <a href="/adminaddteacher">
+                                        <i className='bx bxs-user' />
+                                        <span className="text">Add Teacher</span>
+                                    </a>
+                                </li>
+                                <li className={location.pathname === "/adminteacherview" ? "active" : ""}>
+                                    <a href="/adminteacherview">
+                                        <i className='bx bxs-user-detail' />
+                                        <span className="text">Manage Teacher</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        )}
+                    </li>
+
+                    <li className={location.pathname.startsWith("#") ? "active" : ""}>
+                        <a href="#" onClick={() => toggleSubMenu('student')}>
+                            <i className='bx bxs-graduation'></i>
+                            <span className="text">Student</span>
+                            <i className={`bx bx-caret-${openSubMenu === 'student' ? 'up' : 'down'}`}></i>
+                        </a>
+                        {openSubMenu === 'student' && (
+                            <ul className="sub-menu">
+                                <li className={location.pathname === "/adminaddstudent" ? "active" : ""}>
+                                    <a href="/adminaddstudent">
+                                        <i className='bx bxs-user' />
+                                        <span className="text">Add Student</span>
+                                    </a>
+                                </li>
+                                <li className={location.pathname === "/adminstudentview" ? "active" : ""}>
+                                    <a href="/adminstudentview">
+                                        <i className='bx bxs-user-detail' />
+                                        <span className="text">Manage Student</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        )}
+                    </li>
+
+                    <li className={location.pathname.startsWith("#") ? "active" : ""}>
+                        <a href="#" onClick={() => toggleSubMenu('parent')}>
+                            <i className='bx bxs-user'></i>
+                            <span className="text">Parent</span>
+                            <i className={`bx bx-caret-${openSubMenu === 'parent' ? 'up' : 'down'}`}></i>
+                        </a>
+                        {openSubMenu === 'parent' && (
+                            <ul className="sub-menu">
+                                <li className={location.pathname === "/adminparentview" ? "active" : ""}>
+                                    <a href="/adminparentview">
+                                        <i className='bx bxs-user' />
+                                        <span className="text">View Parent</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        )}
+                    </li>
+
+
+                    <li className={location.pathname === "#" ? "active" : ""}>
+                        <a href="#">
+                            <i className='bx bxs-message-dots' />
+                            <span className="text">Class</span>
+                        </a>
+                    </li>
+
+                    <li className={location.pathname === "#" ? "active" : ""}>
+                        <a href="#">
+                            <i className='bx bxs-group' />
+                            <span className="text">Exam</span>
+                        </a>
+                    </li>
+                </ul>
+                <ul className="side-menu">
+                    <li className={location.pathname === "/adminreg" ? "active" : ""}>
+                        <a href="/adminreg">
+                            <i className='bx bxs-cog' />
+                            <span className="text">Settings</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" className="logout" onClick={handleLogout}>
+                            <i className='bx bxs-log-out-circle' />
+                            <span className="text">Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+            {/* Sidebar */}
+        </>
+    );
+}
+
+export default AdminSidebar;

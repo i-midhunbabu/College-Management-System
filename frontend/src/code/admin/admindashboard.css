@@ -1,0 +1,52 @@
+.profile-container {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    /* Adjust the profile dropdown box width */
+    width: auto;
+    min-width: 120px;
+    max-width: 150px;;
+}
+
+.dropdown-menu a {
+    text-decoration: none;
+    color: black;
+    padding: 8px;
+    transition: background 0.3s;
+}
+
+.dropdown-menu a:hover {
+    background: #f1f1f1;
+}
+
+.sub-menu {
+    list-style: none;
+    padding-left: 20px;
+    /* background-color: #fff; Solid background color */
+    position: absolute; /* Position it above other items */
+    width: 100%; /* Ensure it takes the full width */
+    z-index: 1; /* Ensure it appears on top */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    right: 0;
+    border-radius: 25px;
+
+
+
+}
+
+.sub-menu li {
+    margin: 5px 0;
+}
+
+
