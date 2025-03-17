@@ -36,24 +36,14 @@ function ParentSidebar() {
                 setOpenSubMenu(null);
             }
         };
-
-        const handleClickInside = () => {
-            setOpenSubMenu(null);
-        };
     
         useEffect(() => {
             document.addEventListener("mousedown", handleClickOutside);
-            if (sidebarRef.current) {
-                sidebarRef.current.addEventListener("click", handleClickInside);
-            }
             return () => {
                 document.removeEventListener("mousedown", handleClickOutside);
-                if (sidebarRef.current) {
-                    sidebarRef.current.removeEventListener("click", handleClickInside);
-                }
             };
         }, []);
-        
+
     return (
         <>
             {/* Sidebar */}

@@ -3,8 +3,8 @@ import { useLocation } from "react-router-dom";
 import './teacher.css'
 function TeacherSidebar() {
     const location = useLocation();
-    const [teacherSubMenuOpen, setTeacherSubMenuOpen] = useState(false);
     const [teacherName, setTeacherName] = useState("");
+    const [openSubMenu, setOpenSubMenu] = useState(null);
     const sidebarRef = useRef(null);
 
     useEffect(() => {
@@ -22,15 +22,16 @@ function TeacherSidebar() {
         localStorage.clear();
         window.location.href = '/'
     }
-    const toggleTeacherSubMenu = () => {
-        // setTeacherSubMenuOpen(!teacherSubMenuOpen);
-        setTeacherSubMenuOpen((prev) => !prev);
+
+    const toggleSubMenu = (menu) => {
+        setOpenSubMenu(openSubMenu === menu ? null : menu);
     };
+
 
     useEffect(() => {
         function handleClickOutside(event) {
             if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-                setTeacherSubMenuOpen(false);
+                setOpenSubMenu(null);
             }
         }
 
@@ -62,12 +63,12 @@ function TeacherSidebar() {
                         </a>
                     </li>
                     <li className={location.pathname.startsWith("#") ? "active" : ""}>
-                        <a href="#" onClick={toggleTeacherSubMenu} >
+                        <a href="#" onClick={() => toggleSubMenu('student')} >
                             <i class='bx bxs-chalkboard'></i>
                             <span className="text">Student</span>
-                            <i className={`bx bx-caret-${teacherSubMenuOpen ? 'up' : 'down'}`}></i>
+                            <i className={`bx bx-caret-${openSubMenu === 'student' ? 'up' : 'down'}`}></i>
                         </a>
-                        {teacherSubMenuOpen && (
+                        {openSubMenu === 'student' && (
                             <ul className="sub-menu">
                                 <li className={location.pathname === "#" ? "active" : ""}>
                                     <a href="#">
@@ -84,23 +85,47 @@ function TeacherSidebar() {
                             </ul>
                         )}
                     </li>
-                    <li className={location.pathname === "#" ? "active" : ""}>
-                        <a href="#">
-                            <i class='bx bxs-graduation' ></i>
-                            <span className="text">Student</span>
-                        </a>
-                    </li>
-                    <li className={location.pathname === "#" ? "active" : ""}>
-                        <a href="#">
-                            <i className='bx bxs-message-dots' />
+
+                    <li className={location.pathname.startsWith("#") ? "active" : ""}>
+                        <a href="#" onClick={() => toggleSubMenu('class')}>
+                            <i className='bx bxs-graduation'></i>
                             <span className="text">Class</span>
+                            <i className={`bx bx-caret-${openSubMenu === 'class' ? 'up' : 'down'}`}></i>
                         </a>
+                        {openSubMenu === 'class' && (
+                            <ul className="sub-menu">
+                                <li className={location.pathname === "#" ? "active" : ""}>
+                                    <a href="#">
+                                        <i class='bx bxs-user-check'></i>
+                                        <span className="text">Mark Attendance</span>
+                                    </a>
+                                </li>
+                                <li className={location.pathname === "#" ? "active" : ""}>
+                                    <a href="#">
+                                        <i class='bx bxs-user-check'></i>
+                                        <span className="text">Add / Update Mark</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        )}
                     </li>
-                    <li className={location.pathname === "#" ? "active" : ""}>
-                        <a href="#">
-                            <i className='bx bxs-group' />
+
+                    <li className={location.pathname.startsWith("#") ? "active" : ""}>
+                        <a href="#" onClick={() => toggleSubMenu('exam')}>
+                            <i className='bx bxs-graduation'></i>
                             <span className="text">Exam</span>
+                            <i className={`bx bx-caret-${openSubMenu === 'exam' ? 'up' : 'down'}`}></i>
                         </a>
+                        {openSubMenu === 'exam' && (
+                            <ul className="sub-menu">
+                                <li className={location.pathname === "#" ? "active" : ""}>
+                                    <a href="#">
+                                        <i className='bx bxs-user' />
+                                        <span className="text">Schedule Exam</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        )}
                     </li>
                 </ul>
                 <ul className="side-menu">
