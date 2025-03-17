@@ -50,6 +50,8 @@ function AdminStudentView() {
                                 <th>Guardian</th>
                                 <th>Relation</th>
                                 <th>Blood Group</th>
+                                <th>Degree</th>
+                                <th>Department</th>
                                 <th>10th Mark</th>
                                 <th>12th Mark</th>
                                 <th>Action</th>
@@ -64,6 +66,8 @@ function AdminStudentView() {
                                     <td>{data.guardianname}</td>
                                     <td>{data.guardianrelation}</td>
                                     <td>{data.bloodgroup}</td>
+                                    <td>{data.degree}</td>
+                                    <td>{data.department}</td>
                                     <td>{data.tenth}</td>
                                     <td>{data.twelve}</td>
                                     <td>

@@ -165,6 +165,12 @@ const [studentName, setStudentName] = useState("");
                 {/* Main */}
             </section>
             {/* Content */}
+            <a href="#" className="message-icon">
+            {/* <i className='bx bxs-message-square-dots' style={{color:'#1760e2'}}  >Feedback</i> */}
+            <img src="chat1.png" alt="chat" />
+            <span className="feedback-text">Feedback</span>
+            </a>
+
         </>
     )
 }

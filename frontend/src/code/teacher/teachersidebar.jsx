@@ -64,7 +64,7 @@ function TeacherSidebar() {
                     <li className={location.pathname.startsWith("#") ? "active" : ""}>
                         <a href="#" onClick={toggleTeacherSubMenu} >
                             <i class='bx bxs-chalkboard'></i>
-                            <span className="text">Teacher</span>
+                            <span className="text">Student</span>
                             <i className={`bx bx-caret-${teacherSubMenuOpen ? 'up' : 'down'}`}></i>
                         </a>
                         {teacherSubMenuOpen && (

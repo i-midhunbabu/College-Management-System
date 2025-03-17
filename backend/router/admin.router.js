@@ -20,8 +20,11 @@ router.post('/adminstudentdelete/:Id', adminController.adminStudentDelete);
 router.get('/adminstudentedit/:studentid', adminController.adminStudentEdit);
 router.post('/adminstudentupdate', adminController.adminStudentUpdate);
 router.get('/admingetparent', adminController.adminGetParents);
-
-
+router.post('/blockparent', adminController.blockParent);
+router.post('/adddepartment', adminController.addDepartment);
+router.get('/admindepartmentview', adminController.viewDepartment);
+router.get('/admingetteacher', adminController.adminGetTeachers);
+router.post('/assignteacher', adminController.assignTeacher);
 
 
 

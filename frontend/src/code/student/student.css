@@ -41,7 +41,7 @@
 #content nav .right {
     display: flex;
     align-items: center;
-    gap: 40px;
+    gap: 15px;
     flex-direction: row;
     flex-wrap: nowrap;
 }
@@ -255,4 +255,35 @@
         flex-wrap: wrap;
         justify-content: center;
     }
+}
+
+.message-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px; /* Changed from left to right */
+    background-color: #003399;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    font-size: 24px;
+    z-index: 1000;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    /* background: none; */
+    /* border-radius: 0; */
+    /* box-shadow: none; */
+}
+
+.message-icon img {
+    width: 40px;
+    height: 40px;
+}
+
+.feedback-text {
+    margin-left: 10px;
+    font-size: 16px;
+    color: white;
 }

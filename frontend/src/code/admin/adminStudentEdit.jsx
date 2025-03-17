@@ -66,14 +66,30 @@ function AdminStudentEdit() {
     const [guardianname, setGuardianname] = useState('');
     const [guardianrelation, setGuardianrelation] = useState('');
     const [bloodgroup, setBloodgroup] = useState('');
+    const [degree, setDegree] = useState('');
+    const [department, setDepartment] = useState('');
     const [tenth, setTenth] = useState('');
     const [twelve, setTwelve] = useState('');
     const [email, setEmail] = useState('');
+    const [departmentData, setDepartmentData] = useState([]); // To store fetched degree and department data
     // const [password, setPassword] = useState('');
     const location = useLocation();
     const navigate = useNavigate();
-    // const formattedDateOfBirth = dateofbirth.split('T')[0];
+
+    // Fetch degrees and departments from the backend
+    useEffect(() => {
+        fetch('http://localhost:8000/adminrouter/admindepartmentview')
+            .then((res) => res.json())
+            .then((data) => {
+                setDepartmentData(data);
+            })
+            .catch((err) => {
+                console.error("Error fetching department data:", err);
+            });
+    }, []);
     
+    // const formattedDateOfBirth = dateofbirth.split('T')[0];
+
     // Function to generate the number with the first three digits constant
     const generateNumber = () => {
         const constantPart = 'STU'; //Replace with constant part
@@ -100,6 +116,8 @@ function AdminStudentEdit() {
             setGuardianname(result.guardianname);
             setGuardianrelation(result.guardianrelation);
             setBloodgroup(result.bloodgroup);
+            setDegree(result.degree);
+            setDepartment(result.department);
             setTenth(result.tenth);
             setTwelve(result.twelve);
             setEmail(result.email);
@@ -117,6 +135,8 @@ function AdminStudentEdit() {
             guardianname: guardianname,
             guardianrelation: guardianrelation,
             bloodgroup: bloodgroup,
+            degree: degree,
+            department: department,
             tenth: tenth,
             twelve: twelve,
             email: email,
@@ -188,6 +208,76 @@ function AdminStudentEdit() {
                                     <label style={labelStyle} htmlFor="bloodgroup">Blood Group</label>
                                     <input type="text" id="bloodgroup" value={bloodgroup} onChange={(e) => setBloodgroup(e.target.value)} placeholder="Enter the Blood Group" style={inputStyle} />
                                 </div>
+
+                                {/* <div style={formGroupStyle}>
+                                    <label style={labelStyle} htmlFor="degree">Degree</label>
+                                    <select
+                                        id="degree"
+                                        value={degree}
+                                        onChange={(e) => setDegree(e.target.value)}
+                                        style={inputStyle}
+                                    >
+                                        <option value="">Select Degree</option>
+                                        <option value="B.Tech">B.Tech</option>
+                                    </select>
+                                </div> */}
+
+                                <div style={formGroupStyle}>
+                                    <label style={labelStyle} htmlFor="degree">Degree</label>
+                                    <select
+                                        id="degree"
+                                        value={degree}
+                                        onChange={(e) => setDegree(e.target.value)}
+                                        style={inputStyle}
+                                        required
+                                    >
+                                        <option value="">Select Degree</option>
+                                        {departmentData.map((data, index) => (
+                                            <option key={index} value={data.degree}>
+                                                {data.degree}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* <div style={formGroupStyle}>
+                                    <label style={labelStyle} htmlFor="department">Department</label>
+                                    <select
+                                        id="department"
+                                        value={department}
+                                        onChange={(e) => setDepartment(e.target.value)}
+                                        style={inputStyle}
+                                    >
+                                        <option value="">Select Department</option>
+                                        <option value="Civil Engineering">Civil Engineering</option>
+                                        <option value="Computer Science Engineering">Computer Science Engineering</option>
+                                        <option value="Electrical and Electronics Engineering">Electrical and Electronics Engineering</option>
+                                        <option value="Electronics and Communication Engineering">Electronics and Communication Engineering</option>
+                                        <option value="Mechanical Engineering">Mechanical Engineering</option>
+                                    </select>
+                                </div> */}
+
+                                <div style={formGroupStyle}>
+                                    <label style={labelStyle} htmlFor="department">Department</label>
+                                    <select
+                                        id="department"
+                                        value={department}
+                                        onChange={(e) => setDepartment(e.target.value)}
+                                        style={inputStyle}
+                                        required
+                                    >
+                                        <option value="">Select Department</option>
+                                        {departmentData
+                                            .filter((data) => data.degree === degree)
+                                            .flatMap((data) => data.department)
+                                            .map((dept, index) => (
+                                                <option key={index} value={dept}>
+                                                    {dept}
+                                                </option>
+                                            ))}
+                                    </select>
+                                </div>
+
 
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="tenth">10th- CGPA or %</label>

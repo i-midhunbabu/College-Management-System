@@ -20,6 +20,11 @@ import AdminAddStudent from "./code/admin/adminAddStudent";
 import AdminStudentView from "./code/admin/adminStudentView";
 import AdminStudentEdit from "./code/admin/adminStudentEdit";
 import AdminParentView from "./code/admin/adminParentView";
+import AdminAddDepartment from "./code/admin/adminAddDepartment";
+import AdminDepartmentView from "./code/admin/adminDepartmentView";
+import ListTeachers from "./code/admin/adminListTeachers";
+
+
 
 
 //Teacher Module
@@ -87,6 +92,9 @@ function App() {
             <Route path="/adminstudentview" element={<AdminStudentView/>} ></Route> //manage students
             <Route path="/adminstudentedit" element={<AdminStudentEdit/>} ></Route> //edit the data of students excluding password
             <Route path="/adminparentview" element={<AdminParentView/>} ></Route>
+            <Route path="/adminadddepartment" element={<AdminAddDepartment/>} ></Route>
+            <Route path="/admindepartmentview" element={<AdminDepartmentView/>} ></Route>
+            <Route path="/adminlistteachers" element={<ListTeachers/>} ></Route>
           </Routes>
     ) : auth.teacherDetails?.usertype == 2 ? ( //in local storage it is structured as {message: "text", teacherDetails:{usertype:2}}
           <Routes>

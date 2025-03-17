@@ -43,3 +43,17 @@
     cursor: pointer;
     font-size: 16px;
 } */
+.message-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px; /* Changed from left to right */
+    background-color: #003399;
+    color: white;
+    padding: 10px;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    font-size: 24px;
+    z-index: 1000;
+    text-align: center;
+}

@@ -11,6 +11,22 @@ function AdminParentView() {
             })
             .catch((err) => console.error(err));
         },[refresh])
+
+    const handleBlock = (parentid) => {
+        fetch('http://localhost:8000/adminrouter/blockparent', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            }, body: JSON.stringify({parentid}),
+        }).then((res) => res.json()).then((result)=>{
+            alert(result.message);
+            setRefresh((prev) => !prev);
+        })
+        .catch((err) => {
+            console.error('Error blocking parent:', err);
+            alert('Failed to block parent.');
+        })
+    };
     
     return(
         <>
@@ -32,7 +48,7 @@ function AdminParentView() {
                         {/* <th>Aadhaar No</th> */}
                         <th>Mobile No</th>
                         <th>Email ID</th>
-                        <th>Block</th>
+                        <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,8 +62,20 @@ function AdminParentView() {
                                     <td>{data.mobile}</td>
                                     <td>{data.email}</td>
                                     <td>
-                                        <button type="button" className="btn btn-danger"> 
-                                        <i class='bx bx-block' style={{color:'#ffffff'}}></i>                                       
+                                        <button 
+                                            type="button" 
+                                            className={`btn ${data.isBlocked ? 'btn-secondary' : 'btn-danger'} `}
+                                            onClick={() => !data.isBlocked && handleBlock (data.parentid)}
+                                        > 
+                                            {data.isBlocked ? (
+                                                <>
+                                                <i className='bx bxs-user-x' style={{color:'#ffffff'}} ></i> Blocked
+                                                </>
+                                            ) : (
+                                                <>
+                                                <i className='bx bx-block' style={{color:'#ffffff'}}></i> Block
+                                                </>
+                                            )}
                                         </button>
                                     </td>
                                 </tr>

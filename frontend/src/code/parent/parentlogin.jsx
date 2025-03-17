@@ -20,7 +20,13 @@ function ParentLogin() {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(params)
-            }).then((res) => res.json()).then((result) => {
+            }).then((res) => {
+                if (res.status === 403) {
+                    throw new Error("You are not authorized to visit this page");
+                }
+                return res.json();
+            })
+            .then((result) => {
                 console.log(result);
                 if (result && result.message) {
                     setErrorMessage(result.message); // Show error message if login fails

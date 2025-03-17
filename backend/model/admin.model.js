@@ -117,21 +117,29 @@ const adminAddStudentSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    degree: {
+        type: String,
+        required: true
+    },
+    department: {
+        type: String,
+        required: true
+    },
     tenth:{
         type: Number,
         required: true
     },
     twelve:{
         type: Number,
-        require: true
+        required: true
     },
     email:{
         type: String,
-        require: true
+        required: true
     },
     password:{
         type: String,
-        require: true
+        required: true
     },
     usertype:{
         type: Number
@@ -146,10 +154,51 @@ const adminAddStudentSchema = mongoose.Schema({
     }
 })
 
+const departmentSchema = mongoose.Schema({
+    degree: {
+        type: String,
+        required: true
+    },
+    department: {
+        type: [String],
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now()
+    }
+})
+
+const assignedTeacherSchema = mongoose.Schema({
+    teacherid: {
+        type: String,
+        required: true,
+    },
+    teachername: {
+        type: String,
+        required: true,
+    },
+    assignedclass: {
+        type: String,
+        required: true,
+    },
+    department: {
+        type: [String],
+        required: true,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+});
+
+
 
 
 const adminregmodel = mongoose.model('AdminReg', adminregScheme);
 const adminloginmodel = mongoose.model('AdminLogin',adminloginScheme);
 const adminaddteachermodel = mongoose.model('AdminAddTeacher', adminaddteacherSchema)
 const adminaddstudentmodel = mongoose.model('AdminAddStudent', adminAddStudentSchema)
-module.exports= {adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel}
+const departmentmodel = mongoose.model('Department', departmentSchema)
+const assignedteachermodel = mongoose.model('AssignedTeacher', assignedTeacherSchema);
+module.exports= {adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel}

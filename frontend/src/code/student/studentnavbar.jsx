@@ -88,6 +88,11 @@ function StudentNavBar() {
 
                         <a href="#" className="nav-link"><i class='bx bxs-chalkboard'></i> Class</a>
 
+                        <a href="#" className="nav-link"><i class='bx bxs-bar-chart-square' undefined ></i> Exam</a>
+
+
+                        <a href="#" className="nav-link"><i class='bx bxs-bar-chart-square' undefined ></i> My Performance</a>
+
                         <a href="#" className="notification">
                             <i className='bx bxs-bell' />
                             <span className="num">8</span>

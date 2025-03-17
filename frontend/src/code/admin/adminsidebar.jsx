@@ -84,6 +84,12 @@ function AdminSidebar() {
                                         <span className="text">Manage Teacher</span>
                                     </a>
                                 </li>
+                                <li className={location.pathname === "/adminlistteachers" ? "active" : ""}>
+                                    <a href="/adminlistteachers">
+                                        <i class='bx bxs-user-check'></i>
+                                        <span className="text">Assign Teacher</span>
+                                    </a>
+                                </li>
                             </ul>
                         )}
                     </li>
@@ -138,16 +144,16 @@ function AdminSidebar() {
                         </a>
                         {openSubMenu === 'department' && (
                             <ul className="sub-menu">
-                                <li className={location.pathname === "#" ? "active" : ""}>
-                                    <a href="#">
+                                <li className={location.pathname === "/adminadddepartment" ? "active" : ""}>
+                                    <a href="adminadddepartment">
                                         <i class='bx bxs-plus-square'></i>
                                         <span className="text">Add Department</span>
                                     </a>
                                 </li>
-                                <li className={location.pathname === "#" ? "active" : ""}>
-                                    <a href="#">
+                                <li className={location.pathname === "/admindepartmentview" ? "active" : ""}>
+                                    <a href="/admindepartmentview">
                                         <i class='bx bx-list-check'></i>
-                                        <span className="text">Manage Department</span>
+                                        <span className="text">View Department</span>
                                     </a>
                                 </li>
                             </ul>

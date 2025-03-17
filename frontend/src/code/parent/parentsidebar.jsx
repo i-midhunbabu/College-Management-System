@@ -36,14 +36,24 @@ function ParentSidebar() {
                 setOpenSubMenu(null);
             }
         };
+
+        const handleClickInside = () => {
+            setOpenSubMenu(null);
+        };
     
         useEffect(() => {
             document.addEventListener("mousedown", handleClickOutside);
+            if (sidebarRef.current) {
+                sidebarRef.current.addEventListener("click", handleClickInside);
+            }
             return () => {
                 document.removeEventListener("mousedown", handleClickOutside);
+                if (sidebarRef.current) {
+                    sidebarRef.current.removeEventListener("click", handleClickInside);
+                }
             };
         }, []);
-
+        
     return (
         <>
             {/* Sidebar */}
@@ -65,30 +75,6 @@ function ParentSidebar() {
                     </li>
 
                     <li className={location.pathname.startsWith("#") ? "active" : ""}>
-                        <a href="#" onClick={() => toggleSubMenu('teacher')}>
-                            <i className='bx bxs-chalkboard'></i>
-                            <span className="text">Teacher</span>
-                            <i className={`bx bx-caret-${openSubMenu === 'teacher' ? 'up' : 'down'}`}></i>
-                        </a>
-                        {openSubMenu === 'teacher' && (
-                            <ul className="sub-menu">
-                                <li className={location.pathname === "#" ? "active" : ""}>
-                                    <a href="#">
-                                        <i className='bx bxs-user' />
-                                        <span className="text">Add Teacher</span>
-                                    </a>
-                                </li>
-                                <li className={location.pathname === "#" ? "active" : ""}>
-                                    <a href="#">
-                                        <i className='bx bxs-user-detail' />
-                                        <span className="text">Manage Teacher</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        )}
-                    </li>
-
-                    <li className={location.pathname.startsWith("#") ? "active" : ""}>
                         <a href="#" onClick={() => toggleSubMenu('student')}>
                             <i className='bx bxs-graduation'></i>
                             <span className="text">Student</span>
@@ -98,41 +84,45 @@ function ParentSidebar() {
                             <ul className="sub-menu">
                                 <li className={location.pathname === "#" ? "active" : ""}>
                                     <a href="#">
-                                        <i className='bx bxs-user' />
-                                        <span className="text">Add Student</span>
+                                        <i className='bx bxs-user-detail' />
+                                        <span className="text">View Mark</span>
                                     </a>
                                 </li>
                                 <li className={location.pathname === "#" ? "active" : ""}>
                                     <a href="#">
                                         <i className='bx bxs-user-detail' />
-                                        <span className="text">Manage Student</span>
+                                        <span className="text">Attendance Record</span>
+                                    </a>
+                                </li>
+                                <li className={location.pathname === "#" ? "active" : ""}>
+                                    <a href="#">
+                                        <i className='bx bxs-user-detail' />
+                                        <span className="text">Progress Card</span>
                                     </a>
                                 </li>
                             </ul>
                         )}
                     </li>
 
-                    <li className={location.pathname === "#" ? "active" : ""}>
-                        <a href="#">
-                            <i className='bx bxs-message-dots' />
-                            <span className="text">Class</span>
+                    <li className={location.pathname.startsWith("#") ? "active" : ""}>
+                        <a href="#" onClick={() => toggleSubMenu('teacher')}>
+                            <i className='bx bxs-chalkboard'></i>
+                            <span className="text">Teacher</span>
+                            <i className={`bx bx-caret-${openSubMenu === 'teacher' ? 'up' : 'down'}`}></i>
                         </a>
-                    </li>
-
-                    <li className={location.pathname === "#" ? "active" : ""}>
-                        <a href="#">
-                            <i className='bx bxs-group' />
-                            <span className="text">Exam</span>
-                        </a>
+                        {openSubMenu === 'teacher' && (
+                            <ul className="sub-menu">
+                                <li className={location.pathname === "#" ? "active" : ""}>
+                                    <a href="#">
+                                        <i class='bx bxs-chat'></i>
+                                        <span className="text">Chat with us</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        )}
                     </li>
                 </ul>
                 <ul className="side-menu">
-                    <li className={location.pathname === "#" ? "active" : ""}>
-                        <a href="#">
-                            <i className='bx bxs-cog' />
-                            <span className="text">Settings</span>
-                        </a>
-                    </li>
                     <li>
                         <a href="#" className="logout" onClick={handleLogout}>
                             <i className='bx bxs-log-out-circle' />

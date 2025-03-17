@@ -1,4 +1,4 @@
-const { adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel } = require('../model/admin.model');
+const { adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel } = require('../model/admin.model');
 const { teacherlogmodel } = require('../model/teacher.model')
 const { studentlogmodel, addparentmodel } = require('../model/student.model');
 const nodemailer = require('nodemailer');
@@ -279,6 +279,8 @@ exports.addStudentCreate = async (req, res) => {
             guardianname: req.body.guardianname,
             guardianrelation: req.body.guardianrelation,
             bloodgroup: req.body.bloodgroup,
+            degree: req.body.degree,
+            department: req.body.department,
             tenth: req.body.tenth,
             twelve: req.body.twelve,
             email: req.body.email,
@@ -386,6 +388,8 @@ exports.adminStudentUpdate = async (req, res) => {
             guardianname: req.body.guardianname,
             guardianrelation: req.body.guardianrelation,
             bloodgroup: req.body.bloodgroup,
+            degree: req.body.degree,
+            department: req.body.department,
             tenth: req.body.tenth,
             twelve: req.body.twelve,
             email: req.body.email,
@@ -408,5 +412,97 @@ exports.adminGetParents = async (req, res) => {
         res.status(500).json({ message: "Error retrieving parents" });
     }
 };
+
+exports.blockParent = async (req, res) => {
+    try {
+        const { parentid } = req.body;
+        const parent = await addparentmodel.findOneAndUpdate({ parentid }, { isBlocked: true }, { new: true })
+        if (!parent) {
+            return res.status(404).json({ message: "Parent not found" })
+        }
+        //setup nodemailer transporter
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: 'midhunbabu0474@gmail.com',
+                pass: 'haea jsez acef pmke'
+            }
+        });
+
+        // Email options
+        const mailOptions = {
+            from: 'midhunbabu0474@gmail.com',
+            to: parent.email,
+            subject: 'Parent Account Blocked',
+            text: `Dear ${parent.parentname}, \n\nYour account has been blocked by the administrator. You will be no longer be able to access the parent portal.`
+        };
+        // Send email
+        await transporter.sendMail(mailOptions);
+
+
+        res.json({ message: "Parent blocked", parent })
+    } catch (err) {
+        console.error("Error blocking parent:", err)
+        res.status(500).json({ erroe: "Internal server error" })
+
+    }
+};
+
+exports.addDepartment = async (req,res) => {
+    try {
+        console.log("Request body:", req.body);
+        const addDepartment = {
+            degree: req.body.degree,
+            department: req.body.department,
+        };
+        await departmentmodel.create(addDepartment);
+        res.json({message: "Department added successfully"})
+    }catch (err) {
+        console.error("Error adding department", err);
+        res.status(500).json({error: "Internal server error"})
+    }
+};
+
+
+exports.viewDepartment = async (req, res) => {
+    try {
+        const viewDepartment = await departmentmodel.find();
+        res.json(viewDepartment);
+    } catch (err) {
+        console.log("Error fetching departments:", err);
+        res.status(500).json({ message: "Error retrieving departments" });
+    }
+};
+
+exports.adminGetTeachers = async (req, res) => {
+    try {
+        const teachers = await adminaddteachermodel.find();
+        res.json(teachers);
+    } catch (err) {
+        console.error("Error fetching teachers:", err);
+        res.status(500).json({ message: "Error retrieving teachers" });
+    }
+};
+
+exports.assignTeacher = async (req, res) => {
+    try {
+        const { teacherid, teachername, assignedclass, department } = req.body;
+
+        const newAssignment = {
+            teacherid,
+            teachername,
+            assignedclass,
+            department,
+        };
+
+        await assignedteachermodel.create(newAssignment);
+
+        res.status(200).json({ success: true, message: "Teacher assigned successfully!" });
+    } catch (err) {
+        console.error("Error assigning teacher:", err);
+        res.status(500).json({ success: false, message: "Failed to assign teacher." });
+    }
+};
+
 
 
