@@ -29,5 +29,21 @@ const teacherloginSchema = mongoose.Schema({
     }
 })
 
+const teachernotificationSchema = mongoose.Schema({
+    teacherid: {
+        type: String,
+        required: true,
+    },
+    message: {
+        type: String,
+        required: true,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+});
+
 const teacherlogmodel = mongoose.model('Teacherlogin', teacherloginSchema);
-module.exports= {teacherlogmodel};
+const teachernotificationmodel = mongoose.model('TeacherNotification', teachernotificationSchema);
+module.exports= {teacherlogmodel, teachernotificationmodel};

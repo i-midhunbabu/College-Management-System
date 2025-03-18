@@ -2,6 +2,7 @@ var express = require ('express');
 var router = express.Router();
 var adminController = require("../controller/admin.controller");
 
+
 //admin
 router.post('/adminregisterIns', adminController.adminRegister);
 router.get('/adminregisterView', adminController.adminRegisterView);
@@ -25,7 +26,8 @@ router.post('/adddepartment', adminController.addDepartment);
 router.get('/admindepartmentview', adminController.viewDepartment);
 router.get('/admingetteacher', adminController.adminGetTeachers);
 router.post('/assignteacher', adminController.assignTeacher);
-
+router.post('/addsemester', adminController.addSemester);
+router.get('/viewsemesters', adminController.viewSemesters);
 
 
 

@@ -58,6 +58,7 @@ function StudentAddParent() {
     const [parentname, setParentname] = useState('');
     const [studentid, setStudentId] = useState('');
     const [studentname, setStudentname] = useState('');
+    const [department, setDepartment] = useState('');
     const [relation, setRelation] = useState('');
     const [dateofbirth, setDateofBirth] = useState('');
     const [job, setJob] = useState('');
@@ -95,6 +96,10 @@ function StudentAddParent() {
                 if (userData.studentDetails.guardianrelation) {
                     setRelation(userData.studentDetails.guardianrelation || ''); //fill relation from localstorage
                 }
+                if (userData.studentDetails.department) {
+                    setDepartment(userData.studentDetails.department || ''); //fill department from localstorage
+                }
+
             }
         }
     }, []);
@@ -107,6 +112,7 @@ function StudentAddParent() {
             parentname,
             studentid,
             studentname,
+            department,
             relation,
             dateofbirth: formattedDateOfBirth,
             job,
@@ -132,6 +138,7 @@ function StudentAddParent() {
                 setParentname('');
                 setStudentId('');
                 setStudentname('');
+                setDepartment('');
                 setRelation('');
                 setDateofBirth('');
                 setJob('');
@@ -174,6 +181,11 @@ function StudentAddParent() {
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="studentname">Student Name</label>
                                     <input type="text" id="studentname" value={studentname} onChange={(e) => setStudentname(e.target.value)} placeholder="Enter Student Name" style={inputStyle} />
+                                </div>
+
+                                <div style={formGroupStyle}>
+                                    <label style={labelStyle} htmlFor="department">Department</label>
+                                    <input type="text" id="department" value={department} onChange={(e) => setDepartment(e.target.value)} placeholder="Enter the Department of Student" style={inputStyle} />
                                 </div>
 
                                 <div style={formGroupStyle}>

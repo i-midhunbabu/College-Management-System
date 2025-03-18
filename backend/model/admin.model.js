@@ -192,6 +192,25 @@ const assignedTeacherSchema = mongoose.Schema({
     },
 });
 
+const semesterSchema = mongoose.Schema({
+    degree: {
+        type: String,
+        required: true,
+    },
+    department: {
+        type: String,
+        required: true,
+    },
+    semesters: {
+        type: [String], // Array of semesters (e.g., ["S1", "S2"])
+        required: true,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now(),
+    },
+});
+
 
 
 
@@ -201,4 +220,5 @@ const adminaddteachermodel = mongoose.model('AdminAddTeacher', adminaddteacherSc
 const adminaddstudentmodel = mongoose.model('AdminAddStudent', adminAddStudentSchema)
 const departmentmodel = mongoose.model('Department', departmentSchema)
 const assignedteachermodel = mongoose.model('AssignedTeacher', assignedTeacherSchema);
-module.exports= {adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel}
+const semestermodel = mongoose.model('Semester', semesterSchema);
+module.exports= {adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel, semestermodel}

@@ -51,3 +51,30 @@ nav {
     background-color: #fff; /* Add a background color if needed */
 }
 
+.notification .dropdown-menu {
+    /* width: 300px; */
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 40px; /* Adjust based on your layout */
+    right: 0;
+    z-index: 1000;
+    padding: 10px;
+    width: auto;
+    font-weight: bolder;
+    min-width: 350px;
+    max-width: 900px;;
+
+}
+
+.notification .notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.notification .notification-item:last-child {
+    border-bottom: none;
+}
+

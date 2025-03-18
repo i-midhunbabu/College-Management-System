@@ -21,7 +21,10 @@ function AdminDepartmentView() {
                 <h2 style={{textAlign:'center'}}>Department</h2>
                 <br/>
                 </div>
-                <table className="table table-bordered table-secondary">
+                <table 
+                className="table table-bordered table-secondary"
+                style={{ width: '90%', fontSize: '0.9rem', margin: '0 auto' }}
+                >
                     <thead>
                         <tr>
                         <th>Degree</th>

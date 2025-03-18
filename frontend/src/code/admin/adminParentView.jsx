@@ -38,7 +38,10 @@ function AdminParentView() {
                 <h2 style={{textAlign:'center'}}>Parent List</h2>
                 <br/>
             </div>
-            <table className="table table-bordered table-secondary table-hover">
+            <table 
+            className="table table-bordered table-secondary table-hover"
+            style={{ width: '90%', fontSize: '0.9rem', margin: '0 auto' }}
+            >
                     <thead>
                         <tr>
                         <th>Parent ID</th>
@@ -46,6 +49,7 @@ function AdminParentView() {
                         <th>Student ID</th>
                         <th>Student Name</th>
                         {/* <th>Aadhaar No</th> */}
+                        <th>Department</th>
                         <th>Mobile No</th>
                         <th>Email ID</th>
                         <th>Action</th>
@@ -59,6 +63,7 @@ function AdminParentView() {
                                     <td>{data.studentid}</td>
                                     <td>{data.studentname}</td>
                                     {/* <td>{data.aadhaar}</td> */}
+                                    <td>{data.department}</td>
                                     <td>{data.mobile}</td>
                                     <td>{data.email}</td>
                                     <td>

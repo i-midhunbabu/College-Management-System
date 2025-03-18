@@ -1,4 +1,4 @@
-const {teacherlogmodel} = require('../model/teacher.model');
+const {teacherlogmodel, teachernotificationmodel} = require('../model/teacher.model');
 const {adminaddteachermodel} = require('../model/admin.model');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto'); //generating tokens, creating hashes, encrypting data
@@ -139,6 +139,17 @@ exports.teacherUserProfile = async (req, res) => {
     }catch (err) {
         console.error('Error in teacher profile:', err);
         res.status(500).json({message: "Error fetching teacher profile", error: err.message});
+    }
+};
+
+exports.getTeacherNotifications = async (req, res) => {
+    try {
+        const { teacherid } = req.params;
+        const notifications = await teachernotificationmodel.find({ teacherid });
+        res.json(notifications);
+    } catch (err) {
+        console.error("Error fetching notifications:", err);
+        res.status(500).json({ message: "Error retrieving notifications" });
     }
 };
 

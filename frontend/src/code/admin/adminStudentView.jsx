@@ -41,7 +41,10 @@ function AdminStudentView() {
                         <h2 style={{ textAlign: 'center' }}>Student List</h2>
                         <br />
                     </div>
-                    <table className="table table-bordered table-secondary table-hover">
+                    <table 
+                    className="table table-bordered table-secondary table-hover"
+                    style={{ width: '90%', fontSize: '0.9rem', margin: '0 auto' }}
+                    >
                         <thead>
                             <tr>
                                 <th>Student ID</th>

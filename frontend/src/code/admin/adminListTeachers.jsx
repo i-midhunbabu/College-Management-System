@@ -12,8 +12,10 @@ function ListTeachers() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTeacher, setSelectedTeacher] = useState(null);
     const [departments, setDepartments] = useState([]);
-    const [assignedClass, setAssignedClass] = useState("");
+    const [selectedSemesters, setSelectedSemesters] = useState([]);
     const [selectedDepartment, setSelectedDepartment] = useState([]);
+
+    const semesterList = ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"];
 
     // Fetch teachers
     useEffect(() => {
@@ -41,8 +43,15 @@ function ListTeachers() {
     const closeModal = () => {
         setIsModalOpen(false);
         setSelectedTeacher(null);
-        setAssignedClass("");
+        setSelectedSemesters([]);
         setSelectedDepartment([]);
+    };
+
+    const handleSemesterChange = (e) => {
+        const value = e.target.value;
+        setSelectedSemesters((prev) =>
+            prev.includes(value) ? prev.filter((sem) => sem !== value) : [...prev, value]
+        );
     };
 
     const handleAssign = (e) => {
@@ -51,7 +60,7 @@ function ListTeachers() {
         const assignData = {
             teacherid: selectedTeacher.teacherid,
             teachername: selectedTeacher.teachername,
-            assignedclass: assignedClass,
+            assignedclass: selectedSemesters,
             department: selectedDepartment,
         };
 
@@ -82,7 +91,10 @@ function ListTeachers() {
                         <h2 style={{ textAlign: 'center' }}>Assign Teachers</h2>
                         <br />
                     </div>
-                    <table className="table table-bordered table-secondary table-hover">
+                    <table 
+                    className="table table-bordered table-secondary table-hover"
+                    style={{ width: '90%', fontSize: '0.9rem', margin: '0 auto' }}
+                    >
                         <thead>
                             <tr>
                                 <th>Teacher ID</th>
@@ -136,17 +148,22 @@ function ListTeachers() {
                     </div>
 
                     <div className="form-group">
-                        <label>Assigned Class:</label>
-                        <input
-                            type="text"
-                            value={assignedClass}
-                            onChange={(e) => setAssignedClass(e.target.value)}
-                            className="form-control"
-                            placeholder="Enter class"
-                            required
-                        />
+                        <label>Assigned Semesters:</label>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                            {semesterList.map((sem, index) => (
+                                <label key={index} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                    <input
+                                        type="checkbox"
+                                        value={sem}
+                                        checked={selectedSemesters.includes(sem)}
+                                        onChange={handleSemesterChange}
+                                    />{" "}
+                                    {sem}
+                                </label>
+                            ))}
+                        </div>
                     </div>
-
+                    
                     <div className="form-group">
                         <label>Department:</label>
                         <div>

@@ -2,23 +2,42 @@ import React, { useState, useEffect, useRef } from "react";
 import './teacher.css'
 function TeacherNav() {
     const [teacherName, setTeacherName] = useState("");
-    const [isOpen, setIsOpen] = useState(false);
-    const dropdownRef = useRef(null);
-    const [showDropdown, setShowDropdown] = useState(false);
+    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [notifications, setNotifications] = useState([]);
+    // const dropdownRef = useRef(null);
+    // const [showDropdown, setShowDropdown] = useState(false);
+    const notificationRef = useRef(null);
+    const profileRef = useRef(null);
+
     const handleLogout = () => {
         localStorage.clear();
         window.location.href = '/'
     }
-    const toggleDropdown = () => {
-        setIsOpen(!isOpen);
-        setShowDropdown(!showDropdown);
+
+    const toggleNotificationDropdown = () => {
+        setIsNotificationOpen(!isNotificationOpen);
+        setIsProfileOpen(false); // Close profile dropdown if open
     };
+
+    const toggleProfileDropdown = () => {
+        setIsProfileOpen(!isProfileOpen);
+        setIsNotificationOpen(false); // Close notification dropdown if open
+    };
+
+    // const toggleDropdown = () => {
+    //     setIsOpen(!isOpen);
+    //     // setShowDropdown(!showDropdown);
+    // };
 
     // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setIsOpen(false);
+            if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+                setIsNotificationOpen(false);
+            }
+            if (profileRef.current && !profileRef.current.contains(event.target)) {
+                setIsProfileOpen(false);
             }
         };
 
@@ -36,6 +55,14 @@ function TeacherNav() {
                 if (teacherData.teacherDetails && teacherData.teacherDetails.teachername) {
                     setTeacherName(teacherData.teacherDetails.teachername);
                 }
+
+            // Fetch notifications for the teacher
+            fetch(`http://localhost:8000/teacherrouter/teachernotifications/${teacherData.teacherDetails.teacherid}`)
+            .then((res) => res.json())
+            .then((result) => {
+                setNotifications(result);
+            })
+            .catch((err) => console.error(err));
             }
         }, []);
     
@@ -55,15 +82,24 @@ function TeacherNav() {
                 </form>
                 {/* <input type="checkbox" id="switch-mode" hidden />
                 <label htmlFor="switch-mode" className="switch-mode"></label> */}
-                <a href="#" className="notification">
+                <div className="notification" ref={notificationRef} onClick={toggleNotificationDropdown}>
                     <i className='bx bxs-bell' />
-                    <span className="num">8</span>
-                </a>
-                <div className="profile-container" ref={dropdownRef}>
-                    <a href="#" className="profile" onClick={toggleDropdown}>
+                    <span className="num">{notifications.length}</span>
+                    {isNotificationOpen && (
+                        <div className="dropdown-menu">
+                            {notifications.map((notification, index) => (
+                                <div key={index} className="notification-item">
+                                    {notification.message}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+                <div className="profile-container" ref={profileRef}>
+                    <a href="#" className="profile" onClick={toggleProfileDropdown}>
                         <img src="/assets2/img/people.png" alt="" />
                     </a>
-                    {isOpen && (
+                    {isProfileOpen && (
                         <div className="dropdown-menu">
                             {/* <a href="/teacherprofile" className="profile"><i class='bx bxs-user-circle' style={{color:'#0000ff'}}></i> Profile</a> */}
                             <a href="/teacherprofile" className="profile"><i class='bx bxs-user-circle' style={{color:'#0000ff'}}></i> { teacherName } </a>

@@ -1,5 +1,5 @@
-const { adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel } = require('../model/admin.model');
-const { teacherlogmodel } = require('../model/teacher.model')
+const { adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel, semestermodel } = require('../model/admin.model');
+const { teacherlogmodel, teachernotificationmodel } = require('../model/teacher.model')
 const { studentlogmodel, addparentmodel } = require('../model/student.model');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt'); //hashing passwords
@@ -157,7 +157,7 @@ exports.addTeacherCreate = async (req, res) => {
             password: req.body.password,
             salary: req.body.salary,
             usertype: req.body.usertype,
-            loginid: teacherLogin._id // Reference to teacher login
+            loginid: teacherLogin._id ,// Reference to teacher login
         };
 
         await adminaddteachermodel.create(addteacher);
@@ -497,10 +497,50 @@ exports.assignTeacher = async (req, res) => {
 
         await assignedteachermodel.create(newAssignment);
 
+        // Create a notification for the teacher
+        const notification = new teachernotificationmodel({
+            teacherid,
+            message: `You have been assigned to Class: ${assignedclass} \n Departments: ${department.join(', ')}.`,
+        });
+
+        await notification.save();
+
         res.status(200).json({ success: true, message: "Teacher assigned successfully!" });
     } catch (err) {
         console.error("Error assigning teacher:", err);
         res.status(500).json({ success: false, message: "Failed to assign teacher." });
+    }
+};
+
+exports.addSemester = async (req, res) => {
+    try {
+        const { degree, department, semesters } = req.body;
+
+        if (!degree || !department || semesters.length === 0) {
+            return res.status(400).json({ message: "Degree, department, and semesters are required." });
+        }
+
+        const newSemester = {
+            degree,
+            department,
+            semesters,
+        };
+
+        await semestermodel.create(newSemester);
+        res.json({ message: "Semester added successfully!" });
+    } catch (err) {
+        console.error("Error adding semester:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+exports.viewSemesters = async (req, res) => {
+    try {
+        const semesters = await semestermodel.find({}, { degree: 1, department: 1 });
+        res.json(semesters);
+    } catch (err) {
+        console.error("Error fetching semesters:", err);
+        res.status(500).json({ message: "Error retrieving semesters" });
     }
 };
 

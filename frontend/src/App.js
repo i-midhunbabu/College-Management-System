@@ -23,8 +23,7 @@ import AdminParentView from "./code/admin/adminParentView";
 import AdminAddDepartment from "./code/admin/adminAddDepartment";
 import AdminDepartmentView from "./code/admin/adminDepartmentView";
 import ListTeachers from "./code/admin/adminListTeachers";
-
-
+import AdminSem from "./code/admin/adminSem";
 
 
 //Teacher Module
@@ -95,6 +94,7 @@ function App() {
             <Route path="/adminadddepartment" element={<AdminAddDepartment/>} ></Route>
             <Route path="/admindepartmentview" element={<AdminDepartmentView/>} ></Route>
             <Route path="/adminlistteachers" element={<ListTeachers/>} ></Route>
+            <Route path="/adminsemester" element={<AdminSem/>} ></Route>
           </Routes>
     ) : auth.teacherDetails?.usertype == 2 ? ( //in local storage it is structured as {message: "text", teacherDetails:{usertype:2}}
           <Routes>

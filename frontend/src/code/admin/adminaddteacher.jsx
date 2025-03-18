@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import AdminSidebar from "./adminsidebar";
 import AdminNav from "./adminnavbar";
 
@@ -64,6 +64,7 @@ function AdminAddTeacher() {
     const [salary, setSalary] = useState('');
     const [email, setEmail] = useState(''); 
     const [password, setPassword] = useState('');
+    const inputFile= useRef(null)
 
     // Function to generate the number with the first three digits constant
     const generateNumber = () => {
@@ -90,6 +91,7 @@ function AdminAddTeacher() {
         e.preventDefault();
 
         const formattedDateOfBirth = new Date(dateofbirth).toISOString().split('T')[0];
+
 
         const adminparams = {
             teacherid,
@@ -175,8 +177,7 @@ function AdminAddTeacher() {
                                     <label style={labelStyle} htmlFor="salary">Salary</label>
                                     <input type="number" id="salary" value={salary} onChange={(e) => setSalary(e.target.value)} placeholder="Enter Salary" style={inputStyle} />
                                 </div>
-                                
-                                
+
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="email">Email</label>
                                     <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email" style={inputStyle} />

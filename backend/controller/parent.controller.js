@@ -137,6 +137,7 @@ exports.parentUserProfile = async (req, res) => {
             parentname: parentDetails.parentname,
             studentid: parentDetails.studentid,
             studentname: parentDetails.studentname,
+            department: parentDetails.department,
             relation: parentDetails.relation,
             dateofbirth: new Date(parentDetails.dateofbirth).toLocaleDateString(),
             job: parentDetails.job,

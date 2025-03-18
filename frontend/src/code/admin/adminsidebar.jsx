@@ -156,6 +156,12 @@ function AdminSidebar() {
                                         <span className="text">View Department</span>
                                     </a>
                                 </li>
+                                <li className={location.pathname === "/adminsemester" ? "active" : ""}>
+                                    <a href="/adminsemester">
+                                        <i class='bx bxs-plus-square'></i>
+                                        <span className="text">Add Semester</span>
+                                    </a>
+                                </li>
                             </ul>
                         )}
                     </li>

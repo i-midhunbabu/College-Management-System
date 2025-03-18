@@ -3,8 +3,17 @@ import './admindashboard.css'
 function AdminNav() {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
-
     const [showDropdown, setShowDropdown] = useState(false);
+    const [adminName, setAdminName] = useState('');
+    const [initial, setInitial] = useState('');
+
+    useEffect(() => {
+        // Fetch the admin's name from local storage or backend
+        const name = localStorage.getItem('adminName') || 'Admin';
+        setAdminName(name);
+        setInitial(name.charAt(0).toUpperCase());
+    }, []);
+
     const handleLogout = () => {
         localStorage.clear();
         window.location.href = '/'
@@ -49,7 +58,8 @@ function AdminNav() {
                 </a>
                 <div className="profile-container" ref={dropdownRef}>
                     <a href="#" className="profile" onClick={toggleDropdown}>
-                        <img src="/assets2/img/people.png" alt="" />
+                        {/* <img src="/assets2/img/people.png" alt="" /> */}
+                        <div className="profile-initial">{initial}</div>
                     </a>
                     {isOpen && (
                         <div className="dropdown-menu">

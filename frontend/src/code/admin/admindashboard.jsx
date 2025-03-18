@@ -1,8 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import AdminSidebar from "./adminsidebar";
 import AdminNav from "./adminnavbar";
 // import './admindashboard.css'
 function Admindashboard() {
+    const [teacherCount, setTeacherCount] = useState(0);
+    const [studentCount, setStudentCount] = useState(0);
+
+    useEffect(() => {
+        // Fetch the number of teachers
+        fetch("http://localhost:8000/adminrouter/adminteacherview")
+            .then((res) => res.json())
+            .then((data) => {
+                setTeacherCount(data.length); // Assuming the API returns an array of teachers
+            })
+            .catch((err) => {
+                console.error("Error fetching teacher count:", err);
+            });
+
+        // Fetch the number of students
+        fetch("http://localhost:8000/adminrouter/adminstudentview")
+            .then((res) => res.json())
+            .then((data) => {
+                setStudentCount(data.length); // Assuming the API returns an array of students
+            })
+            .catch((err) => {
+                console.error("Error fetching student count:", err);
+            });
+    }, []);
+
     return (
         <>
             <AdminSidebar />
@@ -31,21 +57,31 @@ function Admindashboard() {
                     </div> */}
 
                     <ul className="box-info">
-                    <li>
-                            <i className='bx bxs-group' ></i>
-                            <span className="text">
-                                <h3>1</h3>
-                                <p>Teacher</p>
-                            </span>
+                        <li>
+                            <Link to="/adminteacherview" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                <div className="icon">
+                                <i className='bx bxs-chalkboard'></i>
+                                </div>
+                                <br />
+                                <div className="text">
+                                    <h3>{teacherCount}</h3>
+                                    <p>Teacher</p>
+                                </div>
+                            </Link>
                         </li>
 
-                        {/* <li>
-                            <i className='bx bxs-calendar-check' ></i>
-                            <span className="text">
-                                <h3>1020</h3>
-                                <p>New Order</p>
-                            </span>
-                        </li> */}
+                        <li>
+                            <Link to="/adminstudentview" style={{ textDecoration: 'none', color: 'none' }}>
+                                <div className="icon">
+                                <i class='bx bxs-graduation'></i>
+                                </div>
+                                <br />
+                                <div className="text">
+                                    <h3>{studentCount}</h3>
+                                    <p>Student</p>
+                                </div>
+                            </Link>
+                        </li>
 
                         {/* <li>
                             <i className='bx bxs-dollar-circle' ></i>
@@ -54,6 +90,7 @@ function Admindashboard() {
                                 <p>Total Sales</p>
                             </span>
                         </li> */}
+                    
                     </ul>
 
 
