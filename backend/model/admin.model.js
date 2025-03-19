@@ -179,7 +179,7 @@ const assignedTeacherSchema = mongoose.Schema({
         required: true,
     },
     assignedclass: {
-        type: String,
+        type: [String],
         required: true,
     },
     department: {
