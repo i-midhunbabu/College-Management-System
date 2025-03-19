@@ -9,6 +9,24 @@ function TeacherNav() {
     // const [showDropdown, setShowDropdown] = useState(false);
     const notificationRef = useRef(null);
     const profileRef = useRef(null);
+    const [initial, setInitial] = useState('');
+
+    useEffect(() => {
+        // Fetch the teacher's name from local storage or backend
+        const teacherDetails = JSON.parse(localStorage.getItem('get'));
+        const name = teacherDetails?.teacherDetails?.teachername || 'Teacher';
+        setTeacherName(name);
+        setInitial(name.charAt(0).toUpperCase());
+
+        // Fetch notifications for the teacher
+        fetch(`http://localhost:8000/teacherrouter/teachernotifications/${teacherDetails.teacherDetails.teacherid}`)
+            .then((res) => res.json())
+            .then((result) => {
+                setNotifications(result);
+            })
+            .catch((err) => console.error(err));
+    }, []);
+
 
     const handleLogout = () => {
         localStorage.clear();
@@ -47,27 +65,6 @@ function TeacherNav() {
         };
     }, []);
 
-        useEffect(() => {
-            // Fetch teacher details from localStorage
-            const storedData = localStorage.getItem("get");
-            if (storedData) {
-                const teacherData = JSON.parse(storedData);
-                if (teacherData.teacherDetails && teacherData.teacherDetails.teachername) {
-                    setTeacherName(teacherData.teacherDetails.teachername);
-                }
-
-            // Fetch notifications for the teacher
-            fetch(`http://localhost:8000/teacherrouter/teachernotifications/${teacherData.teacherDetails.teacherid}`)
-            .then((res) => res.json())
-            .then((result) => {
-                setNotifications(result);
-            })
-            .catch((err) => console.error(err));
-            }
-        }, []);
-    
-
-
     return (
         <>
             {/* Navbar */}
@@ -97,12 +94,13 @@ function TeacherNav() {
                 </div>
                 <div className="profile-container" ref={profileRef}>
                     <a href="#" className="profile" onClick={toggleProfileDropdown}>
-                        <img src="/assets2/img/people.png" alt="" />
+                        {/* <img src="/assets2/img/people.png" alt="" /> */}
+                        <div className="profile-initial">{initial}</div>
                     </a>
                     {isProfileOpen && (
                         <div className="dropdown-menu">
                             {/* <a href="/teacherprofile" className="profile"><i class='bx bxs-user-circle' style={{color:'#0000ff'}}></i> Profile</a> */}
-                            <a href="/teacherprofile" className="profile"><i class='bx bxs-user-circle' style={{color:'#0000ff'}}></i> { teacherName } </a>
+                            <a href="/teacherprofile" className="profile"><i class='bx bxs-user-circle' style={{ color: '#0000ff' }}></i> {teacherName} </a>
                             <a href="#" onClick={handleLogout}><i className='bx bx-log-out-circle' style={{ color: ' #b23b3b' }}></i> Logout </a>
                         </div>
                     )}

@@ -10,17 +10,26 @@ function StudentNavBar() {
     const dropdownRef = useRef(null);
     const parentSubMenuRef = useRef(null);
     // const [showDropdown, setShowDropdown] = useState(false);
+    const [initial, setInitial] = useState('');
 
     useEffect(() => {
-        // Fetch student details from localStorage
-        const storedData = localStorage.getItem("get");
-        if (storedData) {
-            const studentData = JSON.parse(storedData);
-            if (studentData.studentDetails && studentData.studentDetails.studentname) {
-                setStudentName(studentData.studentDetails.studentname);
-            }
-        }
-    }, []);
+        // Fetch the student's name from local storage or backend
+        const studentDetails = JSON.parse(localStorage.getItem('get'));
+        const name = studentDetails?.studentDetails?.studentname || 'Student';
+        setStudentName(name);
+        setInitial(name.charAt(0).toUpperCase());
+    }, [])
+
+    // useEffect(() => {
+    //     // Fetch student details from localStorage
+    //     const storedData = localStorage.getItem("get");
+    //     if (storedData) {
+    //         const studentData = JSON.parse(storedData);
+    //         if (studentData.studentDetails && studentData.studentDetails.studentname) {
+    //             setStudentName(studentData.studentDetails.studentname);
+    //         }
+    //     }
+    // }, []);
 
     const handleLogout = () => {
         localStorage.clear();
@@ -100,7 +109,8 @@ function StudentNavBar() {
 
                         <div className="profile-container" ref={dropdownRef}>
                             <a href="#" className="profile" onClick={toggleDropdown}>
-                                <img src="/assets2/img/people.png" alt="" />
+                                {/* <img src="/assets2/img/people.png" alt="" /> */}
+                                <div className="profile-initial">{initial}</div>
                             </a>
                             {isOpen && (
                                 <div className="dropdown-menu">

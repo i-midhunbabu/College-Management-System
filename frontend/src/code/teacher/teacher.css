@@ -78,3 +78,17 @@ nav {
     border-bottom: none;
 }
 
+.profile-initial {
+    width: 40px;
+    height: 40px;
+    background-color: #003399;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+

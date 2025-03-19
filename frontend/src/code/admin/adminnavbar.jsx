@@ -9,7 +9,8 @@ function AdminNav() {
 
     useEffect(() => {
         // Fetch the admin's name from local storage or backend
-        const name = localStorage.getItem('adminName') || 'Admin';
+        const adminDetails = JSON.parse(localStorage.getItem('get'));
+        const name = adminDetails?.adminDetails?.adminname || 'Admin';
         setAdminName(name);
         setInitial(name.charAt(0).toUpperCase());
     }, []);

@@ -6,6 +6,17 @@ function ParentNav() {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [initial, setInitial] = useState('');
+
+        useEffect(() => {
+            // Fetch the parent's name from local storage or backend
+            const parentDetails = JSON.parse(localStorage.getItem('get'));
+            const name = parentDetails?.parentDetails?.parentname || 'Parent';
+            setParentName(name);
+            setInitial(name.charAt(0).toUpperCase());
+        }, [])
+    
+
 
     const handleLogout = () => {
         localStorage.clear();
@@ -63,7 +74,8 @@ function ParentNav() {
                 </a>
                 <div className="profile-container" ref={dropdownRef}>
                     <a href="#" className="profile" onClick={toggleDropdown}>
-                        <img src="/assets2/img/people.png" alt="" />
+                        {/* <img src="/assets2/img/people.png" alt="" /> */}
+                        <div className="profile-initial">{initial}</div>
                     </a>
                     {isOpen && (
                         <div className="dropdown-menu">
