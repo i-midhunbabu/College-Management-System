@@ -1,4 +1,4 @@
-const { adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel, semestermodel } = require('../model/admin.model');
+const { adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel, semestermodel, subjectmodel } = require('../model/admin.model');
 const { teacherlogmodel, teachernotificationmodel } = require('../model/teacher.model')
 const { studentlogmodel, addparentmodel } = require('../model/student.model');
 const nodemailer = require('nodemailer');
@@ -536,7 +536,8 @@ exports.addSemester = async (req, res) => {
 
 exports.viewSemesters = async (req, res) => {
     try {
-        const semesters = await semestermodel.find({}, { degree: 1, department: 1 });
+        // const semesters = await semestermodel.find({}, { degree: 1, department: 1 });
+        const semesters = await semestermodel.find();
         res.json(semesters);
     } catch (err) {
         console.error("Error fetching semesters:", err);
@@ -544,5 +545,35 @@ exports.viewSemesters = async (req, res) => {
     }
 };
 
+exports.addSubject = async (req, res) => {
+    try {
+        const { degree, department, semester, subject } = req.body;
 
+        if (!degree || !department || !semester || !subject) {
+            return res.status(400).json({ message: "All fields are required." });
+        }
 
+        const newSubject = new subjectmodel({
+            degree,
+            department,
+            semester,
+            subject,
+        });
+
+        await newSubject.save();
+        res.json({ message: "Subject added successfully!" });
+    } catch (err) {
+        console.error("Error adding subject:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+exports.viewSubjects = async (req, res) => {
+    try {
+        const subjects = await subjectmodel.find();
+        res.json(subjects);
+    } catch (err) {
+        console.error("Error fetching subjects:", err);
+        res.status(500).json({ message: "Error retrieving subjects" });
+    }
+};

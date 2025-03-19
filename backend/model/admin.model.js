@@ -202,7 +202,30 @@ const semesterSchema = mongoose.Schema({
         required: true,
     },
     semesters: {
-        type: [String], // Array of semesters (e.g., ["S1", "S2"])
+        type: [String],
+        required: true,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now(),
+    },
+});
+
+const subjectSchema = mongoose.Schema({
+    degree: {
+        type: String,
+        required: true,
+    },
+    department: {
+        type: String,
+        required: true,
+    },
+    semester: {
+        type: String,
+        required: true,
+    },
+    subject: {
+        type: String,
         required: true,
     },
     createdAt: {
@@ -212,8 +235,6 @@ const semesterSchema = mongoose.Schema({
 });
 
 
-
-
 const adminregmodel = mongoose.model('AdminReg', adminregScheme);
 const adminloginmodel = mongoose.model('AdminLogin',adminloginScheme);
 const adminaddteachermodel = mongoose.model('AdminAddTeacher', adminaddteacherSchema)
@@ -221,4 +242,5 @@ const adminaddstudentmodel = mongoose.model('AdminAddStudent', adminAddStudentSc
 const departmentmodel = mongoose.model('Department', departmentSchema)
 const assignedteachermodel = mongoose.model('AssignedTeacher', assignedTeacherSchema);
 const semestermodel = mongoose.model('Semester', semesterSchema);
-module.exports= {adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel, semestermodel}
+const subjectmodel = mongoose.model('Subject', subjectSchema);
+module.exports= {adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel, semestermodel, subjectmodel}

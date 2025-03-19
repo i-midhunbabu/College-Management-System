@@ -24,7 +24,8 @@ import AdminAddDepartment from "./code/admin/adminAddDepartment";
 import AdminDepartmentView from "./code/admin/adminDepartmentView";
 import ListTeachers from "./code/admin/adminListTeachers";
 import AdminSem from "./code/admin/adminSem";
-
+import AdminSub from "./code/admin/adminSub";
+import AdminViewSub from "./code/admin/viewSub";
 
 //Teacher Module
 import Teacherlogin from "./code/teacher/teacherlogin";
@@ -95,6 +96,8 @@ function App() {
             <Route path="/admindepartmentview" element={<AdminDepartmentView/>} ></Route>
             <Route path="/adminlistteachers" element={<ListTeachers/>} ></Route>
             <Route path="/adminsemester" element={<AdminSem/>} ></Route>
+            <Route path="/adminsubjects" element={<AdminSub/>} ></Route>
+            <Route path="/adminviewsubjects" element={<AdminViewSub/>} ></Route>
           </Routes>
     ) : auth.teacherDetails?.usertype == 2 ? ( //in local storage it is structured as {message: "text", teacherDetails:{usertype:2}}
           <Routes>

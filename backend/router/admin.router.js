@@ -28,7 +28,7 @@ router.get('/admingetteacher', adminController.adminGetTeachers);
 router.post('/assignteacher', adminController.assignTeacher);
 router.post('/addsemester', adminController.addSemester);
 router.get('/viewsemesters', adminController.viewSemesters);
-
-
+router.post('/addsubject', adminController.addSubject);
+router.get('/viewsubjects', adminController.viewSubjects);
 
 module.exports = router;

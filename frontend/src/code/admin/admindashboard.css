@@ -56,7 +56,8 @@
 }
 
 .sub-menu li {
-    margin: 5px 0;
+    /* margin: 5px 0; */
+    border-bottom: 0px solid #ddd;
 }
 
 .box-info {
