@@ -14,6 +14,9 @@ function ListTeachers() {
     const [departments, setDepartments] = useState([]);
     const [selectedSemesters, setSelectedSemesters] = useState([]);
     const [selectedDepartment, setSelectedDepartment] = useState([]);
+    const [subjects, setSubjects] = useState([]);
+    const [uniqueSubjects, setUniqueSubjects] = useState([]);
+
 
     const semesterList = ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"];
 
@@ -35,6 +38,19 @@ function ListTeachers() {
             .catch((err) => console.error(err));
     }, []);
 
+    //Fetch Subjects
+    useEffect(() => {
+        fetch('http://localhost:8000/adminrouter/viewsubjects')
+            .then((res) => res.json())
+            .then((result) => {
+                setSubjects(result);
+                //Eliminate duplicates
+                const unique = Array.from(new Set(result.map((subj) => subj.subject)));
+                setUniqueSubjects(unique);
+            })
+            .catch((err) => console.error("Error fetching subjects:", err))
+    }, [])
+
     const openModal = (teacher) => {
         setSelectedTeacher(teacher);
         setIsModalOpen(true);
@@ -45,6 +61,7 @@ function ListTeachers() {
         setSelectedTeacher(null);
         setSelectedSemesters([]);
         setSelectedDepartment([]);
+        setSubjects();
     };
 
     const handleSemesterChange = (e) => {
@@ -61,6 +78,7 @@ function ListTeachers() {
             teacherid: selectedTeacher.teacherid,
             teachername: selectedTeacher.teachername,
             assignedclass: selectedSemesters,
+            subject: selectedDepartment,
             department: selectedDepartment,
         };
 
@@ -91,9 +109,9 @@ function ListTeachers() {
                         <h2 style={{ textAlign: 'center' }}>Assign Teachers</h2>
                         <br />
                     </div>
-                    <table 
-                    className="table table-bordered table-secondary table-hover"
-                    style={{ width: '90%', fontSize: '0.9rem', margin: '0 auto' }}
+                    <table
+                        className="table table-bordered table-secondary table-hover"
+                        style={{ width: '90%', fontSize: '0.9rem', margin: '0 auto' }}
                     >
                         <thead>
                             <tr>
@@ -163,6 +181,18 @@ function ListTeachers() {
                             ))}
                         </div>
                     </div>
+
+                    <div className="form-group">
+                        <label>Assign Subject:</label>
+                        <select className="form-control">
+                            <option value="">Select a Subject</option>
+                            {uniqueSubjects.map((subject, index) => (
+                                <option key={index} value={subject}>
+                                    {subject}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                     
                     <div className="form-group">
                         <label>Department:</label>
@@ -193,7 +223,7 @@ function ListTeachers() {
                             )}
                         </div>
                     </div>
-                    
+
                     <div style={{ marginTop: "20px", textAlign: "center" }}>
                         <button type="submit" className="btn btn-primary">
                             Assign
