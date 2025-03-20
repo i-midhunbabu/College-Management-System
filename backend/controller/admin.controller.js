@@ -486,12 +486,13 @@ exports.adminGetTeachers = async (req, res) => {
 
 exports.assignTeacher = async (req, res) => {
     try {
-        const { teacherid, teachername, assignedclass, department } = req.body;
+        const { teacherid, teachername, assignedclass, subject, department } = req.body;
 
         const newAssignment = {
             teacherid,
             teachername,
             assignedclass,
+            subject,
             department,
         };
 
@@ -500,7 +501,7 @@ exports.assignTeacher = async (req, res) => {
         // Create a notification for the teacher
         const notification = new teachernotificationmodel({
             teacherid,
-            message: `You have been assigned to Class: ${assignedclass} \n Departments: ${department.join(', ')}.`,
+            message: `You have been assigned to Class: ${assignedclass.join(', ')} \nSubject: ${subject.join(', ')} \n Departments: ${department.join(', ')}.`,
         });
 
         await notification.save();
