@@ -26,6 +26,8 @@ import ListTeachers from "./code/admin/adminListTeachers";
 import AdminSem from "./code/admin/adminSem";
 import AdminSub from "./code/admin/adminSub";
 import AdminViewSub from "./code/admin/viewSub";
+import AdminExam from "./code/admin/adminExam";
+import AdminClass from "./code/admin/adminClass";
 
 //Teacher Module
 import Teacherlogin from "./code/teacher/teacherlogin";
@@ -35,6 +37,7 @@ import Teacherdashboard from "./code/teacher/teacherdashboard";
 import TeacherSidebar from "./code/teacher/teachersidebar";
 import TeacherNav from "./code/teacher/teachernavbar";
 import TeacherProfile from "./code/teacher/teacherprofile";
+import TeacherExam from "./code/teacher/teacherexam";
 
 //Student Module
 import StudentLogin from "./code/student/studentlogin";
@@ -98,6 +101,8 @@ function App() {
             <Route path="/adminsemester" element={<AdminSem/>} ></Route>
             <Route path="/adminsubjects" element={<AdminSub/>} ></Route>
             <Route path="/adminviewsubjects" element={<AdminViewSub/>} ></Route>
+            <Route path="/adminexamination" element={<AdminExam/>}></Route>
+            <Route path="/adminclass" element={<AdminClass/>}></Route>
           </Routes>
     ) : auth.teacherDetails?.usertype == 2 ? ( //in local storage it is structured as {message: "text", teacherDetails:{usertype:2}}
           <Routes>
@@ -105,6 +110,7 @@ function App() {
           <Route path="/teachersidebar" element={<TeacherSidebar/>}></Route> //teacher sidebar
           <Route path="/teachernav" element={<TeacherNav/>}></Route>
           <Route path="/teacherprofile" element={<TeacherProfile/>} ></Route>
+          <Route path="/teacherexam" element={<TeacherExam/>} ></Route>
           </Routes>
     ) : auth.studentDetails?.usertype == 3 ? ( //in local storage it is structured as {message: "text", studentDetails:{usertype:3}}
           <Routes>

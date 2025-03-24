@@ -125,6 +125,10 @@ const adminAddStudentSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    semester: {
+        type: String,
+        required: true
+    },
     tenth:{
         type: Number,
         required: true
@@ -238,6 +242,21 @@ const subjectSchema = mongoose.Schema({
     },
 });
 
+const examSchema = mongoose.Schema({
+    examType: {
+        type: String,
+        required: true,
+    },
+    mode: {
+        type: String,
+        required: false,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+});
+
 
 const adminregmodel = mongoose.model('AdminReg', adminregScheme);
 const adminloginmodel = mongoose.model('AdminLogin',adminloginScheme);
@@ -247,4 +266,5 @@ const departmentmodel = mongoose.model('Department', departmentSchema)
 const assignedteachermodel = mongoose.model('AssignedTeacher', assignedTeacherSchema);
 const semestermodel = mongoose.model('Semester', semesterSchema);
 const subjectmodel = mongoose.model('Subject', subjectSchema);
-module.exports= {adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel, semestermodel, subjectmodel}
+const exammodel = mongoose.model('Exam', examSchema);
+module.exports= {adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel, semestermodel, subjectmodel, exammodel}

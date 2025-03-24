@@ -50,6 +50,10 @@ const studentaddparentSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    semester: {
+        type: String,
+        required: true,
+    },
     relation: {
         type: String,
         required: true

@@ -30,5 +30,7 @@ router.post('/addsemester', adminController.addSemester);
 router.get('/viewsemesters', adminController.viewSemesters);
 router.post('/addsubject', adminController.addSubject);
 router.get('/viewsubjects', adminController.viewSubjects);
+router.post('/createexam', adminController.createExam);
+router.get('/getstudentsbyclass', adminController.getStudentsByClass);
 
 module.exports = router;

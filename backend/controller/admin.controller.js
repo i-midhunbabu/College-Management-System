@@ -1,4 +1,4 @@
-const { adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel, semestermodel, subjectmodel } = require('../model/admin.model');
+const { adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel, semestermodel, subjectmodel, exammodel } = require('../model/admin.model');
 const { teacherlogmodel, teachernotificationmodel } = require('../model/teacher.model')
 const { studentlogmodel, addparentmodel } = require('../model/student.model');
 const nodemailer = require('nodemailer');
@@ -281,6 +281,7 @@ exports.addStudentCreate = async (req, res) => {
             bloodgroup: req.body.bloodgroup,
             degree: req.body.degree,
             department: req.body.department,
+            semester: req.body.semester,
             tenth: req.body.tenth,
             twelve: req.body.twelve,
             email: req.body.email,
@@ -390,6 +391,7 @@ exports.adminStudentUpdate = async (req, res) => {
             bloodgroup: req.body.bloodgroup,
             degree: req.body.degree,
             department: req.body.department,
+            semester: req.body.semester,
             tenth: req.body.tenth,
             twelve: req.body.twelve,
             email: req.body.email,
@@ -576,5 +578,28 @@ exports.viewSubjects = async (req, res) => {
     } catch (err) {
         console.error("Error fetching subjects:", err);
         res.status(500).json({ message: "Error retrieving subjects" });
+    }
+};
+
+exports.createExam = async (req, res) => {
+    try {
+        const { examType, mode } = req.body;
+        const newExam = new exammodel({ examType, mode });
+        await newExam.save();
+        res.status(201).json({ message: "Exam created successfully", exam: newExam });
+    } catch (error) {
+        console.error("Error creating exam:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+exports.getStudentsByClass = async (req, res) => {
+    try {
+        const { degree, department, semester } = req.query;
+        const students = await adminaddstudentmodel.find({ degree, department, semester });
+        res.json(students);
+    } catch (err) {
+        console.error("Error fetching students by class:", err);
+        res.status(500).json({ message: "Error retrieving students" });
     }
 };

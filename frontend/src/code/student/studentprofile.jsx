@@ -31,6 +31,8 @@ function StudentProfile() {
                                 <h5><strong>Guardian:</strong> {studentData.guardianname}</h5>
                                 <h5><strong>Relation:</strong> {studentData.guardianrelation}</h5>
                                 <h5><strong>Blood Group:</strong> {studentData.bloodgroup}</h5>
+                                <h5><strong>Department:</strong> {studentData.department}</h5>
+                                <h5><strong>Semester:</strong> {studentData.semester}</h5>
                                 <h5><strong>10th CGPA(or %):</strong> {studentData.tenth}</h5>
                                 <h5><strong>12th CGPA(or %):</strong> {studentData.twelve}</h5>
                                 <h5><strong>Email:</strong> {studentData.email}</h5>

@@ -36,6 +36,21 @@ const radioLabelStyle = {
 
 }
 
+const radioLabelStyle1 = {
+    fontWeight: "bold",
+    marginRight: "5px",
+    textAlign: "left",
+    color: "white",
+
+}
+
+const radioContainerStyle = {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "5px",
+    flex: "2",
+};
+
 const inputStyle = {
     flex: "2",
     padding: "8px",
@@ -66,11 +81,13 @@ function AdminAddStudent() {
     const [bloodgroup, setBloodgroup] = useState('');
     const [degree, setDegree] = useState('');
     const [department, setDepartment] = useState('');
+    const [semester, setSemester] = useState('');
     const [tenth, setTenth] = useState('');
     const [twelve, setTwelve] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [departmentData, setDepartmentData] = useState([]); // To store fetched degree and department data
+    const [semesterData, setSemesterData] = useState([]); // To store fetched semester data
 
     // Fetch degrees and departments from the backend
     useEffect(() => {
@@ -84,7 +101,17 @@ function AdminAddStudent() {
             });
     }, []);
 
-
+    // Fetch semesters from the backend
+    useEffect(() => {
+        fetch('http://localhost:8000/adminrouter/viewsemesters')
+            .then((res) => res.json())
+            .then((data) => {
+                setSemesterData(data);
+            })
+            .catch((err) => {
+                console.error("Error fetching semester data:", err);
+            });
+    }, []);
 
     // Function to generate the number with the first three digits constant
     const generateNumber = () => {
@@ -119,6 +146,7 @@ function AdminAddStudent() {
             bloodgroup,
             degree,
             department,
+            semester,
             tenth,
             twelve,
             email,
@@ -144,6 +172,7 @@ function AdminAddStudent() {
                 setBloodgroup('');
                 setDegree('');
                 setDepartment('');
+                setSemester('');
                 setTenth('');
                 setTwelve('');
                 setEmail('');
@@ -294,6 +323,26 @@ function AdminAddStudent() {
                                     </select>
                                 </div>
 
+                                <div style={formGroupStyle}>
+                                    <label style={labelStyle} htmlFor="semester">Semester</label>
+                                    <div style={radioContainerStyle}>
+                                        {semesterData
+                                            .filter((data) => data.degree === degree && data.department === department)
+                                            .flatMap((data) => data.semesters)
+                                            .map((sem, index) => (
+                                                <label key={index} style={radioLabelStyle1}>
+                                                    <input
+                                                        type="radio"
+                                                        value={sem}
+                                                        name="semester"
+                                                        checked={semester === sem}
+                                                        onChange={(e) => setSemester(e.target.value)}
+                                                    />{" "}
+                                                    {sem}
+                                                </label>
+                                            ))}
+                                    </div>
+                                </div>
 
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="tenth">10th CGPA(or %)</label>

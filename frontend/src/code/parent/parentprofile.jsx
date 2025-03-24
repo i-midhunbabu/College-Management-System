@@ -32,6 +32,7 @@ function ParentProfile() {
                                 <h5><strong>Student ID:</strong> {parentData.studentid}</h5>
                                 <h5><strong>Student Name:</strong> {parentData.studentname}</h5>
                                 <h5><strong>Department:</strong> {parentData.department}</h5>
+                                <h5><strong>Semester:</strong> {parentData.semester}</h5>
                                 <h5><strong>Relation:</strong> {parentData.relation}</h5>
                                 <h5><strong>Date of Birth:</strong> {parentData.dateofbirth}</h5>
                                 <h5><strong>Job:</strong> {parentData.job}</h5>

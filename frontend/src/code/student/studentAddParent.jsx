@@ -32,6 +32,21 @@ const radioLabelStyle = {
     color: "white",
 };
 
+const radioLabelStyle1 = {
+    fontWeight: "bold",
+    marginRight: "5px",
+    textAlign: "left",
+    color: "white",
+
+}
+
+const radioContainerStyle = {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "5px",
+    flex: "2",
+};
+
 const inputStyle = {
     flex: "2",
     padding: "8px",
@@ -59,6 +74,7 @@ function StudentAddParent() {
     const [studentid, setStudentId] = useState('');
     const [studentname, setStudentname] = useState('');
     const [department, setDepartment] = useState('');
+    const [semester, setSemester] = useState('');
     const [relation, setRelation] = useState('');
     const [dateofbirth, setDateofBirth] = useState('');
     const [job, setJob] = useState('');
@@ -99,6 +115,9 @@ function StudentAddParent() {
                 if (userData.studentDetails.department) {
                     setDepartment(userData.studentDetails.department || ''); //fill department from localstorage
                 }
+                if (userData.studentDetails.semester) {
+                    setSemester(userData.studentDetails.semester || ''); //fill semester from localstorage
+                }
 
             }
         }
@@ -113,6 +132,7 @@ function StudentAddParent() {
             studentid,
             studentname,
             department,
+            semester,
             relation,
             dateofbirth: formattedDateOfBirth,
             job,
@@ -139,6 +159,7 @@ function StudentAddParent() {
                 setStudentId('');
                 setStudentname('');
                 setDepartment('');
+                setSemester('');
                 setRelation('');
                 setDateofBirth('');
                 setJob('');
@@ -186,6 +207,11 @@ function StudentAddParent() {
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="department">Department</label>
                                     <input type="text" id="department" value={department} onChange={(e) => setDepartment(e.target.value)} placeholder="Enter the Department of Student" style={inputStyle} />
+                                </div>
+                                
+                                <div style={formGroupStyle}>
+                                    <label style={labelStyle} htmlFor="semester">Semester</label>
+                                    <input type="text" id="semester" value={semester} onChange={(e) => setSemester(e.target.value)} placeholder="Enter the Semester of Student" style={inputStyle} />
                                 </div>
 
                                 <div style={formGroupStyle}>

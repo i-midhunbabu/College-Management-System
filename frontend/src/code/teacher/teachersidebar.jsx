@@ -118,8 +118,8 @@ function TeacherSidebar() {
                         </a>
                         {openSubMenu === 'exam' && (
                             <ul className="sub-menu">
-                                <li className={location.pathname === "#" ? "active" : ""}>
-                                    <a href="#">
+                                <li className={location.pathname === "/teacherexam" ? "active" : ""}>
+                                    <a href="/teacherexam">
                                         <i className='bx bxs-user' />
                                         <span className="text">Schedule Exam</span>
                                     </a>

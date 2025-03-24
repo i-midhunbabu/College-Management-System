@@ -52,6 +52,7 @@ function AdminSidebar() {
                     <span className="text"><img src='/logo2.png' width={200} /></span>
                 </a>
                 <ul className="side-menu top">
+
                     <li className="teacher-name">
                         <span style={{ fontSize: '20px' }}>Welcome</span>
                         <span style={{ fontSize: '20px', fontWeight: 'bolder' }}> {adminName || "Admin"} </span>
@@ -156,15 +157,9 @@ function AdminSidebar() {
                                         <span className="text">View Department</span>
                                     </a>
                                 </li>
-                                <li className={location.pathname === "/adminsemester" ? "active" : ""}>
-                                    <a href="/adminsemester">
-                                        <i className='bx bxs-plus-square'></i>
-                                        <span className="text">Add Semester</span>
-                                    </a>
-                                </li>
                                 <li className={location.pathname === "/adminsubjects" ? "active" : ""}>
                                     <a href="/adminsubjects">
-                                    <i className='bx bxs-book-add'></i>                                        <span className="text">Add Subjects</span>
+                                        <i className='bx bxs-book-add'></i>                                        <span className="text">Add Subjects</span>
                                     </a>
                                 </li>
                                 <li className={location.pathname === "/adminviewsubjects" ? "active" : ""}>
@@ -177,20 +172,50 @@ function AdminSidebar() {
                         )}
                     </li>
 
-                    <li className={location.pathname === "#" ? "active" : ""}>
-                        <a href="#">
-                            <i className='bx bxs-message-dots' />
-                            <span className="text">Class</span>
+                    <li className={location.pathname.startsWith("#") ? "active" : ""}>
+                        <a href="#" onClick={() => toggleSubMenu('semester')}>
+                            <i class='bx bx-columns'></i>
+                            <span className="text">Semester</span>
+                            <i className={`bx bx-caret-${openSubMenu === 'semester' ? 'up' : 'down'}`}></i>
                         </a>
+                        {openSubMenu === 'semester' && (
+                            <ul className="sub-menu">
+                                <li className={location.pathname === "/adminsemester" ? "active" : ""}>
+                                    <a href="/adminsemester">
+                                        <i className='bx bxs-plus-square'></i>
+                                        <span className="text">Add Semester</span>
+                                    </a>
+                                </li>
+                                <li className={location.pathname === "/adminclass" ? "active" : ""}>
+                                    <a href="/adminclass">
+                                        <i className='bx bxs-user-detail'></i>
+                                        <span className="text">Class Management</span>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        )}
                     </li>
 
-                    <li className={location.pathname === "#" ? "active" : ""}>
-                        <a href="#">
-                            <i className='bx bxs-group' />
+                    <li className={location.pathname.startsWith("#") ? "active" : ""}>
+                        <a href="#" onClick={() => toggleSubMenu('exam')}>
+                            <i class='bx bx-paperclip'></i>
                             <span className="text">Exam</span>
+                            <i className={`bx bx-caret-${openSubMenu === 'exam' ? 'up' : 'down'}`}></i>
                         </a>
+                        {openSubMenu === 'exam' && (
+                            <ul className="sub-menu">
+                                <li className={location.pathname === "/adminexamination" ? "active" : ""}>
+                                    <a href="/adminexamination">
+                                        <i className='bx bxs-plus-square'></i>
+                                        <span className="text">Create Exam</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        )}
                     </li>
                 </ul>
+
                 <ul className="side-menu">
                     <li className={location.pathname === "/adminreg" ? "active" : ""}>
                         <a href="/adminreg">
