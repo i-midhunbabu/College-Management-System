@@ -1,6 +1,7 @@
 const { studentlogmodel, addparentmodel } = require('../model/student.model');
 const { adminaddstudentmodel } = require('../model/admin.model');
 const { parentlogmodel } = require('../model/parent.model');
+const { Attendance } = require('../model/teacher.model');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 
@@ -198,3 +199,14 @@ exports.addParentCreate = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error (addParentCreate)' });
     }
 }
+
+exports.getAttendance = async (req, res) => {
+    try {
+        const { studentId } = req.query;
+        const attendance = await Attendance.find({ studentId }).populate('teacherId', 'teacherid teachername');
+        res.status(200).json(attendance);
+    } catch (err) {
+        console.error("Error fetching attendance:", err);
+        res.status(500).json({ success: false, message: "Failed to fetch attendance." });
+    }
+};

@@ -6,9 +6,11 @@ function StudentNavBar() {
     const location = useLocation();
     const [studentName, setStudentName] = useState("");
     const [parentSubMenuOpen, setParentSubMenuOpen] = useState(false);
+    const [classSubMenuOpen, setClassSubMenuOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
     const parentSubMenuRef = useRef(null);
+    const classSubMenuRef = useRef(null);
     // const [showDropdown, setShowDropdown] = useState(false);
     const [initial, setInitial] = useState('');
 
@@ -40,6 +42,10 @@ function StudentNavBar() {
         setParentSubMenuOpen(!parentSubMenuOpen);
     };
 
+    const toggleClassSubMenu = () => {
+        setClassSubMenuOpen(!classSubMenuOpen);
+    };
+
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
         // setShowDropdown(!showDropdown);
@@ -53,6 +59,9 @@ function StudentNavBar() {
             if (parentSubMenuOpen && parentSubMenuRef.current && !parentSubMenuRef.current.contains(event.target)) {
                 setParentSubMenuOpen(false);
             }
+            if (classSubMenuOpen && classSubMenuRef.current && !classSubMenuRef.current.contains(event.target)) {
+                setClassSubMenuOpen(false);
+            }
 
         };
 
@@ -60,7 +69,7 @@ function StudentNavBar() {
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [isOpen, parentSubMenuOpen]);
+    }, [isOpen, parentSubMenuOpen, classSubMenuOpen]);
 
     return (
         <>
@@ -74,11 +83,12 @@ function StudentNavBar() {
                     {/* </div> */}
 
                     <div className="right">
-                        <a href="#" className="nav-link"> <i class='bx bxs-home'></i> Home</a>
+                        <a href="/" className="nav-link"> <i class='bx bxs-home'></i> Home</a>
 
                         <li className={location.pathname.startsWith("#") ? "active" : ""} ref={parentSubMenuRef}>
                             <Link to="#" className="nav-link" onClick={toggleParentSubMenu}>
                                 <i class='bx bxs-user'></i> Parent
+                                <i className={`bx bx-caret-${parentSubMenuOpen === 'parent' ? 'up' : 'down'}`}></i>
                             </Link>
                             {/* <Link to="#" className="nav-link" onClick={toggleParentSubMenu}>
                             <i class='bx bxs-user'></i>Parent
@@ -95,10 +105,30 @@ function StudentNavBar() {
                             )}
                         </li>
 
-                        <a href="#" className="nav-link"><i class='bx bxs-chalkboard'></i> Class</a>
+                        <li className={location.pathname.startsWith("#") ? "active" : ""} ref={classSubMenuRef}>
+                            <Link to="#" className="nav-link" onClick={toggleClassSubMenu}>
+                                <i className='bx bxs-chalkboard'></i> Class
+                                <i className={`bx bx-caret-${classSubMenuOpen === 'class' ? 'up' : 'down'}`}></i>
+                            </Link>
+                            {classSubMenuOpen && (
+                                <ul className="sub-menu">
+                                    <li className={location.pathname === "/downloadcoursematerial" ? "active" : ""}>
+                                        <Link to="/downloadcoursematerial">
+                                            <i class='bx bxs-file-find'></i>
+                                            <span className="text"> View Course Material</span>
+                                        </Link>
+                                    </li>
+                                    <li className={location.pathname === "/viewattendance" ? "active" : ""}>
+                                        <Link to="/viewattendance">
+                                            <i class='bx bxs-file-find'></i>
+                                            <span className="text"> View Attendance</span>
+                                        </Link>
+                                    </li>
+                                </ul>
+                            )}
+                        </li>
 
                         <a href="#" className="nav-link"><i class='bx bxs-bar-chart-square' undefined ></i> Exam</a>
-
 
                         <a href="#" className="nav-link"><i class='bx bxs-bar-chart-square' undefined ></i> My Performance</a>
 

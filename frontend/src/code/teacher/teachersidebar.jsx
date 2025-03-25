@@ -94,8 +94,8 @@ function TeacherSidebar() {
                         </a>
                         {openSubMenu === 'class' && (
                             <ul className="sub-menu">
-                                <li className={location.pathname === "#" ? "active" : ""}>
-                                    <a href="#">
+                                <li className={location.pathname === "/markattendance" ? "active" : ""}>
+                                    <a href="/markattendance">
                                         <i class='bx bxs-user-check'></i>
                                         <span className="text">Mark Attendance</span>
                                     </a>
@@ -106,6 +106,13 @@ function TeacherSidebar() {
                                         <span className="text">Add / Update Mark</span>
                                     </a>
                                 </li>
+                                <li className={location.pathname === "/uploadcoursematerial" ? "active" : ""}>
+                                    <a href="/uploadcoursematerial">
+                                    <i class='bx bx-upload'></i>
+                                        <span className="text">Upload Course Materials</span>
+                                    </a>
+                                </li>
+
                             </ul>
                         )}
                     </li>

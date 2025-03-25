@@ -16,7 +16,7 @@ function ListTeachers() {
     const [selectedDepartment, setSelectedDepartment] = useState([]);
     const [subjects, setSubjects] = useState([]);
     const [uniqueSubjects, setUniqueSubjects] = useState([]);
-
+    const [selectedSubject, setSelectedSubject] = useState('');
 
     const semesterList = ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"];
 
@@ -61,7 +61,7 @@ function ListTeachers() {
         setSelectedTeacher(null);
         setSelectedSemesters([]);
         setSelectedDepartment([]);
-        setSubjects();
+        setSelectedSubject('');
     };
 
     const handleSemesterChange = (e) => {
@@ -78,7 +78,7 @@ function ListTeachers() {
             teacherid: selectedTeacher.teacherid,
             teachername: selectedTeacher.teachername,
             assignedclass: selectedSemesters,
-            subject: selectedDepartment,
+            subject: [selectedSubject],
             department: selectedDepartment,
         };
 
@@ -89,9 +89,13 @@ function ListTeachers() {
         })
             .then((res) => res.json())
             .then((result) => {
-                alert("Teacher assigned successfully!");
-                setRefresh((prev) => !prev);
-                closeModal();
+                if (result.success) {
+                    alert("Teacher assigned successfully!");
+                    setRefresh((prev) => !prev);
+                    closeModal();
+                } else {
+                    alert("Failed to assign teacher.");
+                }
             })
             .catch((err) => {
                 console.error(err);
@@ -184,7 +188,11 @@ function ListTeachers() {
 
                     <div className="form-group">
                         <label>Assign Subject:</label>
-                        <select className="form-control">
+                        <select className="form-control"
+                        value={selectedSubject}
+                        onChange={(e) => setSelectedSubject(e.target.value)}
+                        required
+                        >
                             <option value="">Select a Subject</option>
                             {uniqueSubjects.map((subject, index) => (
                                 <option key={index} value={subject}>

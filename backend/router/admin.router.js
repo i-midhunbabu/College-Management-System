@@ -28,9 +28,12 @@ router.get('/admingetteacher', adminController.adminGetTeachers);
 router.post('/assignteacher', adminController.assignTeacher);
 router.post('/addsemester', adminController.addSemester);
 router.get('/viewsemesters', adminController.viewSemesters);
+router.get('/getDegreeDepartmentSemester', adminController.getDegreeDepartmentSemester);
 router.post('/addsubject', adminController.addSubject);
 router.get('/viewsubjects', adminController.viewSubjects);
 router.post('/createexam', adminController.createExam);
+router.get('/getstudentsbyclass', adminController.getStudentsByClass);
+router.get('/admingetstudents', adminController.getStudents);
 router.get('/getstudentsbyclass', adminController.getStudentsByClass);
 
 module.exports = router;

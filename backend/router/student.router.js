@@ -12,6 +12,7 @@ router.post('/studentforgotpassword', studentController.studentForgotPassword);
 router.post('/resetpassword', studentController.studentResetPassword);
 router.get('/studentprofile/:id',studentController.studentUserProfile);
 router.post('/addparent', studentController.addParentCreate);
+router.get('/getattendance', studentController.getAttendance);
 
 
 module.exports = router;

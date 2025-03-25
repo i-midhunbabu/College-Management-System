@@ -548,6 +548,16 @@ exports.viewSemesters = async (req, res) => {
     }
 };
 
+exports.getDegreeDepartmentSemester = async (req, res) => {
+    try {
+        const semesters = await semestermodel.find();
+        res.json(semesters);
+    } catch (err) {
+        console.error("Error fetching degree, department, and semester:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 exports.addSubject = async (req, res) => {
     try {
         const { degree, department, semester, subject } = req.body;
@@ -603,3 +613,14 @@ exports.getStudentsByClass = async (req, res) => {
         res.status(500).json({ message: "Error retrieving students" });
     }
 };
+
+exports.getStudents = async (req, res) => {
+    try {
+        const students = await adminaddstudentmodel.find();
+        res.status(200).json(students);
+    } catch (err) {
+        console.error("Error fetching students:", err);
+        res.status(500).json({ success: false, message: "Failed to fetch students." });
+    }
+};
+

@@ -1,7 +1,9 @@
-const {teacherlogmodel, teachernotificationmodel} = require('../model/teacher.model');
-const {adminaddteachermodel} = require('../model/admin.model');
+const {teacherlogmodel, teachernotificationmodel, CourseMaterial, Attendance} = require('../model/teacher.model');
+const {adminaddteachermodel, adminaddstudentmodel} = require('../model/admin.model');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto'); //generating tokens, creating hashes, encrypting data
+const path = require('path');
+const fs = require('fs');
 
 
 exports.teacherLogin = async (req,res) =>{
@@ -153,5 +155,101 @@ exports.getTeacherNotifications = async (req, res) => {
     }
 };
 
+exports.uploadCourseMaterial = async (req, res) => {
+    try {
+        const { degree, department, semester, title } = req.body;
+        const file = req.files.file;
 
+        if (!file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+
+        const uploadDir = path.join(__dirname, '..', 'public', 'uploads');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        const uploadPath = path.join(uploadDir, file.name);
+        file.mv(uploadPath, async (err) => {
+            if (err) {
+                console.error("Error moving file:", err);
+                return res.status(500).json({ message: "Internal server error" });
+            }
+
+            const courseMaterial = new CourseMaterial({
+                teacherId: req.user._id,
+                degree,
+                department,
+                semester,
+                title,
+                fileUrl: uploadPath
+            });
+
+            await courseMaterial.save();
+            res.status(201).json({ message: "Course material uploaded successfully" });
+        });
+    } catch (err) {
+        console.error("Error uploading course material:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.getCourseMaterials = async (req, res) => {
+    try {
+        const { degree, department, semester } = req.query;
+        const courseMaterials = await CourseMaterial.find({ degree, department, semester });
+        res.json(courseMaterials);
+    } catch (err) {
+        console.error("Error fetching course materials:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.downloadCourseMaterial = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const courseMaterial = await CourseMaterial.findById(id);
+
+        if (!courseMaterial) {
+            return res.status(404).json({ message: "Course material not found" });
+        }
+
+        const filePath = path.resolve(courseMaterial.fileUrl);
+        res.download(filePath);
+    } catch (err) {
+        console.error("Error downloading course material:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.markAttendance = async (req, res) => {
+    try {
+        // const { studentId, date, status, subject, teacherId } = req.body;
+        const attendanceData = req.body;
+
+        const attendanceRecords = attendanceData.map((record) => ({
+            studentId: record.studentId,
+            date: record.date,
+            status: record.status,
+            teacherId: record.teacherId, 
+        }));
+
+        await Attendance.insertMany(attendanceRecords);
+        res.status(201).json({ success: true, message: "Attendance marked successfully!" });
+    } catch (err) {
+        console.error("Error marking attendance:", err);
+        res.status(500).json({ success: false, message: "Failed to mark attendance." });
+    }
+};
+
+exports.getAttendance = async (req, res) => {
+    try {
+        const { studentId, date } = req.query;
+        const attendance = await Attendance.find({ studentId, date });
+        res.status(200).json(attendance);
+    } catch (err) {
+        console.error("Error fetching attendance:", err);
+        res.status(500).json({ success: false, message: "Failed to fetch attendance." });
+    }
+};
 

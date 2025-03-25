@@ -38,6 +38,8 @@ import TeacherSidebar from "./code/teacher/teachersidebar";
 import TeacherNav from "./code/teacher/teachernavbar";
 import TeacherProfile from "./code/teacher/teacherprofile";
 import TeacherExam from "./code/teacher/teacherexam";
+import CourseMaterials from "./code/teacher/coursematerials";
+import MarkAttendance from "./code/teacher/attendancemark";
 
 //Student Module
 import StudentLogin from "./code/student/studentlogin";
@@ -48,6 +50,8 @@ import StudentNavBar from "./code/student/studentnavbar";
 import StudentHome from "./code/student/studenthome";
 import StudentProfile from "./code/student/studentprofile";
 import StudentAddParent from "./code/student/studentAddParent";
+import ViewCourseMaterials from "./code/student/viewcoursematerials";
+import ViewAttendance from "./code/student/studentattendance";
 
 //Parent Module
 import ParentLogin from "./code/parent/parentlogin";
@@ -111,6 +115,8 @@ function App() {
           <Route path="/teachernav" element={<TeacherNav/>}></Route>
           <Route path="/teacherprofile" element={<TeacherProfile/>} ></Route>
           <Route path="/teacherexam" element={<TeacherExam/>} ></Route>
+          <Route path="/uploadcoursematerial" element={<CourseMaterials/>}></Route>
+          <Route path="/markattendance" element={<MarkAttendance/>} ></Route>
           </Routes>
     ) : auth.studentDetails?.usertype == 3 ? ( //in local storage it is structured as {message: "text", studentDetails:{usertype:3}}
           <Routes>
@@ -119,6 +125,8 @@ function App() {
           <Route path="/studenthome" element={<StudentHome/>}></Route>
           <Route path="/studentprofile" element={<StudentProfile/>}></Route>
           <Route path="/studentaddparent" element={<StudentAddParent/>} ></Route>
+          <Route path="/downloadcoursematerial" element={<ViewCourseMaterials/>} ></Route>
+          <Route path="/viewattendance" element={<ViewAttendance/> }></Route>
           </Routes>
     ) : auth.parentDetails?.usertype == 4 ? ( //in local storage it is structured as {message: "text", parentDetails:{usertype:4}}
         <Routes>
