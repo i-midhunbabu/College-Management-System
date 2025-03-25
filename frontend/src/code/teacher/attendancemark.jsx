@@ -163,7 +163,7 @@ function MarkAttendance() {
                                         </option>
                                     ))}
                                 </select>
-                            </div> 
+                            </div>
 
                             <div style={formGroupStyle}>
                                 <label style={labelStyle}>Department:</label>
@@ -182,8 +182,8 @@ function MarkAttendance() {
                                                 {deptName}
                                             </option>
                                         ))}
-                                </select>                            
-                                </div>
+                                </select>
+                            </div>
 
                             <div style={formGroupStyle}>
                                 <label style={labelStyle}>Date:</label>
@@ -213,10 +213,10 @@ function MarkAttendance() {
                                                 {sem}
                                             </option>
                                         ))}
-                                </select>                            
-                                </div>
+                                </select>
+                            </div>
 
-                                <table className="table table-bordered table-secondary table-hover" style={{ width: '100%', fontSize: '0.9rem', margin: '0 auto' }}>
+                            <table className="table table-bordered table-secondary table-hover" style={{ width: '100%', fontSize: '0.9rem', margin: '0 auto' }}>
                                 <thead>
                                     <tr>
                                         <th>Student Name</th>
@@ -240,7 +240,7 @@ function MarkAttendance() {
                                                     <option value="Absent" style={attendanceStyle.Absent}>A</option>
                                                 </select>
                                             </td>
-                                            </tr>
+                                        </tr>
                                     ))}
                                 </tbody>
                             </table>

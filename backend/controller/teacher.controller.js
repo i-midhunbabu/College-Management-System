@@ -1,29 +1,29 @@
-const {teacherlogmodel, teachernotificationmodel, CourseMaterial, Attendance} = require('../model/teacher.model');
-const {adminaddteachermodel, adminaddstudentmodel} = require('../model/admin.model');
+const { teacherlogmodel, teachernotificationmodel, CourseMaterial, Attendance } = require('../model/teacher.model');
+const { adminaddteachermodel, adminaddstudentmodel } = require('../model/admin.model');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto'); //generating tokens, creating hashes, encrypting data
 const path = require('path');
 const fs = require('fs');
 
 
-exports.teacherLogin = async (req,res) =>{
-    try{
+exports.teacherLogin = async (req, res) => {
+    try {
         const teacherLoginParams = {
             email: req.body.email,
             password: req.body.password
         };
 
-        const teacher = await teacherlogmodel.findOne({email: teacherLoginParams.email});
+        const teacher = await teacherlogmodel.findOne({ email: teacherLoginParams.email });
 
         if (teacher) {
             if (teacher.password === teacherLoginParams.password) {
                 if (teacher.usertype === 2) {
                     // Get teacher details
                     const teacherDetails = await adminaddteachermodel.findOne({ loginid: teacher._id });
-                    
+
                     if (teacherDetails) {
                         req.session.data = teacher;
-                        res.json({ ...teacher._doc, teacherDetails: teacherDetails}); // Send teacher details
+                        res.json({ ...teacher._doc, teacherDetails: teacherDetails }); // Send teacher details
                     } else {
                         res.status(404).json({ message: "Teacher details not found" });
                     }
@@ -84,7 +84,7 @@ exports.teacherresetPass = async (req, res) => {
         const { token, password } = req.body;
 
         const teacher = await teacherlogmodel.findOne({ resetToken: token, resetTokenExpiry: { $gt: Date.now() } });
-        
+
         if (!teacher) {
             return res.status(400).json({ message: "Invalid or expired token" });
         }
@@ -113,7 +113,7 @@ exports.teacherresetPass = async (req, res) => {
 };
 
 exports.teacherUserProfile = async (req, res) => {
-    try{
+    try {
         //find teacher login details
         const teacherLogin = await teacherlogmodel.findById(req.params.id);
         if (!teacherLogin) {
@@ -125,22 +125,22 @@ exports.teacherUserProfile = async (req, res) => {
         if (!teacherDetails) {
             return res.status(404).json({ message: "Teacher details not found" });
         }
-        
-        res.json({
-                teacherid: teacherDetails.teacherid,
-                teachername: teacherDetails.teachername,
-                designation: teacherDetails.designation,
-                dateofbirth: new Date(teacherDetails.dateofbirth).toLocaleDateString(),
-                qualification: teacherDetails.qualification,
-                bloodgroup: teacherDetails.bloodgroup,
-                salary: teacherDetails.salary,
-                email: teacherLogin.email,
-                // password: teacherLogin.password
-            });
 
-    }catch (err) {
+        res.json({
+            teacherid: teacherDetails.teacherid,
+            teachername: teacherDetails.teachername,
+            designation: teacherDetails.designation,
+            dateofbirth: new Date(teacherDetails.dateofbirth).toLocaleDateString(),
+            qualification: teacherDetails.qualification,
+            bloodgroup: teacherDetails.bloodgroup,
+            salary: teacherDetails.salary,
+            email: teacherLogin.email,
+            // password: teacherLogin.password
+        });
+
+    } catch (err) {
         console.error('Error in teacher profile:', err);
-        res.status(500).json({message: "Error fetching teacher profile", error: err.message});
+        res.status(500).json({ message: "Error fetching teacher profile", error: err.message });
     }
 };
 
@@ -231,7 +231,7 @@ exports.markAttendance = async (req, res) => {
             studentId: record.studentId,
             date: record.date,
             status: record.status,
-            teacherId: record.teacherId, 
+            teacherId: record.teacherId,
         }));
 
         await Attendance.insertMany(attendanceRecords);

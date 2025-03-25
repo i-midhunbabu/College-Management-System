@@ -157,7 +157,7 @@ exports.addTeacherCreate = async (req, res) => {
             password: req.body.password,
             salary: req.body.salary,
             usertype: req.body.usertype,
-            loginid: teacherLogin._id ,// Reference to teacher login
+            loginid: teacherLogin._id,// Reference to teacher login
         };
 
         await adminaddteachermodel.create(addteacher);
@@ -450,7 +450,7 @@ exports.blockParent = async (req, res) => {
     }
 };
 
-exports.addDepartment = async (req,res) => {
+exports.addDepartment = async (req, res) => {
     try {
         console.log("Request body:", req.body);
         const addDepartment = {
@@ -458,10 +458,10 @@ exports.addDepartment = async (req,res) => {
             department: req.body.department,
         };
         await departmentmodel.create(addDepartment);
-        res.json({message: "Department added successfully"})
-    }catch (err) {
+        res.json({ message: "Department added successfully" })
+    } catch (err) {
         console.error("Error adding department", err);
-        res.status(500).json({error: "Internal server error"})
+        res.status(500).json({ error: "Internal server error" })
     }
 };
 

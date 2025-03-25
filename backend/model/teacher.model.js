@@ -1,29 +1,29 @@
 const mongoose = require('mongoose');
 
 const teacherloginSchema = mongoose.Schema({
-    email:{
+    email: {
         type: String,
         required: true
     },
-    password:{
+    password: {
         type: String,
         required: true
     },
-    usertype:{
+    usertype: {
         type: Number,
         default: 3
     },
-    resetToken:{
+    resetToken: {
         type: String,
     },
-    resetTokenExpiry: { 
+    resetTokenExpiry: {
         type: Date,
     },
     teacherDetails: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'AdminAddTeacher'
     },
-    createdAt:{
+    createdAt: {
         type: Date,
         default: Date.now()
     }
@@ -77,24 +77,24 @@ const courseMaterialSchema = mongoose.Schema({
 });
 
 const attendanceSchema = new mongoose.Schema({
-    studentId: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'AdminAddStudent', 
-        required: true 
+    studentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'AdminAddStudent',
+        required: true
     },
-    date: { 
-        type: Date, 
-        required: true 
+    date: {
+        type: Date,
+        required: true
     },
-    status: { 
-        type: String, 
-        enum: ['Present', 'Absent'], 
-        required: true 
+    status: {
+        type: String,
+        enum: ['Present', 'Absent'],
+        required: true
     },
-    teacherId: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'AdminAddTeacher', 
-        required: true 
+    teacherId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'AdminAddTeacher',
+        required: true
     }
 }, { timestamps: true });
 
@@ -102,4 +102,4 @@ const teacherlogmodel = mongoose.model('Teacherlogin', teacherloginSchema);
 const teachernotificationmodel = mongoose.model('TeacherNotification', teachernotificationSchema);
 const CourseMaterial = mongoose.model('CourseMaterial', courseMaterialSchema);
 const Attendance = mongoose.model('Attendance', attendanceSchema);
-module.exports= {teacherlogmodel, teachernotificationmodel, CourseMaterial, Attendance};
+module.exports = { teacherlogmodel, teachernotificationmodel, CourseMaterial, Attendance };

@@ -17,7 +17,7 @@ function TeacherSidebar() {
             }
         }
     }, []);
-    
+
     const handleLogout = () => {
         localStorage.clear();
         window.location.href = '/'
@@ -52,10 +52,10 @@ function TeacherSidebar() {
                 <ul className="side-menu top">
                     {/* Display Teacher's Name */}
                     <li className="teacher-name">
-                        <span style={{fontSize:'20px'}}>Welcome</span> 
-                        <span style={{fontSize:'20px', fontWeight:'bolder'}}> {teacherName || "Teacher"} </span>
+                        <span style={{ fontSize: '20px' }}>Welcome</span>
+                        <span style={{ fontSize: '20px', fontWeight: 'bolder' }}> {teacherName || "Teacher"} </span>
                     </li>
-                
+
                     <li className={location.pathname === "/" ? "active" : ""}>
                         <a href="/">
                             <i className='bx bxs-dashboard' />
@@ -108,7 +108,7 @@ function TeacherSidebar() {
                                 </li>
                                 <li className={location.pathname === "/uploadcoursematerial" ? "active" : ""}>
                                     <a href="/uploadcoursematerial">
-                                    <i class='bx bx-upload'></i>
+                                        <i class='bx bx-upload'></i>
                                         <span className="text">Upload Course Materials</span>
                                     </a>
                                 </li>

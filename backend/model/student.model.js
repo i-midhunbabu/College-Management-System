@@ -1,4 +1,4 @@
-const mongoose = require ('mongoose');
+const mongoose = require('mongoose');
 
 const studentLoginSchema = mongoose.Schema({
     email: {
@@ -57,7 +57,7 @@ const studentaddparentSchema = mongoose.Schema({
     relation: {
         type: String,
         required: true
-    },  
+    },
     dateofbirth: {
         type: String,
         required: true
@@ -82,7 +82,7 @@ const studentaddparentSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
-    password:{
+    password: {
         type: String,
         required: true
     },
@@ -90,17 +90,17 @@ const studentaddparentSchema = mongoose.Schema({
         type: Number,
         default: 4
     },
-        loginid: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Parentlogin'
-        },
-        createdAt:{
-            type: Date,
-            default: Date.now()
-        }
-    
+    loginid: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Parentlogin'
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now()
+    }
+
 })
 
 const studentlogmodel = mongoose.model('StudentLogin', studentLoginSchema);
 const addparentmodel = mongoose.model('AddParent', studentaddparentSchema);
-module.exports={studentlogmodel, addparentmodel}
+module.exports = { studentlogmodel, addparentmodel }

@@ -2,15 +2,15 @@ const mongoose = require('mongoose');
 
 //Admin Registration Scheme
 const adminregScheme = mongoose.Schema({
-    adminname:{
+    adminname: {
         type: String,
         required: true
     },
-    loginid:{
+    loginid: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'AdminLogin'
     },
-    createdAt:{
+    createdAt: {
         type: Date,
         default: Date.now()
     }
@@ -19,101 +19,101 @@ const adminregScheme = mongoose.Schema({
 
 // Admin Login Schema
 const adminloginScheme = mongoose.Schema({
-    email:{
+    email: {
         type: String,
         required: true
     },
-    password:{
+    password: {
         type: String,
         required: true
     },
-    adminname:{
+    adminname: {
         type: String,
         required: true
     },
-    usertype:{
+    usertype: {
         type: Number
     },
-    resetToken: { 
+    resetToken: {
         type: String,
     },
-    resetTokenExpiry: { 
+    resetTokenExpiry: {
         type: Date,
     },
-    createdAt:{
+    createdAt: {
         type: Date,
         default: Date.now()
     }
 })
 
 const adminaddteacherSchema = mongoose.Schema({
-    teacherid:{
+    teacherid: {
         type: String,
         required: true
     },
-    teachername:{
+    teachername: {
         type: String,
         required: true
     },
-    designation:{
+    designation: {
         type: String,
         required: true
     },
-    dateofbirth:{
+    dateofbirth: {
         type: String,
         required: true
     },
-    qualification:{
+    qualification: {
         type: [String],
         required: true
     },
-    email:{
+    email: {
         type: String,
         required: true
     },
-    password:{
+    password: {
         type: String,
         required: true
     },
-    salary:{
+    salary: {
         type: Number,
         required: true
     },
-    usertype:{
+    usertype: {
         type: Number
     },
     loginid: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'TeacherLogin'
     },
-    createdAt:{
+    createdAt: {
         type: Date,
         default: Date.now()
     }
 })
 
 const adminAddStudentSchema = mongoose.Schema({
-    studentid:{
+    studentid: {
         type: String,
         required: true
     },
-    studentname:{
+    studentname: {
         type: String,
         required: true
     },
-    dateofbirth:{
+    dateofbirth: {
         type: String,
         required: true
     },
-    guardianname:{
+    guardianname: {
         type: String,
         required: true
     },
-    guardianrelation:{
+    guardianrelation: {
         type: String,
         required: true
     },
-    bloodgroup:{
+    bloodgroup: {
         type: String,
         required: true
     },
@@ -129,30 +129,30 @@ const adminAddStudentSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    tenth:{
+    tenth: {
         type: Number,
         required: true
     },
-    twelve:{
+    twelve: {
         type: Number,
         required: true
     },
-    email:{
+    email: {
         type: String,
         required: true
     },
-    password:{
+    password: {
         type: String,
         required: true
     },
-    usertype:{
+    usertype: {
         type: Number
     },
     loginid: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'StudentLogin'
     },
-    createdAt:{
+    createdAt: {
         type: Date,
         default: Date.now()
     }
@@ -186,7 +186,7 @@ const assignedTeacherSchema = mongoose.Schema({
         type: [String],
         required: true,
     },
-    subject : {
+    subject: {
         type: [String],
         required: true,
     },
@@ -259,7 +259,7 @@ const examSchema = mongoose.Schema({
 
 
 const adminregmodel = mongoose.model('AdminReg', adminregScheme);
-const adminloginmodel = mongoose.model('AdminLogin',adminloginScheme);
+const adminloginmodel = mongoose.model('AdminLogin', adminloginScheme);
 const adminaddteachermodel = mongoose.model('AdminAddTeacher', adminaddteacherSchema)
 const adminaddstudentmodel = mongoose.model('AdminAddStudent', adminAddStudentSchema)
 const departmentmodel = mongoose.model('Department', departmentSchema)
@@ -267,4 +267,4 @@ const assignedteachermodel = mongoose.model('AssignedTeacher', assignedTeacherSc
 const semestermodel = mongoose.model('Semester', semesterSchema);
 const subjectmodel = mongoose.model('Subject', subjectSchema);
 const exammodel = mongoose.model('Exam', examSchema);
-module.exports= {adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel, semestermodel, subjectmodel, exammodel}
+module.exports = { adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel, semestermodel, subjectmodel, exammodel }
