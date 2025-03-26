@@ -98,8 +98,62 @@ const attendanceSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
+const examSchema = new mongoose.Schema({
+    examType: {
+        type: String,
+        required: true
+    },
+    mode: {
+        type: String,
+        required: true
+    },
+    degree: {
+        type: String,
+        required: true
+    },
+    department: {
+        type: String,
+        required: true
+    },
+    semester: {
+        type: String,
+        required: true
+    },
+    dateOfExamination: {
+        type: Date,
+        required: true
+    },
+    startTime: {
+        type: String,
+        required: true
+    },
+    endTime: {
+        type: String,
+        required: true
+    },
+    maximumMark: {
+        type: Number,
+        required: true
+    },
+    passMark: {
+        type: Number,
+        required: true
+    },
+    questions: [
+        {
+            question: String,
+            options: [String]
+        }
+    ],
+    questionFile: {
+        type: String
+    }
+}, { timestamps: true });
+
 const teacherlogmodel = mongoose.model('Teacherlogin', teacherloginSchema);
 const teachernotificationmodel = mongoose.model('TeacherNotification', teachernotificationSchema);
 const CourseMaterial = mongoose.model('CourseMaterial', courseMaterialSchema);
 const Attendance = mongoose.model('Attendance', attendanceSchema);
-module.exports = { teacherlogmodel, teachernotificationmodel, CourseMaterial, Attendance };
+const Exam = mongoose.model('Examination', examSchema);
+
+module.exports = { teacherlogmodel, teachernotificationmodel, CourseMaterial, Attendance, Exam };

@@ -40,6 +40,9 @@ import TeacherProfile from "./code/teacher/teacherprofile";
 import TeacherExam from "./code/teacher/teacherexam";
 import CourseMaterials from "./code/teacher/coursematerials";
 import MarkAttendance from "./code/teacher/attendancemark";
+import ExaminationView from "./code/teacher/examinationview";
+import EditExam from "./code/teacher/editexam";
+
 
 //Student Module
 import StudentLogin from "./code/student/studentlogin";
@@ -117,6 +120,8 @@ function App() {
           <Route path="/teacherexam" element={<TeacherExam/>} ></Route>
           <Route path="/uploadcoursematerial" element={<CourseMaterials/>}></Route>
           <Route path="/markattendance" element={<MarkAttendance/>} ></Route>
+          <Route path="/examinationlist" element={<ExaminationView/>} ></Route>
+          <Route path="/editexam/:examId" element={<EditExam/>} ></Route>
           </Routes>
     ) : auth.studentDetails?.usertype == 3 ? ( //in local storage it is structured as {message: "text", studentDetails:{usertype:3}}
           <Routes>

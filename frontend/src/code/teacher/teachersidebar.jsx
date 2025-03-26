@@ -127,10 +127,17 @@ function TeacherSidebar() {
                             <ul className="sub-menu">
                                 <li className={location.pathname === "/teacherexam" ? "active" : ""}>
                                     <a href="/teacherexam">
-                                        <i className='bx bxs-user' />
+                                        <i class='bx bxs-calendar-plus'></i>
                                         <span className="text">Schedule Exam</span>
                                     </a>
                                 </li>
+                                <li className={location.pathname === "/examinationlist" ? "active" : ""}>
+                                    <a href="/examinationlist">
+                                        <i class='bx bx-list-ul'></i>
+                                        <span className="text">Examination List</span>
+                                    </a>
+                                </li>
+
                             </ul>
                         )}
                     </li>

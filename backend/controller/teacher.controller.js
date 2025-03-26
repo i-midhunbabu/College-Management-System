@@ -1,5 +1,5 @@
-const { teacherlogmodel, teachernotificationmodel, CourseMaterial, Attendance } = require('../model/teacher.model');
-const { adminaddteachermodel, adminaddstudentmodel } = require('../model/admin.model');
+const { teacherlogmodel, teachernotificationmodel, CourseMaterial, Attendance, Exam } = require('../model/teacher.model');
+const { adminaddteachermodel, adminaddstudentmodel, departmentmodel, semestermodel } = require('../model/admin.model');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto'); //generating tokens, creating hashes, encrypting data
 const path = require('path');
@@ -253,3 +253,145 @@ exports.getAttendance = async (req, res) => {
     }
 };
 
+exports.getDegreesAndDepartments = async (req, res) => {
+    try {
+        const departments = await departmentmodel.find();
+        res.json(departments);
+    } catch (err) {
+        console.error("Error fetching degrees and departments:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.getSemesters = async (req, res) => {
+    try {
+        const semesters = await semestermodel.find();
+        res.json(semesters);
+    } catch (err) {
+        console.error("Error fetching semesters:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.createExam = async (req, res) => {
+    try {
+        const { examType, mode, degree, department, semester, dateOfExamination, startTime, endTime, maximumMark, passMark, questions } = req.body;
+        const formattedDate = new Date(dateOfExamination).toISOString().split('T')[0];
+        const newExam = new Exam({
+            examType,
+            mode,
+            degree,
+            department,
+            semester,
+            dateOfExamination: formattedDate,
+            startTime,
+            endTime,
+            maximumMark,
+            passMark,
+            questions
+        });
+
+        await newExam.save();
+        res.status(201).json({ message: "Exam created successfully", exam: newExam });
+    } catch (error) {
+        console.error("Error creating exam:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+exports.uploadQuestionFile = async (req, res) => {
+    try {
+        const { examId } = req.body;
+        const file = req.files.file;
+
+        if (!file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+
+        const uploadDir = path.join(__dirname, '..', 'public', 'uploads');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        const uploadPath = path.join(uploadDir, file.name);
+        file.mv(uploadPath, async (err) => {
+            if (err) {
+                console.error("Error moving file:", err);
+                return res.status(500).json({ message: "Internal server error" });
+            }
+
+            const exam = await Exam.findById(examId);
+            if (!exam) {
+                return res.status(404).json({ message: "Exam not found" });
+            }
+
+            exam.questionFile = uploadPath;
+            await exam.save();
+            res.status(201).json({ message: "Question file uploaded successfully", exam });
+        });
+    } catch (err) {
+        console.error("Error uploading question file:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.getExams = async (req, res) => {
+    try {
+        const exams = await Exam.find();
+        res.json(exams);
+    } catch (err) {
+        console.error("Error fetching exams:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.deleteExam = async (req, res) => {
+    try {
+        const { examId } = req.params;
+        const exam = await Exam.findByIdAndDelete(examId);
+
+        if (!exam) {
+            return res.status(404).json({ message: "Exam not found" });
+        }
+
+        res.status(200).json({ message: "Exam deleted successfully" });
+    } catch (err) {
+        console.error("Error deleting exam:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.getExam = async (req, res) => {
+    try {
+        const { examId } = req.params;
+        const exam = await Exam.findById(examId);
+
+        if (!exam) {
+            return res.status(404).json({ message: "Exam not found" });
+        }
+
+        const formattedDate = new Date(exam.dateOfExamination).toISOString().split('T')[0];
+        exam.dateOfExamination = formattedDate;
+
+        res.json(exam);
+    } catch (err) {
+        console.error("Error fetching exam:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.updateExam = async (req, res) => {
+    try {
+        const { examId } = req.params;
+        const updatedExam = await Exam.findByIdAndUpdate(examId, req.body, { new: true });
+
+        if (!updatedExam) {
+            return res.status(404).json({ message: "Exam not found" });
+        }
+
+        res.status(200).json({ message: "Exam updated successfully", exam: updatedExam });
+    } catch (err) {
+        console.error("Error updating exam:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
