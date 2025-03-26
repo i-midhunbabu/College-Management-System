@@ -1,35 +1,39 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import TeacherSidebar from "./teachersidebar";
 import TeacherNav from "./teachernavbar";
 
 const formStyle = {
     maxWidth: "600px",
     margin: "0 auto",
-    // backgroundColor: "#e0e1dd",
     backgroundColor: "rgb(85, 96, 216)",
     padding: "20px",
     borderRadius: "25px",
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
 };
+
 const formGroupStyle = {
     marginBottom: "15px",
     display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
+    // justifyContent: "space-between",
+    flexDirection: "column",
+    alignItems: "flex-start",
 };
+
 const labelStyle = {
     fontWeight: "bold",
-    flex: "1",
+    // flex: "1",
     marginRight: "10px",
-    textAlign: "right",
+    // textAlign: "right",
     color: "white",
 };
+
 const inputStyle = {
-    flex: "2",
+    // flex: "2",
     padding: "8px",
     border: "2px solid #ccc",
     borderRadius: "10px",
     fontSize: "14px",
+    width: "100%",
 };
 
 const buttonStyle = {
@@ -44,7 +48,6 @@ const buttonStyle = {
     fontSize: "16px",
     marginTop: "20px",
 };
-
 
 function TeacherExam() {
     const [examType, setExamType] = useState("");
@@ -62,6 +65,7 @@ function TeacherExam() {
     const [degreeList, setDegreeList] = useState([]);
     const [departmentList, setDepartmentList] = useState([]);
     const [semesterList, setSemesterList] = useState([]);
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         // Fetch degrees and departments from adminAddDepartment
@@ -207,6 +211,9 @@ function TeacherExam() {
         setEndTime("");
         setMaximumMark("");
         setPassMark("");
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
     };
 
     return (
@@ -374,7 +381,7 @@ function TeacherExam() {
                                 {mode !== "mcq" && (
                                     <div style={formGroupStyle}>
                                         <label style={labelStyle} htmlFor="questionFile">Upload Question:</label>
-                                        <input type="file" id="questionFile" onChange={handleFileChange} />
+                                        <input type="file" id="questionFile" onChange={handleFileChange} ref={fileInputRef} />
                                     </div>
                                 )}
                                 {mode !== "mcq" && (

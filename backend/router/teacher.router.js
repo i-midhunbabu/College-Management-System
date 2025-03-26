@@ -23,6 +23,6 @@ router.get('/semesters', teacherController.getSemesters);
 router.get('/getexams', teacherController.getExams);
 router.delete('/deleteexam/:examId', teacherController.deleteExam);
 router.get('/getexam/:examId', teacherController.getExam);
-router.post('/updateexam/:examId', teacherController.updateExam);
+router.put('/updateexam/:examId', teacherController.updateExam);
 
 module.exports = router;

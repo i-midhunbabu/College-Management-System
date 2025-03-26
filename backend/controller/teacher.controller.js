@@ -325,7 +325,7 @@ exports.uploadQuestionFile = async (req, res) => {
                 return res.status(404).json({ message: "Exam not found" });
             }
 
-            exam.questionFile = uploadPath;
+            exam.questionFile = file.name;
             await exam.save();
             res.status(201).json({ message: "Question file uploaded successfully", exam });
         });
@@ -338,7 +338,14 @@ exports.uploadQuestionFile = async (req, res) => {
 exports.getExams = async (req, res) => {
     try {
         const exams = await Exam.find();
-        res.json(exams);
+        const formattedExams = exams.map(exam => {
+            const formattedDate = new Date(exam.dateOfExamination).toISOString().split('T')[0];
+            return {
+                ...exam._doc,
+                dateOfExamination: formattedDate
+            };
+        });
+        res.json(formattedExams);
     } catch (err) {
         console.error("Error fetching exams:", err);
         res.status(500).json({ message: "Internal server error" });
@@ -395,3 +402,4 @@ exports.updateExam = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
+

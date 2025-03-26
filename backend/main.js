@@ -25,6 +25,7 @@ app.use(session({
 //     console.log("Sample Text");
 // })
 
+
 var adminRouter = require('./router/admin.router');
 app.use('/adminrouter', adminRouter)
 var teacherRouter = require('./router/teacher.router');

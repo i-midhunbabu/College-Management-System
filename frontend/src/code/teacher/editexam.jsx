@@ -15,24 +15,26 @@ const formStyle = {
 const formGroupStyle = {
     marginBottom: "15px",
     display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
+    // justifyContent: "space-between",
+    flexDirection: "column",
+    alignItems: "flex-start",
 };
 
 const labelStyle = {
     fontWeight: "bold",
-    flex: "1",
+    // flex: "1",
     marginRight: "10px",
-    textAlign: "right",
+    // textAlign: "right",
     color: "white",
 };
 
 const inputStyle = {
-    flex: "2",
+    // flex: "2",
     padding: "8px",
     border: "2px solid #ccc",
     borderRadius: "10px",
     fontSize: "14px",
+    width: "100%",
 };
 
 const buttonStyle = {
@@ -48,80 +50,126 @@ const buttonStyle = {
     marginTop: "20px",
 };
 
+const fileLabelStyle = {
+    fontWeight: "bold",
+    color: "white",
+    marginBottom: "5px", // Add some space below the label
+};
+
+
 function EditExam() {
     const { examId } = useParams();
     const navigate = useNavigate();
-    const [examData, setExamData] = useState({
-        examType: "",
-        mode: "",
-        degree: "",
-        department: "",
-        semester: "",
-        dateOfExamination: "",
-        startTime: "",
-        endTime: "",
-        maximumMark: "",
-        passMark: "",
-        questions: [{ question: "", options: ["", "", "", ""] }],
-        questionFile: null,
-    });
+    const [examType, setExamType] = useState("");
+    const [mode, setMode] = useState("");
+    const [questionFile, setQuestionFile] = useState(null);
+    const [questionFileName, setQuestionFileName] = useState(""); 
+    const [questions, setQuestions] = useState([{ question: "", options: ["", "", "", ""] }]);
+    const [degree, setDegree] = useState("");
+    const [department, setDepartment] = useState("");
+    const [semester, setSemester] = useState("");
+    const [dateOfExamination, setDateOfExamination] = useState("");
+    const [startTime, setStartTime] = useState("");
+    const [endTime, setEndTime] = useState("");
+    const [maximumMark, setMaximumMark] = useState("");
+    const [passMark, setPassMark] = useState("");
+    const [degreeList, setDegreeList] = useState([]);
+    const [departmentList, setDepartmentList] = useState([]);
+    const [semesterList, setSemesterList] = useState([]);
 
     useEffect(() => {
         fetch(`http://localhost:8000/teacherrouter/getexam/${examId}`)
             .then((res) => res.json())
             .then((data) => {
-
                 data.dateOfExamination = new Date(data.dateOfExamination).toISOString().split('T')[0];
-                setExamData(data);
+                setExamType(data.examType);
+                setMode(data.mode);
+                setQuestions(data.questions);
+                setDegree(data.degree);
+                setDepartment(data.department);
+                setSemester(data.semester);
+                setDateOfExamination(data.dateOfExamination);
+                setStartTime(data.startTime);
+                setEndTime(data.endTime);
+                setMaximumMark(data.maximumMark);
+                setPassMark(data.passMark);
+                setQuestionFileName(data.questionFile ? data.questionFile.split('\\').pop() : ""); // Set the file name
             })
             .catch((err) => console.error("Error fetching exam data:", err));
     }, [examId]);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setExamData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
+    useEffect(() => {
+        // Fetch degrees and departments from adminAddDepartment
+        fetch("http://localhost:8000/adminrouter/admindepartmentview")
+            .then((res) => res.json())
+            .then((data) => {
+                setDepartmentList(data);
+                const uniqueDegrees = [...new Set(data.map((dept) => dept.degree))];
+                setDegreeList(uniqueDegrees);
+            })
+            .catch((error) => {
+                console.error("Error fetching departments:", error);
+            });
+
+        // Fetch semesters from adminSem
+        fetch("http://localhost:8000/adminrouter/viewsemesters")
+            .then((res) => res.json())
+            .then((data) => setSemesterList(data))
+            .catch((error) => {
+                console.error("Error fetching semesters:", error);
+            });
+    }, []);
+
+    const handleExamTypeChange = (e) => {
+        setExamType(e.target.value);
     };
 
-    const handleQuestionChange = (index, value) => {
-        const newQuestions = [...examData.questions];
-        newQuestions[index].question = value;
-        setExamData((prevData) => ({
-            ...prevData,
-            questions: newQuestions,
-        }));
-    };
-
-    const handleOptionChange = (qIndex, oIndex, value) => {
-        const newQuestions = [...examData.questions];
-        newQuestions[qIndex].options[oIndex] = value;
-        setExamData((prevData) => ({
-            ...prevData,
-            questions: newQuestions,
-        }));
-    };
-
-    const addQuestion = () => {
-        setExamData((prevData) => ({
-            ...prevData,
-            questions: [...prevData.questions, { question: "", options: ["", "", "", ""] }],
-        }));
+    const handleModeChange = (e) => {
+        setMode(e.target.value);
     };
 
     const handleFileChange = (e) => {
-        setExamData((prevData) => ({
-            ...prevData,
-            questionFile: e.target.files[0],
-        }));
+        setQuestionFile(e.target.files[0]);
+        setQuestionFileName(e.target.files[0].name); // Update the file name
+    };
+
+    const handleQuestionChange = (index, value) => {
+        const newQuestions = [...questions];
+        newQuestions[index].question = value;
+        setQuestions(newQuestions);
+    };
+
+    const handleOptionChange = (qIndex, oIndex, value) => {
+        const newQuestions = [...questions];
+        newQuestions[qIndex].options[oIndex] = value;
+        setQuestions(newQuestions);
+    };
+
+    const addQuestion = () => {
+        setQuestions([...questions, { question: "", options: ["", "", "", ""] }]);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const formattedDate = new Date(dateOfExamination).toISOString().split('T')[0];
+
         try {
+            const examData = {
+                examType,
+                mode,
+                degree,
+                department,
+                semester,
+                dateOfExamination: formattedDate,
+                startTime,
+                endTime,
+                maximumMark,
+                passMark,
+                questions,
+            };
+
             const response = await fetch(`http://localhost:8000/teacherrouter/updateexam/${examId}`, {
-                method: "POST",
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -151,62 +199,64 @@ function EditExam() {
                             <form onSubmit={handleSubmit}>
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="examType">Exam Type</label>
-                                    <input
-                                        type="text"
-                                        id="examType"
-                                        name="examType"
-                                        value={examData.examType}
-                                        onChange={handleChange}
-                                        style={inputStyle}
-                                    />
+                                    <select id="examType" value={examType} onChange={handleExamTypeChange} style={inputStyle}>
+                                        <option value="">Select Exam Type</option>
+                                        <option value="internal">Internal Exam</option>
+                                        <option value="semester">Semester Exam</option>
+                                    </select>
                                 </div>
 
-                                <div style={formGroupStyle}>
-                                    <label style={labelStyle} htmlFor="mode">Exam Mode</label>
-                                    <input
-                                        type="text"
-                                        id="mode"
-                                        name="mode"
-                                        value={examData.mode}
-                                        onChange={handleChange}
-                                        style={inputStyle}
-                                    />
-                                </div>
+                                {examType === "internal" && (
+                                    <div style={formGroupStyle}>
+                                        <label style={labelStyle} htmlFor="mode">Mode</label>
+                                        <select id="mode" value={mode} onChange={handleModeChange} style={inputStyle}>
+                                            <option value="">Select Mode</option>
+                                            <option value="assignment">Assignment</option>
+                                            <option value="mcq">MCQ</option>
+                                        </select>
+                                    </div>
+                                )}
 
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="degree">Degree</label>
-                                    <input
-                                        type="text"
-                                        id="degree"
-                                        name="degree"
-                                        value={examData.degree}
-                                        onChange={handleChange}
-                                        style={inputStyle}
-                                    />
+                                    <select id="degree" value={degree} onChange={(e) => setDegree(e.target.value)} style={inputStyle} required>
+                                        <option value="">Select Degree</option>
+                                        {degreeList.map((deg, index) => (
+                                            <option key={index} value={deg}>
+                                                {deg}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
 
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="department">Department</label>
-                                    <input
-                                        type="text"
-                                        id="department"
-                                        name="department"
-                                        value={examData.department}
-                                        onChange={handleChange}
-                                        style={inputStyle}
-                                    />
+                                    <select id="department" value={department} onChange={(e) => setDepartment(e.target.value)} style={inputStyle} required>
+                                        <option value="">Select Department</option>
+                                        {departmentList
+                                            .filter((dept) => dept.degree === degree)
+                                            .flatMap((dept) => dept.department)
+                                            .map((deptName, index) => (
+                                                <option key={index} value={deptName}>
+                                                    {deptName}
+                                                </option>
+                                            ))}
+                                    </select>
                                 </div>
 
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="semester">Semester</label>
-                                    <input
-                                        type="text"
-                                        id="semester"
-                                        name="semester"
-                                        value={examData.semester}
-                                        onChange={handleChange}
-                                        style={inputStyle}
-                                    />
+                                    <select id="semester" value={semester} onChange={(e) => setSemester(e.target.value)} style={inputStyle} required>
+                                        <option value="">Select Semester</option>
+                                        {semesterList
+                                            .filter((sem) => sem.degree === degree && sem.department === department)
+                                            .flatMap((sem) => sem.semesters)
+                                            .map((sem, index) => (
+                                                <option key={index} value={sem}>
+                                                    {sem}
+                                                </option>
+                                            ))}
+                                    </select>
                                 </div>
 
                                 <div style={formGroupStyle}>
@@ -214,10 +264,10 @@ function EditExam() {
                                     <input
                                         type="date"
                                         id="dateOfExamination"
-                                        name="dateOfExamination"
-                                        value={examData.dateOfExamination}
-                                        onChange={handleChange}
+                                        value={dateOfExamination}
+                                        onChange={(e) => setDateOfExamination(e.target.value)}
                                         style={inputStyle}
+                                        required
                                     />
                                 </div>
 
@@ -226,10 +276,10 @@ function EditExam() {
                                     <input
                                         type="time"
                                         id="startTime"
-                                        name="startTime"
-                                        value={examData.startTime}
-                                        onChange={handleChange}
+                                        value={startTime}
+                                        onChange={(e) => setStartTime(e.target.value)}
                                         style={inputStyle}
+                                        required
                                     />
                                 </div>
 
@@ -238,10 +288,10 @@ function EditExam() {
                                     <input
                                         type="time"
                                         id="endTime"
-                                        name="endTime"
-                                        value={examData.endTime}
-                                        onChange={handleChange}
+                                        value={endTime}
+                                        onChange={(e) => setEndTime(e.target.value)}
                                         style={inputStyle}
+                                        required
                                     />
                                 </div>
 
@@ -250,10 +300,10 @@ function EditExam() {
                                     <input
                                         type="number"
                                         id="maximumMark"
-                                        name="maximumMark"
-                                        value={examData.maximumMark}
-                                        onChange={handleChange}
+                                        value={maximumMark}
+                                        onChange={(e) => setMaximumMark(e.target.value)}
                                         style={inputStyle}
+                                        required
                                     />
                                 </div>
 
@@ -262,15 +312,16 @@ function EditExam() {
                                     <input
                                         type="number"
                                         id="passMark"
-                                        name="passMark"
-                                        value={examData.passMark}
-                                        onChange={handleChange}
+                                        value={passMark}
+                                        onChange={(e) => setPassMark(e.target.value)}
                                         style={inputStyle}
+                                        required
                                     />
                                 </div>
-                                {examData.mode === "mcq" && (
+
+                                {mode === "mcq" && (
                                     <div>
-                                        {examData.questions.map((q, qIndex) => (
+                                        {questions.map((q, qIndex) => (
                                             <div key={qIndex} style={{ marginBottom: "20px" }}>
                                                 <div style={formGroupStyle}>
                                                     <label style={labelStyle} htmlFor={`question-${qIndex}`}>Question {qIndex + 1}:</label>
@@ -299,12 +350,15 @@ function EditExam() {
                                         <button type="button" onClick={addQuestion} style={buttonStyle}>Add Question</button>
                                     </div>
                                 )}
-                                {examData.mode !== "mcq" && (
+
+                                {mode !== "mcq" && (
                                     <div style={formGroupStyle}>
+                                        {questionFileName && <p style={fileLabelStyle}>Uploaded File: {questionFileName}</p>} {/* Display the file name */}
                                         <label style={labelStyle} htmlFor="questionFile">Upload Question:</label>
                                         <input type="file" id="questionFile" onChange={handleFileChange} />
                                     </div>
                                 )}
+
                                 <button type="submit" style={buttonStyle}>Update Exam</button>
                             </form>
                         </div>

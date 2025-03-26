@@ -28,6 +28,7 @@ import AdminSub from "./code/admin/adminSub";
 import AdminViewSub from "./code/admin/viewSub";
 import AdminExam from "./code/admin/adminExam";
 import AdminClass from "./code/admin/adminClass";
+import ExaminationList from "./code/admin/examinationlist";
 
 //Teacher Module
 import Teacherlogin from "./code/teacher/teacherlogin";
@@ -110,6 +111,7 @@ function App() {
             <Route path="/adminviewsubjects" element={<AdminViewSub/>} ></Route>
             <Route path="/adminexamination" element={<AdminExam/>}></Route>
             <Route path="/adminclass" element={<AdminClass/>}></Route>
+            <Route path="/adminExaminationlist" element={<ExaminationList/>} ></Route>
           </Routes>
     ) : auth.teacherDetails?.usertype == 2 ? ( //in local storage it is structured as {message: "text", teacherDetails:{usertype:2}}
           <Routes>

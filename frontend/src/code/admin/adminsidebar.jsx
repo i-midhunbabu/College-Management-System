@@ -211,6 +211,12 @@ function AdminSidebar() {
                                         <span className="text">Create Exam</span>
                                     </a>
                                 </li>
+                                <li className={location.pathname === "/adminExaminationlist" ? "active" : ""}>
+                                    <a href="/adminExaminationlist">
+                                        <i class='bx bx-list-ul'></i>
+                                        <span className="text">Examination List</span>
+                                    </a>
+                                </li>
                             </ul>
                         )}
                     </li>
