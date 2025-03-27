@@ -13,6 +13,7 @@ router.post('/resetpassword', studentController.studentResetPassword);
 router.get('/studentprofile/:id', studentController.studentUserProfile);
 router.post('/addparent', studentController.addParentCreate);
 router.get('/getattendance', studentController.getAttendance);
+router.get('/getstudentexams', studentController.getStudentExams);
 
 
 module.exports = router;

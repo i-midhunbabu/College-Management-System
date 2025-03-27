@@ -7,10 +7,12 @@ function StudentNavBar() {
     const [studentName, setStudentName] = useState("");
     const [parentSubMenuOpen, setParentSubMenuOpen] = useState(false);
     const [classSubMenuOpen, setClassSubMenuOpen] = useState(false);
+    const [examSubMenuOpen, setExamSubMenuOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
     const parentSubMenuRef = useRef(null);
     const classSubMenuRef = useRef(null);
+    const examSubMenuRef = useRef(null);
     // const [showDropdown, setShowDropdown] = useState(false);
     const [initial, setInitial] = useState('');
 
@@ -46,6 +48,11 @@ function StudentNavBar() {
         setClassSubMenuOpen(!classSubMenuOpen);
     };
 
+    const toggleExamSubMenu = () => {
+        setExamSubMenuOpen(!examSubMenuOpen);
+    };
+
+
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
         // setShowDropdown(!showDropdown);
@@ -62,6 +69,10 @@ function StudentNavBar() {
             if (classSubMenuOpen && classSubMenuRef.current && !classSubMenuRef.current.contains(event.target)) {
                 setClassSubMenuOpen(false);
             }
+            if (examSubMenuOpen && examSubMenuRef.current && !examSubMenuRef.current.contains(event.target)) {
+                setExamSubMenuOpen(false);
+            }
+
 
         };
 
@@ -69,7 +80,7 @@ function StudentNavBar() {
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [isOpen, parentSubMenuOpen, classSubMenuOpen]);
+    }, [isOpen, parentSubMenuOpen, classSubMenuOpen, examSubMenuOpen]);
 
     return (
         <>
@@ -128,7 +139,22 @@ function StudentNavBar() {
                             )}
                         </li>
 
-                        <a href="#" className="nav-link"><i class='bx bxs-bar-chart-square' undefined ></i> Exam</a>
+                        <li className={location.pathname.startsWith("#") ? "active" : ""} ref={examSubMenuRef}>
+                            <Link to="#" className="nav-link" onClick={toggleExamSubMenu}>
+                            <i class='bx bxs-bar-chart-square' undefined ></i> Exam
+                            <i className={`bx bx-caret-${examSubMenuOpen === 'exam' ? 'up' : 'down'}`}></i>
+                            </Link>
+                            {examSubMenuOpen && (
+                                <ul className="sub-menu">
+                                    <li className={location.pathname === "/studentexamlist" ? "active" : ""}>
+                                        <Link to="/studentexamlist">
+                                            <i class='bx bxs-file-find'></i>
+                                            <span className="text"> Examination List</span>
+                                        </Link>
+                                    </li>
+                                </ul>
+                            )}
+                        </li>
 
                         <a href="#" className="nav-link"><i class='bx bxs-bar-chart-square' undefined ></i> My Performance</a>
 

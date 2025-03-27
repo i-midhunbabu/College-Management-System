@@ -1,8 +1,13 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import StudentNavBar from "./studentnavbar";
 import './student.css'
+
 function Studentdashboard() {
-const [studentName, setStudentName] = useState("");
+    const [studentName, setStudentName] = useState("");
+    const [upcomingExams, setUpcomingExams] = useState([]);
+    const navigate = useNavigate();
+
     useEffect(() => {
         // Fetch student details from localStorage
         const storedData = localStorage.getItem("get");
@@ -12,163 +17,128 @@ const [studentName, setStudentName] = useState("");
                 setStudentName(studentData.studentDetails.studentname);
             }
         }
+
+        // Fetch upcoming exams
+        fetchUpcomingExams();
     }, []);
 
+    const fetchUpcomingExams = async () => {
+        try {
+            const storedData = JSON.parse(localStorage.getItem("get"));
+            if (storedData && storedData.studentDetails) {
+                const { degree, department, semester } = storedData.studentDetails;
     
+                const response = await fetch(
+                    `http://localhost:8000/studentrouter/getstudentexams?degree=${encodeURIComponent(degree)}&department=${encodeURIComponent(department)}&semester=${encodeURIComponent(semester)}`
+                );
+                const exams = await response.json();
+    
+                if (!exams || exams.length === 0) {
+                    console.log("No exams found in API response.");
+                    setUpcomingExams([]);
+                    return;
+                }
+    
+                // Filter exams to show only upcoming ones
+                const now = new Date();
+                const filteredExams = exams.filter((exam) => {
+                    const examDate = new Date(exam.dateOfExamination); 
+                    const [hours, minutes] = exam.startTime.split(":"); 
+                    examDate.setHours(hours, minutes, 0, 0); 
+                    return examDate > now;
+                });
+    
+                setUpcomingExams(filteredExams);
+            } else {
+                console.error("Student details not found in localStorage.");
+            }
+        } catch (err) {
+            console.error("Error fetching exams:", err);
+        }
+    };
+
+    const formatTime = (time) => {
+        const [hours, minutes] = time.split(":");
+        const date = new Date();
+        date.setHours(hours, minutes);
+        const options = { hour: "numeric", minute: "numeric", hour12: true };
+        return date.toLocaleTimeString("en-US", options);
+    };
+
+    const handleAttendExam = () => {
+        navigate("/studentexamlist");
+    };
+
     return (
         <>
-            {/* Content */}
             <section id="content" className="student-module">
-                <StudentNavBar/>
-                {/* Main */}
+                <StudentNavBar />
                 <main>
-                    {/* <div className="head-title">
-                        <div className="left">
-                            <h1>Dashboard</h1>
-                            <ul className="breadcrumb">
-                                <li>
-                                    <a href="#">Dashboard</a>
-                                </li>
-                                <li><i className='bx bx-chevron-right' ></i></li>
-                                <li>
-                                    <a className="active" href="#">Home</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <a href="#" className="btn-download">
-                            <i className='bx bxs-cloud-download' />
-                            <span className="text">Download PDF</span>
-                        </a>
-                    </div> */}
                     <div className="head-title">
                         <div className="student-name">
-                        <span style={{fontSize:'30px'}}>Welcome </span>
-                        <span style={{fontSize:'30px', fontWeight:'bolder'}}> {studentName || "Student"} </span>                        
+                            <span style={{ fontSize: "30px" }}>Welcome </span>
+                            <span style={{ fontSize: "30px", fontWeight: "bolder" }}>
+                                {studentName || "Student"}
+                            </span>
                         </div>
                     </div>
 
-                    <ul className="box-info">
-                        <li>
-                            <i className='bx bxs-calendar-check' ></i>
-                            <span className="text">
-                                <h3>1020</h3>
-                                <p>New Order</p>
-                            </span>
-                        </li>
-                        <li>
-                            <i className='bx bxs-group' ></i>
-                            <span className="text">
-                                <h3>2834</h3>
-                                <p>Visitors</p>
-                            </span>
-                        </li>
-                        <li>
-                            <i className='bx bxs-dollar-circle' ></i>
-                            <span className="text">
-                                <h3>$2543</h3>
-                                <p>Total Sales</p>
-                            </span>
-                        </li>
-                    </ul>
-
-
-                    <div className="table-data">
-                        <div className="order">
-                            <div className="head">
-                                <h3>Recent Orders</h3>
-                                <i className='bx bx-search' ></i>
-                                <i className='bx bx-filter' ></i>
-                            </div>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>User</th>
-                                        <th>Date Order</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <img src="assets2/img/people.png" alt="" />
-                                            <p>John Doe</p>
-                                        </td>
-                                        <td>01-10-2021</td>
-                                        <td><span className="status completed">Completed</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <img src="assets2/img/people.png" alt="" />
-                                            <p>John Doe</p>
-                                        </td>
-                                        <td>01-10-2021</td>
-                                        <td><span className="status pending">Pending</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <img src="assets2/img/people.png" alt="" />
-                                            <p>John Doe</p>
-                                        </td>
-                                        <td>01-10-2021</td>
-                                        <td><span className="status process">Process</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <img src="assets2/img/people.png" alt="" />
-                                            <p>John Doe</p>
-                                        </td>
-                                        <td>01-10-2021</td>
-                                        <td><span className="status pending">Pending</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <img src="assets2/img/people.png" alt=""/>
-                                            <p>John Doe</p>
-                                        </td>
-                                        <td>01-10-2021</td>
-                                        <td><span className="status completed">Completed</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="todo">
-                            <div className="head">
-                                <h3>Todos</h3>
-                                <i className='bx bx-plus' ></i>
-                                <i className='bx bx-filter' ></i>
-                            </div>
-                            <ul className="todo-list">
-                                <li className="completed">
-                                    <p>Todo List</p>
-                                    <i className='bx bx-dots-vertical-rounded' ></i>
-                                </li>
-                                <li className="completed">
-                                    <p>Todo List</p>
-                                    <i className='bx bx-dots-vertical-rounded' ></i>
-                                </li>
-                                <li className="not-completed">
-                                    <p>Todo List</p>
-                                    <i className='bx bx-dots-vertical-rounded' ></i>
-                                </li>
-                                <li className="completed">
-                                    <p>Todo List</p>
-                                    <i className='bx bx-dots-vertical-rounded' ></i>
-                                </li>
-                                <li className="not-completed">
-                                    <p>Todo List</p>
-                                    <i className='bx bx-dots-vertical-rounded' ></i>
-                                </li>
+                    <div
+                        className="exam-list-container"
+                        style={{
+                            backgroundColor: "white",
+                            padding: "20px",
+                            borderRadius: "10px",
+                            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                            marginTop: "20px",
+                            // width: "300px",
+                            // height: "300px", 
+                            // margin: "20px auto",
+                            // overflowY: "auto", 
+                        }}
+                    >
+                        <h3 style={{ textAlign: "center", marginBottom: "20px" }}>
+                            Upcoming Examinations
+                        </h3>
+                        {upcomingExams.length > 0 ? (
+                            <ul style={{ listStyleType: "none", padding: 0 }}>
+                                {upcomingExams.map((exam, index) => (
+                                    <li
+                                        key={index}
+                                        style={{
+                                            padding: "10px",
+                                            borderBottom: "1px solid #ccc",
+                                            marginBottom: "10px",
+                                        }}
+                                    >
+                                        <strong>Exam Type:</strong> {exam.examType} <br />
+                                        <strong>Subject:</strong> {exam.subject} <br/>
+                                        <strong>Date:</strong>{" "}
+                                        {new Date(exam.dateOfExamination).toLocaleDateString()} <br />
+                                        <strong>Start Time:</strong> {formatTime(exam.startTime)} <br />
+                                        <strong>End Time:</strong> {formatTime(exam.endTime)}
+                                    </li>
+                                ))}
                             </ul>
-                        </div>
+                        ) : (
+                            <p style={{ textAlign: "center" }}>No upcoming exams found.</p>
+                        )}
+                        <button
+                            className="btn btn-primary"
+                            onClick={handleAttendExam}
+                            style={{ marginTop: "20px", display: "block", marginLeft: "auto", marginRight: "auto" }}
+                        >
+                            View All Exams
+                        </button>
                     </div>
                 </main>
                 {/* Main */}
             </section>
             {/* Content */}
             <a href="#" className="message-icon">
-            {/* <i className='bx bxs-message-square-dots' style={{color:'#1760e2'}}  >Feedback</i> */}
-            <img src="chat1.png" alt="chat" />
-            <span className="feedback-text">Feedback</span>
+                {/* <i className='bx bxs-message-square-dots' style={{color:'#1760e2'}}  >Feedback</i> */}
+                <img src="chat1.png" alt="chat" />
+                <span className="feedback-text">Feedback</span>
             </a>
 
         </>

@@ -199,7 +199,7 @@ function AdminSidebar() {
 
                     <li className={location.pathname.startsWith("#") ? "active" : ""}>
                         <a href="#" onClick={() => toggleSubMenu('exam')}>
-                            <i class='bx bx-paperclip'></i>
+                            <i class='bx bxs-notepad'></i>
                             <span className="text">Exam</span>
                             <i className={`bx bx-caret-${openSubMenu === 'exam' ? 'up' : 'down'}`}></i>
                         </a>

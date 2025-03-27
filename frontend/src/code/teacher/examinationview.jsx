@@ -59,6 +59,7 @@ function ExaminationView() {
                                 <th>Exam Mode</th>
                                 <th>Department</th>
                                 <th>Semester</th>
+                                <th>Subject</th>
                                 <th>Date</th>
                                 <th>Start Time</th>
                                 <th>End Time</th>
@@ -74,6 +75,7 @@ function ExaminationView() {
                                     <td>{exam.mode}</td>
                                     <td>{exam.department}</td>
                                     <td>{exam.semester}</td>
+                                    <td>{exam.subject}</td>
                                     <td>{new Date(exam.dateOfExamination).toLocaleDateString()}</td>
                                     <td>{formatTime(exam.startTime)}</td>
                                     <td>{formatTime(exam.endTime)}</td>

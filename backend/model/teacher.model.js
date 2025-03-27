@@ -119,6 +119,10 @@ const examSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    subject: {
+        type: String,
+        required: true
+    },
     dateOfExamination: {
         type: Date,
         required: true

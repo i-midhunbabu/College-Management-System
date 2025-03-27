@@ -1,5 +1,5 @@
 const { teacherlogmodel, teachernotificationmodel, CourseMaterial, Attendance, Exam } = require('../model/teacher.model');
-const { adminaddteachermodel, adminaddstudentmodel, departmentmodel, semestermodel } = require('../model/admin.model');
+const { adminaddteachermodel, adminaddstudentmodel, departmentmodel, semestermodel, subjectmodel } = require('../model/admin.model');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto'); //generating tokens, creating hashes, encrypting data
 const path = require('path');
@@ -273,23 +273,61 @@ exports.getSemesters = async (req, res) => {
     }
 };
 
+exports.getSubjects = async (req, res) => {
+    try {
+        const { degree, department, semester } = req.query;
+
+        if (!degree || !department || !semester) {
+            return res.status(400).json({ message: "Degree, department, and semester are required" });
+        }
+        
+        const subjects = await subjectmodel.find({ degree, department, semester });
+        res.status(200).json(subjects);
+    } catch (err) {
+        console.error("Error fetching subjects:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 exports.createExam = async (req, res) => {
     try {
-        const { examType, mode, degree, department, semester, dateOfExamination, startTime, endTime, maximumMark, passMark, questions } = req.body;
-        const formattedDate = new Date(dateOfExamination).toISOString().split('T')[0];
-        const newExam = new Exam({
+        const {
             examType,
             mode,
             degree,
             department,
             semester,
+            subject,
+            dateOfExamination,
+            startTime,
+            endTime,
+            maximumMark,
+            passMark,
+            questions,
+        } = req.body;
+
+        const formattedDate = new Date(dateOfExamination).toISOString().split("T")[0];
+
+        const examData = {
+            examType,
+            mode,
+            degree,
+            department,
+            semester,
+            subject,
             dateOfExamination: formattedDate,
             startTime,
             endTime,
             maximumMark,
             passMark,
-            questions
-        });
+        };
+
+        // Include questions only if not internal-assignment
+        if (!(examType === "internal" && mode === "assignment")) {
+            examData.questions = questions;
+        }
+
+        const newExam = new Exam(examData);
 
         await newExam.save();
         res.status(201).json({ message: "Exam created successfully", exam: newExam });
@@ -390,6 +428,10 @@ exports.getExam = async (req, res) => {
 exports.updateExam = async (req, res) => {
     try {
         const { examId } = req.params;
+        // Format the dateOfExamination to YYYY-MM-DD if it exists in the request body
+        if (req.body.dateOfExamination) {
+            req.body.dateOfExamination = new Date(req.body.dateOfExamination).toISOString().split("T")[0];
+        }
         const updatedExam = await Exam.findByIdAndUpdate(examId, req.body, { new: true });
 
         if (!updatedExam) {

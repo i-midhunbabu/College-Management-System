@@ -57,6 +57,8 @@ function TeacherExam() {
     const [degree, setDegree] = useState("");
     const [department, setDepartment] = useState("");
     const [semester, setSemester] = useState("");
+    const [subject, setSubject] = useState("");
+    const [subjects, setSubjects] = useState([]);
     const [dateOfExamination, setDateOfExamination] = useState("");
     const [startTime, setStartTime] = useState("");
     const [endTime, setEndTime] = useState("");
@@ -88,6 +90,25 @@ function TeacherExam() {
                 console.error("Error fetching semesters:", error);
             });
     }, []);
+
+    // Fetch subjects when degree, department, and semester are selected
+    useEffect(() => {
+        if (degree && department && semester) {
+            fetchSubjects(degree, department, semester);
+        }
+    }, [degree, department, semester]);
+
+    const fetchSubjects = async (degree, department, semester) => {
+        try {
+            const response = await fetch(
+                `http://localhost:8000/teacherrouter/getsubjects?degree=${encodeURIComponent(degree)}&department=${encodeURIComponent(department)}&semester=${encodeURIComponent(semester)}`
+            );
+            const data = await response.json();
+            setSubjects(data);
+        } catch (err) {
+            console.error("Error fetching subjects:", err);
+        }
+    };
 
     const handleExamTypeChange = (e) => {
         setExamType(e.target.value);
@@ -121,21 +142,6 @@ function TeacherExam() {
         e.preventDefault();
         const formattedDate = new Date(dateOfExamination).toISOString().split('T')[0];
 
-        // Handle form submission logic here
-        // console.log("Exam Type:", examType);
-        // console.log("Mode:", mode);
-        // console.log("Question File:", questionFile);
-        // console.log("Questions:", questions);
-        // console.log("Degree:", degree);
-        // console.log("Department:", department);
-        // console.log("Semester:", semester);
-        // console.log("Date of Examination:", dateOfExamination);
-        // console.log("Start Time:", startTime);
-        // console.log("End Time:", endTime);
-        // console.log("Maximum Mark:", maximumMark);
-        // console.log("Pass Mark:", passMark);
-        // Add logic to upload the question file to the backend
-
         try {
             const examData = {
                 examType,
@@ -143,13 +149,20 @@ function TeacherExam() {
                 degree,
                 department,
                 semester,
+                subject,
                 dateOfExamination: formattedDate,
                 startTime,
                 endTime,
                 maximumMark,
                 passMark,
-                questions,
+                // questions,
             };
+
+
+            // Include questions only if not internal-assignment
+            if (!(examType === "internal" && mode === "assignment")) {
+                examData.questions = questions;
+            }
 
             const response = await fetch("http://localhost:8000/teacherrouter/createexam", {
                 method: "POST",
@@ -206,6 +219,8 @@ function TeacherExam() {
         setDegree("");
         setDepartment("");
         setSemester("");
+        setSubject("");
+        setSubjects([]);
         setDateOfExamination("");
         setStartTime("");
         setEndTime("");
@@ -284,6 +299,25 @@ function TeacherExam() {
                                                     {sem}
                                                 </option>
                                             ))}
+                                    </select>
+                                </div>
+
+                                <div style={formGroupStyle}>
+                                    <label style={labelStyle} htmlFor="subject">Subject:</label>
+                                    <select 
+                                        id="subject" 
+                                        value={subject} 
+                                        onChange={(e) => setSubject(e.target.value)} 
+                                        style={inputStyle} 
+                                        required
+                                    >
+                                        <option value="">Select Subject</option>
+                                            {subjects.map((sub, index) => (
+                                            <option key={index} value={sub.subject}>
+                                                {sub.subject}
+                                            </option>
+                                        ))
+                                    }
                                     </select>
                                 </div>
 

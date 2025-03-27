@@ -24,5 +24,6 @@ router.get('/getexams', teacherController.getExams);
 router.delete('/deleteexam/:examId', teacherController.deleteExam);
 router.get('/getexam/:examId', teacherController.getExam);
 router.put('/updateexam/:examId', teacherController.updateExam);
+router.get('/getsubjects', teacherController.getSubjects);
 
 module.exports = router;

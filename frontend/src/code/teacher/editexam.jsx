@@ -68,6 +68,8 @@ function EditExam() {
     const [degree, setDegree] = useState("");
     const [department, setDepartment] = useState("");
     const [semester, setSemester] = useState("");
+    const [subject, setSubject] = useState("");
+    const [subjects, setSubjects] = useState([]);
     const [dateOfExamination, setDateOfExamination] = useState("");
     const [startTime, setStartTime] = useState("");
     const [endTime, setEndTime] = useState("");
@@ -88,6 +90,7 @@ function EditExam() {
                 setDegree(data.degree);
                 setDepartment(data.department);
                 setSemester(data.semester);
+                setSubject(data.subject);
                 setDateOfExamination(data.dateOfExamination);
                 setStartTime(data.startTime);
                 setEndTime(data.endTime);
@@ -119,6 +122,24 @@ function EditExam() {
                 console.error("Error fetching semesters:", error);
             });
     }, []);
+
+    useEffect(() => {
+        if (degree && department && semester) {
+            fetchSubjects(degree, department, semester);
+        }
+    }, [degree, department, semester]);
+
+    const fetchSubjects = async (degree, department, semester) => {
+        try {
+            const response = await fetch(
+                `http://localhost:8000/teacherrouter/getsubjects?degree=${encodeURIComponent(degree)}&department=${encodeURIComponent(department)}&semester=${encodeURIComponent(semester)}`
+            );
+            const data = await response.json();
+            setSubjects(data);
+        } catch (err) {
+            console.error("Error fetching subjects:", err);
+        }
+    };
 
     const handleExamTypeChange = (e) => {
         setExamType(e.target.value);
@@ -160,6 +181,7 @@ function EditExam() {
                 degree,
                 department,
                 semester,
+                subject,
                 dateOfExamination: formattedDate,
                 startTime,
                 endTime,
@@ -256,6 +278,24 @@ function EditExam() {
                                                     {sem}
                                                 </option>
                                             ))}
+                                    </select>
+                                </div>
+
+                                <div style={formGroupStyle}>
+                                    <label style={labelStyle} htmlFor="subject">Subject</label>
+                                    <select
+                                        id="subject"
+                                        value={subject}
+                                        onChange={(e) => setSubject(e.target.value)}
+                                        style={inputStyle}
+                                        required
+                                    >
+                                        <option value="">Select Subject</option>
+                                        {subjects.map((sub, index) => (
+                                            <option key={index} value={sub.subject}>
+                                                {sub.subject}
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
 

@@ -1,7 +1,7 @@
 const { studentlogmodel, addparentmodel } = require('../model/student.model');
 const { adminaddstudentmodel } = require('../model/admin.model');
 const { parentlogmodel } = require('../model/parent.model');
-const { Attendance } = require('../model/teacher.model');
+const { Attendance, Exam } = require('../model/teacher.model');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 
@@ -208,5 +208,22 @@ exports.getAttendance = async (req, res) => {
     } catch (err) {
         console.error("Error fetching attendance:", err);
         res.status(500).json({ success: false, message: "Failed to fetch attendance." });
+    }
+};
+
+exports.getStudentExams = async (req, res) => {
+    try {
+        const { degree, department, semester } = req.query;
+
+        if (!degree || !department || !semester) {
+            return res.status(400).json({ message: "Degree, department, and semester are required" });
+        }
+
+        const exams = await Exam.find({ degree, department, semester });
+
+        res.status(200).json(exams);
+    } catch (err) {
+        console.error("Error fetching student exams:", err);
+        res.status(500).json({ message: "Internal server error" });
     }
 };
