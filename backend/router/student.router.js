@@ -14,6 +14,7 @@ router.get('/studentprofile/:id', studentController.studentUserProfile);
 router.post('/addparent', studentController.addParentCreate);
 router.get('/getattendance', studentController.getAttendance);
 router.get('/getstudentexams', studentController.getStudentExams);
-
+router.get('/getexamdetails/:examId', studentController.getExamDetails);
+router.post('/submitanswers', studentController.submitAnswers);
 
 module.exports = router;

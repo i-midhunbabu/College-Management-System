@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import StudentNavBar from "./studentnavbar";
 import './student.css'
+import { useNavigate } from "react-router-dom";
 function StudentExam() {
     const [exams, setExams] = useState([]);
     const [studentDetails, setStudentDetails] = useState({
@@ -8,6 +9,7 @@ function StudentExam() {
         department: "",
         semester: "",
     });
+    const navigate = useNavigate();
 
     // Fetch student details 
     const fetchStudentDetails = () => {
@@ -106,6 +108,7 @@ function StudentExam() {
                             <td>
                                 <button
                                     className="btn btn-success"
+                                    onClick={() => navigate(`/studentexamattend/${exam._id}`)}
                                     disabled={!isAttendButtonEnabled(exam.startTime, exam.dateOfExamination)}
                                 >
                                     Attend

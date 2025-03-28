@@ -428,7 +428,6 @@ exports.getExam = async (req, res) => {
 exports.updateExam = async (req, res) => {
     try {
         const { examId } = req.params;
-        // Format the dateOfExamination to YYYY-MM-DD if it exists in the request body
         if (req.body.dateOfExamination) {
             req.body.dateOfExamination = new Date(req.body.dateOfExamination).toISOString().split("T")[0];
         }

@@ -1,4 +1,4 @@
-const { studentlogmodel, addparentmodel } = require('../model/student.model');
+const { studentlogmodel, addparentmodel, Submission } = require('../model/student.model');
 const { adminaddstudentmodel } = require('../model/admin.model');
 const { parentlogmodel } = require('../model/parent.model');
 const { Attendance, Exam } = require('../model/teacher.model');
@@ -224,6 +224,42 @@ exports.getStudentExams = async (req, res) => {
         res.status(200).json(exams);
     } catch (err) {
         console.error("Error fetching student exams:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.getExamDetails = async (req, res) => {
+    try {
+        const { examId } = req.params;
+        const exam = await Exam.findById(examId);
+        if (!exam) {
+            return res.status(404).json({ message: "Exam not found" });
+        }
+        res.status(200).json(exam);
+    } catch (err) {
+        console.error("Error fetching exam details:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.submitAnswers = async (req, res) => {
+    try {
+        const { examId, studentId, answers, answerSheet } = req.body;
+
+        // Save the answers or answer sheet in the database
+        const submission = {
+            examId,
+            studentId,
+            answers,
+            answerSheet,
+        };
+
+        // Save submission logic here (e.g., save to a collection)
+        const savedSubmission = await Submission.create(submission);
+
+        res.status(200).json({ message: "Answers submitted successfully" });
+    } catch (err) {
+        console.error("Error submitting answers:", err);
         res.status(500).json({ message: "Internal server error" });
     }
 };

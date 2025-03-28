@@ -57,6 +57,7 @@ import StudentAddParent from "./code/student/studentAddParent";
 import ViewCourseMaterials from "./code/student/viewcoursematerials";
 import ViewAttendance from "./code/student/studentattendance";
 import StudentExam from "./code/student/studentexams";
+import StudentExamAttend from "./code/student/studentexamattend";
 
 //Parent Module
 import ParentLogin from "./code/parent/parentlogin";
@@ -136,6 +137,7 @@ function App() {
           <Route path="/downloadcoursematerial" element={<ViewCourseMaterials/>} ></Route>
           <Route path="/viewattendance" element={<ViewAttendance/> }></Route>
           <Route path="/studentexamlist" element={<StudentExam/>} ></Route>
+          <Route path="/studentexamattend/:examId" element={<StudentExamAttend/>} ></Route>
           </Routes>
     ) : auth.parentDetails?.usertype == 4 ? ( //in local storage it is structured as {message: "text", parentDetails:{usertype:4}}
         <Routes>
