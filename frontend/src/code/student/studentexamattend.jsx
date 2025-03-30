@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css";
 import StudentNavBar from "./studentnavbar";
 
 function StudentExamAttend() {
@@ -7,7 +9,6 @@ function StudentExamAttend() {
     const [examDetails, setExamDetails] = useState(null);
     const [answers, setAnswers] = useState({});
     const [answerSheet, setAnswerSheet] = useState(null);
-    
 
     // Fetch exam details
     useEffect(() => {
@@ -54,11 +55,53 @@ function StudentExamAttend() {
             const result = await response.json();
             if (response.ok) {
                 alert("Answers submitted successfully!");
+
+                // Show success notification based on mode
+                if (examDetails.mode === "assignment") {
+                    toast.success("Answer Sheet Submitted Successfully!", {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                } else if (examDetails.mode === "mcq") {
+                    toast.success("Answers Submitted Successfully!", {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
+
             } else {
                 console.error("Error submitting answers:", result);
+
+                // Show error notification
+                toast.error("Failed to submit answers. Please try again.", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
             }
         } catch (err) {
             console.error("Error submitting answers:", err);
+
+            // Show error notification
+            toast.error("An error occurred while submitting answers.", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
         }
     };
 
@@ -66,64 +109,75 @@ function StudentExamAttend() {
         return <p>Loading exam details...</p>;
     }
 
-    
-
     return (
         <>
             <section id="content" className="student-module">
                 <StudentNavBar />
                 <main>
                     <div style={{ padding: "20px" }}>
-                    <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
-                        {/* <h2 style={{ textAlign: "center" }}>Attend Exam</h2> */}
-                        {/* <h4>Exam Type: {examDetails.examType}</h4>
+                        <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+                            {/* <h2 style={{ textAlign: "center" }}>Attend Exam</h2> */}
+                            {/* <h4>Exam Type: {examDetails.examType}</h4>
                         <h4>Mode: {examDetails.mode}</h4> */}
 
-                        <div style={{ flexGrow: 1, textAlign: "center" }}>
-                        <h3 style={{ textAlign: "center", margin:0 }}>{examDetails.subject}</h3>
-                        </div>
+                            <div style={{ flexGrow: 1, textAlign: "center" }}>
+                                <h3 style={{ textAlign: "center", margin: 0 }}>{examDetails.subject}</h3>
+                            </div>
 
-                        <div style={{ textAlign: "right" }}>
-                            <p style={{ margin: 0 }}>
-                                Start: {new Date(`1970-01-01T${examDetails.startTime}`).toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric", hour12: true })}
-                            </p>
-                            <p style={{ margin: 0, color:"red" }}>
-                                End: {new Date(`1970-01-01T${examDetails.endTime}`).toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric", hour12: true })}
-                            </p>
+                            <div style={{ textAlign: "right" }}>
+                                <p style={{ margin: 0 }}>
+                                    Start: {new Date(`1970-01-01T${examDetails.startTime}`).toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric", hour12: true })}
+                                </p>
+                                <p style={{ margin: 0, color: "red" }}>
+                                    End: {new Date(`1970-01-01T${examDetails.endTime}`).toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric", hour12: true })}
+                                </p>
+                            </div>
                         </div>
-                    </div>
 
                         {examDetails.mode === "assignment" && (
                             <>
-                            <div>
-                                <h4>Question Paper:</h4>
+                                <div>
+                                    <h4>Question Paper:</h4>
 
-                                <div style={{marginTop: "20px", marginBottom: "20px" }}>
+                                    {/* Preview the question paper */}
+                                    {/* <div style={{marginTop: "20px", marginBottom: "20px" }}>
                                     <a href={`http://localhost:8000/uploads/${examDetails.questionFile}`} target="_blank" rel="noopener noreferrer">
                                         Preview Question Paper
                                     </a>
-                                </div>
+                                    </div>*/}
 
-                                <div style={{ marginBottom: "20px" }}>
-                                    <a href={`http://localhost:8000/uploads/${examDetails.questionFile}`} target="_blank" rel="noopener noreferrer" download>
-                                        Download Question Paper
-                                    </a>
-                                </div>
+                                    {/* Display the question paper content */}
+                                    <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+                                        <iframe
+                                            src={`http://localhost:8000/uploads/${examDetails.questionFile}`}
+                                            style={{ width: "100%", height: "500px", border: "1px solid #ccc" }}
+                                            title="Question Paper"
+                                        ></iframe>
+                                    </div>
 
-                                <div style={{ marginBottom: "20px" }}>
-                                    <label>
-                                        Upload Answer Sheet:
-                                        <input type="file" onChange={handleAnswerSheetUpload} />
-                                    </label>
-                                </div>
+                                    {/* Download Question Paper */}
+                                    <div style={{ marginBottom: "20px" }}>
+                                        <a href={`http://localhost:8000/studentrouter/download/${examDetails.questionFile}`} download>
+                                            Download Question Paper
+                                        </a>
+                                    </div>
 
-                                <div style={{textAlign: "center"}}>
-                                    <button onClick={handleSubmit} className="btn btn-primary" >
-                                        Submit Answer Sheet
-                                    </button>
+                                    {/* Upload Answer Sheet */}
+                                    <div style={{ marginBottom: "20px" }}>
+                                        <label>
+                                            Upload Answer Sheet:
+                                            <input type="file" onChange={handleAnswerSheetUpload} />
+                                        </label>
+                                    </div>
+
+                                    {/* Submit Answer Sheet */}
+                                    <div style={{ textAlign: "center" }}>
+                                        <button onClick={handleSubmit} className="btn btn-primary" >
+                                            Submit Answer Sheet
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        </>
+                            </>
                         )}
 
                         {examDetails.mode === "mcq" && (
@@ -141,21 +195,25 @@ function StudentExamAttend() {
                                                     name={`question-${index}`}
                                                     value={option}
                                                     onChange={() => handleAnswerChange(index, option)}
-                                                    style={{marginRight: "10px"}}
+                                                    style={{ marginRight: "10px" }}
                                                 />
                                                 {option}
                                             </label>
                                         ))}
                                     </div>
                                 ))}
-                                <button onClick={handleSubmit} className="btn btn-primary">
-                                    Submit Answers
-                                </button>
+
+                                <div style={{ textAlign: "center" }}>
+                                    <button onClick={handleSubmit} className="btn btn-primary">
+                                        {examDetails.mode === "assignment" ? "Submit Answer Sheet" : "Submit Answers"}
+                                    </button>
+                                </div>
                             </>
                         )}
                     </div>
                 </main>
             </section>
+            <ToastContainer />
         </>
     );
 }

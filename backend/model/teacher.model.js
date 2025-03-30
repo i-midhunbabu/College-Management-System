@@ -146,7 +146,8 @@ const examSchema = new mongoose.Schema({
     questions: [
         {
             question: String,
-            options: [String]
+            options: [String],
+            correctAnswer: String,
         }
     ],
     questionFile: {

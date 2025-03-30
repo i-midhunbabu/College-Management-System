@@ -28,6 +28,12 @@ const labelStyle = {
     color: "white",
 };
 
+const label1Style = {
+    fontWeight: "bold",
+    marginRight: "10px",
+    color: "rgb(85, 96, 216)",
+};
+
 const inputStyle = {
     // flex: "2",
     padding: "8px",
@@ -53,7 +59,7 @@ const buttonStyle = {
 const fileLabelStyle = {
     fontWeight: "bold",
     color: "white",
-    marginBottom: "5px", // Add some space below the label
+    marginBottom: "5px",
 };
 
 
@@ -63,8 +69,8 @@ function EditExam() {
     const [examType, setExamType] = useState("");
     const [mode, setMode] = useState("");
     const [questionFile, setQuestionFile] = useState(null);
-    const [questionFileName, setQuestionFileName] = useState(""); 
-    const [questions, setQuestions] = useState([{ question: "", options: ["", "", "", ""] }]);
+    const [questionFileName, setQuestionFileName] = useState("");
+    const [questions, setQuestions] = useState([{ question: "", options: [] }]);
     const [degree, setDegree] = useState("");
     const [department, setDepartment] = useState("");
     const [semester, setSemester] = useState("");
@@ -170,6 +176,34 @@ function EditExam() {
         setQuestions([...questions, { question: "", options: ["", "", "", ""] }]);
     };
 
+    const handleCorrectAnswerChange = (qIndex, value) => {
+        const newQuestions = [...questions];
+        newQuestions[qIndex].correctAnswer = value;
+        setQuestions(newQuestions);
+    };
+
+    const uploadQuestionFile = async (examId) => {
+        const formData = new FormData();
+        formData.append("examId", examId);
+        formData.append("file", questionFile);
+
+        try {
+            const response = await fetch("http://localhost:8000/teacherrouter/uploadquestionfile", {
+                method: "POST",
+                body: formData,
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                console.log("Question file uploaded successfully:", result);
+            } else {
+                console.error("Error uploading question file:", result);
+            }
+        } catch (error) {
+            console.error("Error uploading question file:", error);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formattedDate = new Date(dateOfExamination).toISOString().split('T')[0];
@@ -199,6 +233,9 @@ function EditExam() {
             });
 
             if (response.ok) {
+                if (mode !== "mcq" && questionFile) {
+                    await uploadQuestionFile(examId);
+                }
                 console.log("Exam updated successfully");
                 navigate("/examinationlist");
             } else {
@@ -359,12 +396,53 @@ function EditExam() {
                                     />
                                 </div>
 
+                                {examType === "internal" && mode === "mcq" && (
+                                    <>
+                                        <hr style={{ margin: "20px 0", borderColor: "#ccc" }} />
+                                        <h3 style={{ textAlign: "center", color: "white", marginBottom: "20px", fontWeight: "bolder" }}>Edit Question</h3>
+                                    </>
+                                )}
+
                                 {mode === "mcq" && (
                                     <div>
                                         {questions.map((q, qIndex) => (
-                                            <div key={qIndex} style={{ marginBottom: "20px" }}>
+                                            <div key={qIndex} style={{
+                                                marginBottom: "20px",
+                                                padding: "15px",
+                                                border: "1px solid #ccc",
+                                                borderRadius: "10px",
+                                                backgroundColor: "#f9f9f9",
+                                                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                                                position: "relative", // For positioning the close button
+                                            }}
+                                            >
                                                 <div style={formGroupStyle}>
-                                                    <label style={labelStyle} htmlFor={`question-${qIndex}`}>Question {qIndex + 1}:</label>
+                                                    <label style={label1Style} htmlFor={`question-${qIndex}`}>Question {qIndex + 1}:</label>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const newQuestions = questions.filter((_, index) => index !== qIndex);
+                                                            setQuestions(newQuestions);
+                                                        }}
+                                                        style={{
+                                                            position: "absolute",
+                                                            top: "10px",
+                                                            right: "10px",
+                                                            backgroundColor: "red",
+                                                            color: "white",
+                                                            border: "none",
+                                                            borderRadius: "50%",
+                                                            width: "25px",
+                                                            height: "25px",
+                                                            cursor: "pointer",
+                                                            fontSize: "16px",
+                                                            lineHeight: "25px",
+                                                            textAlign: "center",
+                                                        }}
+                                                    >
+                                                        &times;
+                                                    </button>
+
                                                     <input
                                                         type="text"
                                                         id={`question-${qIndex}`}
@@ -375,7 +453,7 @@ function EditExam() {
                                                 </div>
                                                 {q.options.map((option, oIndex) => (
                                                     <div key={oIndex} style={formGroupStyle}>
-                                                        <label style={labelStyle} htmlFor={`option-${qIndex}-${oIndex}`}>Option {String.fromCharCode(65 + oIndex)}:</label>
+                                                        <label style={label1Style} htmlFor={`option-${qIndex}-${oIndex}`}>Option {String.fromCharCode(65 + oIndex)}:</label>
                                                         <input
                                                             type="text"
                                                             id={`option-${qIndex}-${oIndex}`}
@@ -385,6 +463,37 @@ function EditExam() {
                                                         />
                                                     </div>
                                                 ))}
+
+                                                <div style={{ marginBottom: "20px" }}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const newQuestions = [...questions];
+                                                            newQuestions[qIndex].options.push("");
+                                                            setQuestions(newQuestions);
+                                                        }}
+                                                        style={buttonStyle}
+                                                    >
+                                                        Add Option
+                                                    </button>
+                                                </div>
+
+                                                <div style={formGroupStyle}>
+                                                    <label style={label1Style} htmlFor={`correctAnswer-${qIndex}`}>Correct Answer:</label>
+                                                    <select
+                                                        id={`correctAnswer-${qIndex}`}
+                                                        value={q.correctAnswer || ""}
+                                                        onChange={(e) => handleCorrectAnswerChange(qIndex, e.target.value)}
+                                                        style={inputStyle}
+                                                    >
+                                                        <option value="">Select Correct Answer</option>
+                                                        {q.options.map((option, oIndex) => (
+                                                            <option key={oIndex} value={option}>
+                                                                {option}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
                                             </div>
                                         ))}
                                         <button type="button" onClick={addQuestion} style={buttonStyle}>Add Question</button>

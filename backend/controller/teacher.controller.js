@@ -320,6 +320,7 @@ exports.createExam = async (req, res) => {
             endTime,
             maximumMark,
             passMark,
+            questions,
         };
 
         // Include questions only if not internal-assignment

@@ -4,6 +4,8 @@ const { parentlogmodel } = require('../model/parent.model');
 const { Attendance, Exam } = require('../model/teacher.model');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const path = require('path');
+const fs = require('fs');
 
 exports.studentLoginView = async (req, res) => {
     try {
@@ -260,6 +262,25 @@ exports.submitAnswers = async (req, res) => {
         res.status(200).json({ message: "Answers submitted successfully" });
     } catch (err) {
         console.error("Error submitting answers:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.downloadQuestionFile = async (req, res) => {
+    try {
+        const { fileName } = req.params;
+        const filePath = path.join(__dirname, '..', 'public', 'uploads', fileName);
+
+        // Check if the file exists
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ message: "File not found" });
+        }
+
+        // Set the Content-Disposition header to force download
+        res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+        res.sendFile(filePath);
+    } catch (err) {
+        console.error("Error downloading file:", err);
         res.status(500).json({ message: "Internal server error" });
     }
 };

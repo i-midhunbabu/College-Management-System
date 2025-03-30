@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import { toast, ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css";
 import TeacherSidebar from "./teachersidebar";
 import TeacherNav from "./teachernavbar";
 
@@ -27,6 +29,12 @@ const labelStyle = {
     color: "white",
 };
 
+const label1Style = {
+    fontWeight: "bold",
+    marginRight: "10px",
+    color: "rgb(85, 96, 216)",
+};
+
 const inputStyle = {
     // flex: "2",
     padding: "8px",
@@ -53,7 +61,7 @@ function TeacherExam() {
     const [examType, setExamType] = useState("");
     const [mode, setMode] = useState("");
     const [questionFile, setQuestionFile] = useState(null);
-    const [questions, setQuestions] = useState([{ question: "", options: ["", "", "", ""] }]);
+    const [questions, setQuestions] = useState([{ question: "", options: [] }]);
     const [degree, setDegree] = useState("");
     const [department, setDepartment] = useState("");
     const [semester, setSemester] = useState("");
@@ -135,13 +143,13 @@ function TeacherExam() {
     };
 
     const addQuestion = () => {
-        setQuestions([...questions, { question: "", options: ["", "", "", ""] }]);
+        setQuestions([...questions, { question: "", options: [] }]);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const formattedDate = new Date(dateOfExamination).toISOString().split('T')[0];
 
+        const formattedDate = new Date(dateOfExamination).toISOString().split('T')[0];
         try {
             const examData = {
                 examType,
@@ -155,7 +163,6 @@ function TeacherExam() {
                 endTime,
                 maximumMark,
                 passMark,
-                // questions,
             };
 
 
@@ -175,6 +182,18 @@ function TeacherExam() {
             const result = await response.json();
             if (response.ok) {
                 console.log("Exam created successfully:", result);
+
+                // Show success notification for both "mcq" and "assignment"
+                toast.success("Exam Scheduled Successfully!", {
+                    position: "top-right",
+                    autoClose: 3000, // Auto close after 3 seconds
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
                 if (mode !== "mcq" && questionFile) {
                     await uploadQuestionFile(result.exam._id);
                 }
@@ -183,10 +202,38 @@ function TeacherExam() {
 
             } else {
                 console.error("Error creating exam:", result);
+
+                // Show error notification
+                toast.error("Failed to schedule the exam.", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
             }
         } catch (error) {
             console.error("Error submitting form:", error);
+
+            // Show error notification
+            toast.error("An error occurred while scheduling the exam.", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
         }
+    };
+
+    const handleCorrectAnswerChange = (qIndex, value) => {
+        const newQuestions = [...questions];
+        newQuestions[qIndex].correctAnswer = value;
+        setQuestions(newQuestions);
     };
 
     const uploadQuestionFile = async (examId) => {
@@ -304,20 +351,20 @@ function TeacherExam() {
 
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="subject">Subject:</label>
-                                    <select 
-                                        id="subject" 
-                                        value={subject} 
-                                        onChange={(e) => setSubject(e.target.value)} 
-                                        style={inputStyle} 
+                                    <select
+                                        id="subject"
+                                        value={subject}
+                                        onChange={(e) => setSubject(e.target.value)}
+                                        style={inputStyle}
                                         required
                                     >
                                         <option value="">Select Subject</option>
-                                            {subjects.map((sub, index) => (
+                                        {subjects.map((sub, index) => (
                                             <option key={index} value={sub.subject}>
                                                 {sub.subject}
                                             </option>
                                         ))
-                                    }
+                                        }
                                     </select>
                                 </div>
 
@@ -380,12 +427,55 @@ function TeacherExam() {
                                         required
                                     />
                                 </div>
+
+                                {examType === "internal" && mode === "mcq" && (
+                                    <>
+                                        <hr style={{ margin: "20px 0", borderColor: "#ccc" }} />
+                                        <h3 style={{ textAlign: "center", color: "white", marginBottom: "20px", fontWeight: "bolder" }}>Add Question</h3>
+                                    </>
+                                )}
+
                                 {mode === "mcq" && (
                                     <div>
                                         {questions.map((q, qIndex) => (
-                                            <div key={qIndex} style={{ marginBottom: "20px" }}>
+                                            <div key={qIndex} style={{
+                                                marginBottom: "20px",
+                                                padding: "15px",
+                                                border: "1px solid #ccc",
+                                                borderRadius: "10px",
+                                                backgroundColor: "#f9f9f9",
+                                                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                                                position: "relative", // For positioning the close button
+                                            }}
+                                            >
                                                 <div style={formGroupStyle}>
-                                                    <label style={labelStyle} htmlFor={`question-${qIndex}`}>Question {qIndex + 1}:</label>
+                                                    <label style={label1Style} htmlFor={`question-${qIndex}`}>Question {qIndex + 1}:</label>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const newQuestions = questions.filter((_, index) => index !== qIndex);
+                                                            setQuestions(newQuestions);
+                                                        }}
+                                                        style={{
+                                                            position: "absolute",
+                                                            top: "10px",
+                                                            right: "10px",
+                                                            backgroundColor: "red",
+                                                            color: "white",
+                                                            border: "none",
+                                                            borderRadius: "50%",
+                                                            width: "25px",
+                                                            height: "25px",
+                                                            cursor: "pointer",
+                                                            fontSize: "16px",
+                                                            lineHeight: "25px",
+                                                            textAlign: "center",
+                                                        }}
+                                                    >
+                                                        &times;
+                                                    </button>
+
                                                     <input
                                                         type="text"
                                                         id={`question-${qIndex}`}
@@ -396,7 +486,7 @@ function TeacherExam() {
                                                 </div>
                                                 {q.options.map((option, oIndex) => (
                                                     <div key={oIndex} style={formGroupStyle}>
-                                                        <label style={labelStyle} htmlFor={`option-${qIndex}-${oIndex}`}>Option {String.fromCharCode(65 + oIndex)}:</label>
+                                                        <label style={label1Style} htmlFor={`option-${qIndex}-${oIndex}`}>Option {String.fromCharCode(65 + oIndex)}:</label>
                                                         <input
                                                             type="text"
                                                             id={`option-${qIndex}-${oIndex}`}
@@ -406,20 +496,51 @@ function TeacherExam() {
                                                         />
                                                     </div>
                                                 ))}
+
+                                                <div style={{ marginBottom: "20px" }}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const newQuestions = [...questions];
+                                                            newQuestions[qIndex].options.push("");
+                                                            setQuestions(newQuestions);
+                                                        }}
+                                                        style={buttonStyle}
+                                                    >
+                                                        Add Option
+                                                    </button>
+                                                </div>
+
+                                                <div style={formGroupStyle}>
+                                                    <label style={label1Style} htmlFor={`correctAnswer-${qIndex}`}>Correct Answer:</label>
+                                                    <select
+                                                        id={`correctAnswer-${qIndex}`}
+                                                        value={q.correctAnswer || ""}
+                                                        onChange={(e) => handleCorrectAnswerChange(qIndex, e.target.value)}
+                                                        style={inputStyle}
+                                                    >
+                                                        <option value="">Select Correct Answer</option>
+                                                        {q.options.map((option, oIndex) => (
+                                                            <option key={oIndex} value={option}>
+                                                                {option}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
                                             </div>
                                         ))}
                                         <button type="button" onClick={addQuestion} style={buttonStyle}>Add Question</button>
-                                        <button type="submit" style={buttonStyle}>Submit Questions</button>
+                                        <button type="submit" style={buttonStyle}>Schedule Exam</button>
                                     </div>
                                 )}
-                                {mode !== "mcq" && (
+                                {mode && mode !== "mcq" && (
                                     <div style={formGroupStyle}>
                                         <label style={labelStyle} htmlFor="questionFile">Upload Question:</label>
                                         <input type="file" id="questionFile" onChange={handleFileChange} ref={fileInputRef} />
                                     </div>
                                 )}
-                                {mode !== "mcq" && (
-                                    <button type="submit" style={buttonStyle}>Upload Question</button>
+                                {mode && mode !== "mcq" && (
+                                    <button type="submit" style={buttonStyle}>Schedule Exam</button>
                                 )}
                             </form>
 
@@ -428,6 +549,7 @@ function TeacherExam() {
 
                 </main>
             </section>
+            <ToastContainer />
         </>
     )
 }

@@ -102,29 +102,29 @@ const studentaddparentSchema = mongoose.Schema({
 })
 
 const submissionSchema = new mongoose.Schema({
-    examId: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Examination', 
-        required: true 
+    examId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Examination',
+        required: true
     },
-    studentId: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'AdminAddStudent', 
-        required: true 
+    studentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'AdminAddStudent',
+        required: true
     },
-    answers: { 
-        type: Map, 
-        of: String, 
-        default: null 
+    answers: {
+        type: Map,
+        of: String,
+        default: null
     },
-    answerSheet: { 
-        type: String, 
-        default: null 
-    }, 
-    submittedAt: { 
-        type: Date, 
-        default: Date.now 
-    }, 
+    answerSheet: {
+        type: String,
+        default: null
+    },
+    submittedAt: {
+        type: Date,
+        default: Date.now
+    },
 });
 
 const studentlogmodel = mongoose.model('StudentLogin', studentLoginSchema);
