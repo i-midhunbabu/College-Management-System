@@ -53,7 +53,7 @@ function ExaminationView() {
                         className="table table-bordered table-secondary table-hover"
                         style={{ width: "90%", fontSize: "0.9rem", margin: "0 auto" }}
                     >
-                        <thead>
+                        <thead style={{verticalAlign: "middle", textAlign: "center"}}>
                             <tr>
                                 <th>Exam Type</th>
                                 <th>Exam Mode</th>
@@ -65,10 +65,11 @@ function ExaminationView() {
                                 <th>End Time</th>
                                 <th>Maximum Mark</th>
                                 <th>Pass Mark</th>
+                                <th>Uploaded Answersheet</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody style={{ textAlign: "center"}}>
                             {examData.map((exam, index) => (
                                 <tr key={index}>
                                     <td>{exam.examType}</td>
@@ -82,9 +83,16 @@ function ExaminationView() {
                                     <td>{exam.maximumMark}</td>
                                     <td>{exam.passMark}</td>
                                     <td>
+                                        <Link to={`/exammark/${exam._id}`}>
+                                            <button type="button" className="btn btn-success">
+                                            <i class="fa fa-eye" aria-hidden="true"></i> View
+                                            </button>
+                                        </Link>
+                                    </td>
+                                    <td>
                                         <Link to={`/editexam/${exam._id}`}>
                                             <button type="button" className="btn btn-primary">
-                                            <i class='bx bxs-edit' undefined ></i> 
+                                                <i class='bx bxs-edit' undefined ></i>
                                             </button>
                                         </Link>
                                         &nbsp;

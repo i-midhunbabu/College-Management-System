@@ -1,5 +1,8 @@
-const { teacherlogmodel, teachernotificationmodel, CourseMaterial, Attendance, Exam } = require('../model/teacher.model');
+const { teacherlogmodel, teachernotificationmodel, CourseMaterial, Attendance, Exam, Mark } = require('../model/teacher.model');
 const { adminaddteachermodel, adminaddstudentmodel, departmentmodel, semestermodel, subjectmodel } = require('../model/admin.model');
+const { Submission } = require('../model/student.model');
+const mongoose = require('mongoose')
+const ObjectId = mongoose.Types.ObjectId;
 const nodemailer = require('nodemailer');
 const crypto = require('crypto'); //generating tokens, creating hashes, encrypting data
 const path = require('path');
@@ -280,7 +283,7 @@ exports.getSubjects = async (req, res) => {
         if (!degree || !department || !semester) {
             return res.status(400).json({ message: "Degree, department, and semester are required" });
         }
-        
+
         const subjects = await subjectmodel.find({ degree, department, semester });
         res.status(200).json(subjects);
     } catch (err) {
@@ -445,3 +448,121 @@ exports.updateExam = async (req, res) => {
     }
 };
 
+// Fetch student submissions for a specific exam
+exports.getStudentSubmissions = async (req, res) => {
+    try {
+        const { examId } = req.params;
+
+        const exam = await Exam.findById(examId);
+        if (!exam) {
+            return res.status(404).json({ message: "Exam not found" });
+        }
+
+        const submissions = await Submission.find({ examId });
+
+        const populatedSubmissions = await Submission.find({ examId }).populate('studentId', 'studentname studentid');
+
+        const baseUrl = `${req.protocol}://${req.get('host')}/uploads/answersheets/`;
+
+        const formattedSubmissions = submissions.map((submission) => ({
+            ...submission._doc,
+            answerUrl: submission.answerSheet ? baseUrl + submission.answerSheet : null,
+        }));
+
+        res.status(200).json({ submissions: formattedSubmissions, passMark: exam.passMark, maximumMark: exam.maximumMark });
+    } catch (err) {
+        console.error("Error fetching student submissions:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.saveMark = async (req, res) => {
+    try {
+        const { submissionId } = req.params;
+        const { examId, studentId, studentid, studentname, mark, isPass } = req.body;
+
+        const examObjectId = new ObjectId(examId);
+        const studentObjectId = new ObjectId(studentId);
+
+        // Fetch the exam to get the maximum mark
+        const exam = await Exam.findById(examId);
+        if (!exam) {
+            return res.status(404).json({ message: "Exam not found" });
+        }
+
+        // Validate if the mark exceeds the maximum mark
+        if (mark > exam.maximumMark) {
+            return res.status(400).json({ message: `Mark cannot exceed the maximum mark of ${exam.maximumMark}.` });
+        }
+
+        // Check if a mark entry already exists for this student and exam
+        const existingMark = await Mark.findOne({ examId: examObjectId, studentId: studentObjectId });
+        console.log("Existing Mark:", existingMark);
+
+        if (existingMark) {
+            // Update the existing mark entry
+            existingMark.mark = mark;
+            existingMark.isPass = isPass;
+            existingMark.studentname = studentname;
+            existingMark.studentid = studentid;
+            await existingMark.save();
+            console.log("Updated Mark:", existingMark);
+        } else {
+            // Create a new mark entry
+            const newMark = new Mark({
+                examId: examObjectId,
+                studentId: studentObjectId,
+                studentname,
+                studentid,
+                mark,
+                isPass,
+            });
+            await newMark.save();
+            console.log("New Mark Created:", newMark);
+        }
+
+        res.status(200).json({ message: "Mark saved successfully" });
+    } catch (err) {
+        console.error("Error saving mark:", err);
+        res.status(500).json({ message: "Internal server error", error: err.message });
+    }
+};
+
+exports.getMarks = async (req, res) => {
+    try {
+        const { examId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(examId)) {
+            return res.status(400).json({ message: "Invalid exam ID" });
+        }
+
+        // Fetch marks for the given exam
+        const marks = await Mark.find({ examId }).populate('studentId', 'studentname studentid');
+
+        res.status(200).json({ marks });
+    } catch (err) {
+        console.error("Error fetching marks:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.downloadAnswerSheet = async (req, res) => {
+    try {
+        const { fileName } = req.params;
+        const filePath = path.join(__dirname, '..', 'public', 'uploads', 'answersheets', fileName);
+
+        // Check if the file exists
+        if (!fs.existsSync(filePath)) {
+            console.error(`File not found: ${filePath}`);
+            return res.status(404).json({ message: "File not found" });
+        }
+
+        // Set the Content-Disposition header to force download
+        res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+        res.setHeader('Content-Type', 'application/octet-stream');
+        res.sendFile(filePath);
+    } catch (err) {
+        console.error("Error downloading file:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};

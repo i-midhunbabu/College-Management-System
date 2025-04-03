@@ -1,7 +1,7 @@
 const { studentlogmodel, addparentmodel, Submission } = require('../model/student.model');
 const { adminaddstudentmodel } = require('../model/admin.model');
 const { parentlogmodel } = require('../model/parent.model');
-const { Attendance, Exam } = require('../model/teacher.model');
+const { Attendance, Exam, Mark } = require('../model/teacher.model');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const path = require('path');
@@ -246,13 +246,41 @@ exports.getExamDetails = async (req, res) => {
 
 exports.submitAnswers = async (req, res) => {
     try {
-        const { examId, studentId, answers, answerSheet } = req.body;
+        const { examId, studentId, studentid, studentname, degree, department, semester, examDate, answers } = req.body;
+
+        let answerSheet = null;
+        if (req.files && req.files.answerSheet) {
+
+            const file = req.files.answerSheet;
+            const uploadDir = path.join(__dirname, '../public/uploads/answersheets');
+            const uploadPath = path.join(uploadDir, file.name);
+
+            //Check if the directory exixts, else create
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+
+            // Move the file to the upload directory
+            await file.mv(uploadPath);
+
+            // Save the file name or path
+            answerSheet = file.name;
+        }
+
+        // Parse answers if it's a JSON string
+        const parsedAnswers = typeof answers === "string" ? JSON.parse(answers) : answers;
 
         // Save the answers or answer sheet in the database
         const submission = {
             examId,
             studentId,
-            answers,
+            studentid,
+            studentname,
+            degree,
+            department,
+            semester,
+            examDate,
+            answers: parsedAnswers,
             answerSheet,
         };
 
@@ -281,6 +309,37 @@ exports.downloadQuestionFile = async (req, res) => {
         res.sendFile(filePath);
     } catch (err) {
         console.error("Error downloading file:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.getStudentExamResults = async (req, res) => {
+    try {
+        const { studentId } = req.query;
+
+        if (!studentId) {
+            return res.status(400).json({ message: "Student ID is required" });
+        }
+
+        // Fetch all exams for the student
+        const exams = await Exam.find();
+
+        // Fetch marks for the student
+        const marks = await Mark.find({ studentId });
+
+        // Merge exams with marks
+        const examResults = exams.map((exam) => {
+            const markEntry = marks.find((mark) => mark.examId.toString() === exam._id.toString());
+            return {
+                ...exam._doc,
+                mark: markEntry ? markEntry.mark : "Not Attempted",
+                isPass: markEntry ? markEntry.isPass : "Not Attempted",
+            };
+        });
+
+        res.status(200).json(examResults);
+    } catch (err) {
+        console.error("Error fetching student exam results:", err);
         res.status(500).json({ message: "Internal server error" });
     }
 };

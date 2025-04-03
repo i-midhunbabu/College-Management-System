@@ -35,12 +35,32 @@ function StudentExamAttend() {
         setAnswerSheet(e.target.files[0]);
     };
 
+    const isSubmissionAllowed = () => {
+        const now = new Date();
+        const examDate = new Date(examDetails.dateOfExamination);
+    
+        // Set the end time + 5 minutes
+        const [endHours, endMinutes] = examDetails.endTime.split(":");
+        examDate.setHours(endHours, endMinutes, 0, 0);
+        examDate.setMinutes(examDate.getMinutes() + 5); // Add 5 minutes to the end time
+    
+        return now <= examDate; // Allow submission only if the current time is before endTime + 5 minutes
+    };
+
     const handleSubmit = async () => {
         try {
             const formData = new FormData();
-            const studentData = JSON.parse(localStorage.getItem("student"));
+            const studentData = JSON.parse(localStorage.getItem("get"));
+
             formData.append("examId", examId);
-            formData.append("studentID", studentData.studentDetails.studentid);
+            formData.append("studentId", studentData._id); //Object Id of the student
+            formData.append("studentid", studentData.studentDetails.studentid); // STU***
+            formData.append("studentname", studentData.studentDetails.studentname); // Student name
+            formData.append("degree", studentData.studentDetails.degree);
+            formData.append("department", studentData.studentDetails.department);
+            formData.append("semester", studentData.studentDetails.semester);
+            formData.append("examDate", examDetails.dateOfExamination);
+
             if (examDetails.mode === "assignment") {
                 formData.append("answerSheet", answerSheet);
             } else if (examDetails.mode === "mcq") {
@@ -54,7 +74,7 @@ function StudentExamAttend() {
 
             const result = await response.json();
             if (response.ok) {
-                alert("Answers submitted successfully!");
+                // alert("Answers submitted successfully!");
 
                 // Show success notification based on mode
                 if (examDetails.mode === "assignment") {
@@ -166,13 +186,22 @@ function StudentExamAttend() {
                                     <div style={{ marginBottom: "20px" }}>
                                         <label>
                                             Upload Answer Sheet:
-                                            <input type="file" onChange={handleAnswerSheetUpload} />
+                                            <input 
+                                            type="file" 
+                                            onChange={handleAnswerSheetUpload}
+                                            disabled={!isSubmissionAllowed()} 
+                                            />
+                                            
                                         </label>
                                     </div>
 
                                     {/* Submit Answer Sheet */}
                                     <div style={{ textAlign: "center" }}>
-                                        <button onClick={handleSubmit} className="btn btn-primary" >
+                                        <button 
+                                        onClick={handleSubmit} 
+                                        className="btn btn-primary" 
+                                        disabled={!isSubmissionAllowed()} 
+                                        >
                                             Submit Answer Sheet
                                         </button>
                                     </div>
@@ -196,6 +225,7 @@ function StudentExamAttend() {
                                                     value={option}
                                                     onChange={() => handleAnswerChange(index, option)}
                                                     style={{ marginRight: "10px" }}
+                                                    disabled={!isSubmissionAllowed()}
                                                 />
                                                 {option}
                                             </label>
@@ -204,7 +234,11 @@ function StudentExamAttend() {
                                 ))}
 
                                 <div style={{ textAlign: "center" }}>
-                                    <button onClick={handleSubmit} className="btn btn-primary">
+                                    <button 
+                                    onClick={handleSubmit} 
+                                    className="btn btn-primary"
+                                    disabled={!isSubmissionAllowed()}
+                                    >
                                         {examDetails.mode === "assignment" ? "Submit Answer Sheet" : "Submit Answers"}
                                     </button>
                                 </div>

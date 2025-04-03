@@ -43,7 +43,7 @@ import CourseMaterials from "./code/teacher/coursematerials";
 import MarkAttendance from "./code/teacher/attendancemark";
 import ExaminationView from "./code/teacher/examinationview";
 import EditExam from "./code/teacher/editexam";
-
+import ExamMark from "./code/teacher/exammark";
 
 //Student Module
 import StudentLogin from "./code/student/studentlogin";
@@ -58,6 +58,8 @@ import ViewCourseMaterials from "./code/student/viewcoursematerials";
 import ViewAttendance from "./code/student/studentattendance";
 import StudentExam from "./code/student/studentexams";
 import StudentExamAttend from "./code/student/studentexamattend";
+import PreviousExam from "./code/student/previousexams";
+import StudentExamResult from "./code/student/studentexamresult";
 
 //Parent Module
 import ParentLogin from "./code/parent/parentlogin";
@@ -126,6 +128,7 @@ function App() {
           <Route path="/markattendance" element={<MarkAttendance/>} ></Route>
           <Route path="/examinationlist" element={<ExaminationView/>} ></Route>
           <Route path="/editexam/:examId" element={<EditExam/>} ></Route>
+          <Route path="/exammark/:id" element={<ExamMark/>} ></Route>
           </Routes>
     ) : auth.studentDetails?.usertype == 3 ? ( //in local storage it is structured as {message: "text", studentDetails:{usertype:3}}
           <Routes>
@@ -138,6 +141,8 @@ function App() {
           <Route path="/viewattendance" element={<ViewAttendance/> }></Route>
           <Route path="/studentexamlist" element={<StudentExam/>} ></Route>
           <Route path="/studentexamattend/:examId" element={<StudentExamAttend/>} ></Route>
+          <Route path="/previousexams" element={<PreviousExam/>} ></Route>
+          <Route path="/examresult" element={<StudentExamResult/>} ></Route>
           </Routes>
     ) : auth.parentDetails?.usertype == 4 ? ( //in local storage it is structured as {message: "text", parentDetails:{usertype:4}}
         <Routes>

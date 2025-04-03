@@ -112,6 +112,30 @@ const submissionSchema = new mongoose.Schema({
         ref: 'AdminAddStudent',
         required: true
     },
+    studentid: {
+        type: String,
+        required: true
+    },
+    studentname: {
+        type: String,
+        required: true
+    },
+    degree: {
+        type: String,
+        required: true
+    },
+    department: {
+        type: String,
+        required: true
+    },
+    semester: {
+        type: String,
+        required: true
+    },
+    examDate: {
+        type: String,
+        required: true
+    },
     answers: {
         type: Map,
         of: String,

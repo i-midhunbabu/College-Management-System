@@ -25,5 +25,10 @@ router.delete('/deleteexam/:examId', teacherController.deleteExam);
 router.get('/getexam/:examId', teacherController.getExam);
 router.put('/updateexam/:examId', teacherController.updateExam);
 router.get('/getsubjects', teacherController.getSubjects);
+router.get('/getstudentsubmissions/:examId', teacherController.getStudentSubmissions);
+router.post('/savemark/:submissionId', teacherController.saveMark);
+router.get('/getmarks/:examId', teacherController.getMarks);
+router.get('/download/:fileName', teacherController.downloadAnswerSheet);
+
 
 module.exports = router;

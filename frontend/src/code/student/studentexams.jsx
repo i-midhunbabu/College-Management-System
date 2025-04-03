@@ -32,7 +32,23 @@ function StudentExam() {
                 `http://localhost:8000/studentrouter/getstudentexams?degree=${studentDetails.degree}&department=${studentDetails.department}&semester=${studentDetails.semester}`
             );
             const data = await response.json();
-            setExams(data);
+
+            // Sort exams by dateOfExamination and startTime (ascending)
+            const sortedExams = data.sort((a, b) => {
+                const dateA = new Date(a.dateOfExamination);
+                const dateB = new Date(b.dateOfExamination);
+
+                if (dateA.getTime() === dateB.getTime()) {
+                    // If dates are the same, compare startTime
+                    const [hourA, minuteA] = a.startTime.split(":").map(Number);
+                    const [hourB, minuteB] = b.startTime.split(":").map(Number);
+                    return hourA - hourB || minuteA - minuteB;
+                }
+
+                return dateA - dateB;
+            });
+
+            setExams(sortedExams);
         } catch (err) {
             console.error("Error fetching exams:", err);
         }
@@ -47,13 +63,27 @@ function StudentExam() {
     };
 
 
-    const isAttendButtonEnabled = (startTime, dateOfExamination) => {
+    const isAttendButtonEnabled = (startTime, endTime, dateOfExamination) => {
         const now = new Date();
         const examDate = new Date(dateOfExamination);
-        const [hours, minutes] = startTime.split(":");
-        examDate.setHours(hours, minutes, 0, 0);
 
-        return now >= examDate;
+        // Set the start time
+        const [startHours, startMinutes] = startTime.split(":");
+        examDate.setHours(startHours, startMinutes, 0, 0);
+
+        // Set the end time + 5 minutes
+        const [endHours, endMinutes] = endTime.split(":");
+        const endDate = new Date(dateOfExamination);
+        endDate.setHours(endHours, endMinutes, 0, 0);
+        endDate.setMinutes(endDate.getMinutes() + 5); // Add 5 minutes to the end time
+
+        if (now >= examDate && now <= endDate) {
+            return "attend"; 
+        } else if (now > endDate) {
+            return "view"; 
+        } else {
+            return "upcoming"; 
+        }
     };
 
     useEffect(() => {
@@ -95,32 +125,48 @@ function StudentExam() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {exams.map((exam, index) => (
-                                    <tr key={index}>
-                                        <td>{exam.examType}</td>
-                                        <td>{exam.mode}</td>
-                                        <td>{exam.subject}</td>
-                                        <td>{new Date(exam.dateOfExamination).toLocaleDateString()}</td>
-                                        <td>{formatTime(exam.startTime)}</td>
-                                        <td>{formatTime(exam.endTime)}</td>
-                                        <td>{exam.maximumMark}</td>
-                                        <td>{exam.passMark}</td>
-                                        <td>
-                                            <button
-                                                className="btn btn-success"
-                                                onClick={() => navigate(`/studentexamattend/${exam._id}`)}
-                                                disabled={!isAttendButtonEnabled(exam.startTime, exam.dateOfExamination)}
-                                            >
-                                                Attend
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {exams.map((exam, index) => {
+                                    const buttonState = isAttendButtonEnabled(exam.startTime, exam.endTime, exam.dateOfExamination);
+                                    // const isButtonEnabled = isAttendButtonEnabled(exam.startTime, exam.dateOfExamination);
+                                    return (
+                                        <tr key={index}>
+                                            <td>{exam.examType}</td>
+                                            <td>{exam.mode}</td>
+                                            <td>{exam.subject}</td>
+                                            <td>{new Date(exam.dateOfExamination).toLocaleDateString()}</td>
+                                            <td>{formatTime(exam.startTime)}</td>
+                                            <td>{formatTime(exam.endTime)}</td>
+                                            <td>{exam.maximumMark}</td>
+                                            <td>{exam.passMark}</td>
+                                            <td>
+                                                {buttonState === "attend" && (
+                                                    <button
+                                                        className="btn btn-success"
+                                                        onClick={() => navigate(`/studentexamattend/${exam._id}`)}
+                                                    >
+                                                        Attend
+                                                    </button>
+                                                )}
+                                                {buttonState === "view" && (
+                                                    <button
+                                                        className="btn btn-primary"
+                                                        onClick={() => navigate(`/studentexamattend/${exam._id}`)}
+                                                    >
+                                                        View
+                                                    </button>
+                                                )}
+                                                {buttonState === "upcoming" && (
+                                                    <button className="btn btn-secondary" disabled>
+                                                        Upcoming
+                                                    </button>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
                             </tbody>
                         </table>
                     </div>
-
-
                 </main>
             </section>
         </>

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { toast, ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css";
 import TeacherSidebar from './teachersidebar';
 import TeacherNav from './teachernavbar';
 
@@ -129,13 +131,44 @@ function MarkAttendance() {
             });
 
             if (response.ok) {
-                alert('Attendance marked successfully');
+                console.log("Attendance marked successfully");
+                // alert('Attendance marked successfully');
+                toast.success("Attendance marked successfully!", {
+                    position: "top-right",
+                    autoClose: 3000, // Auto close after 3 seconds
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                
             } else {
-                alert('Failed to mark attendance');
+                console.log("Failed to mark attendance");
+                // alert('Failed to mark attendance');
+                toast.error("Failed to mark attendance", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
             }
         } catch (err) {
             console.error('Error marking attendance:', err);
-            alert('Failed to mark attendance');
+            // alert('Failed to mark attendance');
+            toast.error("An error occurred while marking the attendance.", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            
         }
     };
 
@@ -250,6 +283,7 @@ function MarkAttendance() {
                     </div>
                 </main>
             </section>
+            <ToastContainer/>
         </>
     );
 }

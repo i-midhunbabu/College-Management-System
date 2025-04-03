@@ -149,7 +149,13 @@ function StudentNavBar() {
                                     <li className={location.pathname === "/studentexamlist" ? "active" : ""}>
                                         <Link to="/studentexamlist">
                                             <i class='bx bxs-file-find'></i>
-                                            <span className="text"> Examination List</span>
+                                            <span className="text"> Exam List</span>
+                                        </Link>
+                                    </li>
+                                    <li className={location.pathname === "/examresult" ? "active" : ""}>
+                                        <Link to="/examresult">
+                                            <i class='bx bxs-certification'></i>
+                                            <span className="text"> Result</span>
                                         </Link>
                                     </li>
                                 </ul>

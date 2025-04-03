@@ -206,7 +206,7 @@ function EditExam() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const formattedDate = new Date(dateOfExamination).toISOString().split('T')[0];
+        // const formattedDate = new Date(dateOfExamination).toISOString().split('T')[0];
 
         try {
             const examData = {
@@ -216,7 +216,7 @@ function EditExam() {
                 department,
                 semester,
                 subject,
-                dateOfExamination: formattedDate,
+                dateOfExamination,
                 startTime,
                 endTime,
                 maximumMark,
