@@ -77,6 +77,12 @@ function TeacherExam() {
     const [semesterList, setSemesterList] = useState([]);
     const fileInputRef = useRef(null);
 
+    // Retrieve and parse the local storage data
+    const userData = JSON.parse(localStorage.getItem('get'));
+    const teacherid = userData?.teacherDetails?.teacherid || "";
+    const teacherId = userData?.teacherDetails?._id || "";
+    const teachername = userData?.teacherDetails?.teachername || "";
+
     useEffect(() => {
         // Fetch degrees and departments from adminAddDepartment
         fetch("http://localhost:8000/adminrouter/admindepartmentview")
@@ -148,64 +154,79 @@ function TeacherExam() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         const formattedDate = new Date(dateOfExamination).toISOString().split('T')[0];
+    
         try {
-            const examData = {
-                examType,
-                mode,
-                degree,
-                department,
-                semester,
-                subject,
-                dateOfExamination: formattedDate,
-                startTime,
-                endTime,
-                maximumMark,
-                passMark,
-            };
-
-
-            // Include questions only if not internal-assignment
-            if (!(examType === "internal" && mode === "assignment")) {
-                examData.questions = questions;
+            // Use FormData for all cases to handle file uploads
+            const formData = new FormData();
+            formData.append('examType', examType);
+            formData.append('mode', mode || 'N/A'); // Default mode for semester exams
+            formData.append('degree', degree);
+            formData.append('department', department);
+            formData.append('semester', semester);
+            formData.append('subject', subject);
+            formData.append('dateOfExamination', formattedDate);
+            formData.append('startTime', startTime);
+            formData.append('endTime', endTime);
+            formData.append('maximumMark', maximumMark);
+            formData.append('passMark', passMark);
+    
+            // Add teacher details for semester exams
+            if (examType === 'semester') {
+                formData.append('teacherid', teacherid);
+                formData.append('teacherId', teacherId); // Object ID
+                formData.append('teachername', teachername);
             }
-
-            const response = await fetch("http://localhost:8000/teacherrouter/createexam", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(examData),
+    
+            // Add question file if provided
+            if (questionFile) {
+                formData.append('questionFile', questionFile);
+            }
+    
+            // Add questions for internal MCQ exams
+            if (examType === "internal" && mode === "mcq") {
+                formData.append('questions', JSON.stringify(questions));
+            }
+    
+            // Determine the endpoint based on the exam type and mode
+            let endpoint = '';
+            if (examType === 'semester') {
+                endpoint = 'http://localhost:8000/teacherrouter/submitExamApplication';
+            } else if (examType === 'internal' && mode === 'assignment') {
+                endpoint = 'http://localhost:8000/teacherrouter/createexam';
+            } else if (examType === 'internal' && mode === 'mcq') {
+                endpoint = 'http://localhost:8000/teacherrouter/createexam';
+            }
+    
+            // Send the request to the backend
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                body: formData, // Use FormData for all cases
             });
-
+    
             const result = await response.json();
             if (response.ok) {
-                console.log("Exam created successfully:", result);
-
-                // Show success notification for both "mcq" and "assignment"
-                toast.success("Exam Scheduled Successfully!", {
-                    position: "top-right",
-                    autoClose: 3000, // Auto close after 3 seconds
+                console.log(`${examType} exam created successfully:`, result);
+    
+                // Show success notification
+                toast.success(`${examType === 'semester' ? 'Semester' : 'Internal'} Exam Scheduled Successfully!`, {
+                    position: 'top-right',
+                    autoClose: 3000,
                     hideProgressBar: true,
                     closeOnClick: true,
                     pauseOnHover: true,
                     draggable: true,
                     progress: undefined,
                 });
-
-                if (mode !== "mcq" && questionFile) {
-                    await uploadQuestionFile(result.exam._id);
-                }
-
+    
                 resetForm();
-
             } else {
-                console.error("Error creating exam:", result);
-
+                console.error(`Error creating ${examType} exam:`, result);
+    
                 // Show error notification
-                toast.error("Failed to schedule the exam.", {
-                    position: "top-right",
+                toast.error(`Failed to schedule the ${examType} exam.`, {
+                    position: 'top-right',
                     autoClose: 3000,
                     hideProgressBar: true,
                     closeOnClick: true,
@@ -216,10 +237,10 @@ function TeacherExam() {
             }
         } catch (error) {
             console.error("Error submitting form:", error);
-
+    
             // Show error notification
             toast.error("An error occurred while scheduling the exam.", {
-                position: "top-right",
+                position: 'top-right',
                 autoClose: 3000,
                 hideProgressBar: true,
                 closeOnClick: true,
@@ -229,7 +250,7 @@ function TeacherExam() {
             });
         }
     };
-
+    
     const handleCorrectAnswerChange = (qIndex, value) => {
         const newQuestions = [...questions];
         newQuestions[qIndex].correctAnswer = value;
@@ -428,6 +449,13 @@ function TeacherExam() {
                                     />
                                 </div>
 
+                                {examType === "semester" && (
+                                    <div style={formGroupStyle}>
+                                        <label style={labelStyle} htmlFor="questionFile">Upload Question File:</label>
+                                        <input type="file" id="questionFile" onChange={handleFileChange} ref={fileInputRef} />
+                                    </div>
+                                )}
+
                                 {examType === "internal" && mode === "mcq" && (
                                     <>
                                         <hr style={{ margin: "20px 0", borderColor: "#ccc" }} />
@@ -540,6 +568,9 @@ function TeacherExam() {
                                     </div>
                                 )}
                                 {mode && mode !== "mcq" && (
+                                    <button type="submit" style={buttonStyle}>Schedule Exam</button>
+                                )}
+                                {examType === "semester" && (
                                     <button type="submit" style={buttonStyle}>Schedule Exam</button>
                                 )}
                             </form>

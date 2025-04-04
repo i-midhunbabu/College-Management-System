@@ -27,28 +27,41 @@ function Studentdashboard() {
             const storedData = JSON.parse(localStorage.getItem("get"));
             if (storedData && storedData.studentDetails) {
                 const { degree, department, semester } = storedData.studentDetails;
-    
+                const studentId = storedData._id;
+
+                if (!studentId || studentId.length !== 24) {
+                    console.error("Invalid studentId:", studentId);
+                    return;
+                }
+
                 const response = await fetch(
-                    `http://localhost:8000/studentrouter/getstudentexams?degree=${encodeURIComponent(degree)}&department=${encodeURIComponent(department)}&semester=${encodeURIComponent(semester)}`
+                    `http://localhost:8000/studentrouter/getstudentexams?degree=${encodeURIComponent(degree)}&department=${encodeURIComponent(department)}&semester=${encodeURIComponent(semester)}&studentId=${studentId}`
                 );
                 const exams = await response.json();
-    
+
                 if (!exams || exams.length === 0) {
                     console.log("No exams found in API response.");
                     setUpcomingExams([]);
                     return;
                 }
-    
+
                 // Filter exams to show only upcoming ones
                 const now = new Date();
                 const filteredExams = exams.filter((exam) => {
-                    const examDate = new Date(exam.dateOfExamination); 
-                    const [hours, minutes] = exam.startTime.split(":"); 
-                    examDate.setHours(hours, minutes, 0, 0); 
+                    const examDate = new Date(exam.dateOfExamination);
+                    const [hours, minutes] = exam.startTime.split(":");
+                    examDate.setHours(hours, minutes, 0, 0);
                     return examDate > now;
                 });
-    
-                setUpcomingExams(filteredExams);
+
+                // Sort exams by date and time
+                const sortedExams = filteredExams.sort((a, b) => {
+                    const dateA = new Date(a.dateOfExamination + "T" + a.startTime);
+                    const dateB = new Date(b.dateOfExamination + "T" + b.startTime);
+                    return dateA - dateB;
+                });
+
+                setUpcomingExams(sortedExams);
             } else {
                 console.error("Student details not found in localStorage.");
             }
@@ -112,7 +125,7 @@ function Studentdashboard() {
                                         }}
                                     >
                                         <strong>Exam Type:</strong> {exam.examType} <br />
-                                        <strong>Subject:</strong> {exam.subject} <br/>
+                                        <strong>Subject:</strong> {exam.subject} <br />
                                         <strong>Date:</strong>{" "}
                                         {new Date(exam.dateOfExamination).toLocaleDateString()} <br />
                                         <strong>Start Time:</strong> {formatTime(exam.startTime)} <br />

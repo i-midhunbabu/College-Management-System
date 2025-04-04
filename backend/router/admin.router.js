@@ -35,5 +35,7 @@ router.post('/createexam', adminController.createExam);
 router.get('/getstudentsbyclass', adminController.getStudentsByClass);
 router.get('/admingetstudents', adminController.getStudents);
 router.get('/getstudentsbyclass', adminController.getStudentsByClass);
+router.get('/pendingExamApplications', adminController.getPendingExamApplications);
+router.put('/reviewExamApplication/:examId', adminController.reviewExamApplication);
 
 module.exports = router;

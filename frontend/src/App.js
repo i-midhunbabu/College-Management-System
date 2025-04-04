@@ -29,6 +29,7 @@ import AdminViewSub from "./code/admin/viewSub";
 import AdminExam from "./code/admin/adminExam";
 import AdminClass from "./code/admin/adminClass";
 import ExaminationList from "./code/admin/examinationlist";
+import AdminExamReview from "./code/admin/examApprove";
 
 //Teacher Module
 import Teacherlogin from "./code/teacher/teacherlogin";
@@ -44,6 +45,7 @@ import MarkAttendance from "./code/teacher/attendancemark";
 import ExaminationView from "./code/teacher/examinationview";
 import EditExam from "./code/teacher/editexam";
 import ExamMark from "./code/teacher/exammark";
+import StudentMark from "./code/teacher/studentmark";
 
 //Student Module
 import StudentLogin from "./code/student/studentlogin";
@@ -116,6 +118,7 @@ function App() {
             <Route path="/adminexamination" element={<AdminExam/>}></Route>
             <Route path="/adminclass" element={<AdminClass/>}></Route>
             <Route path="/adminExaminationlist" element={<ExaminationList/>} ></Route>
+            <Route path="/examapprove" element={<AdminExamReview/>} ></Route>
           </Routes>
     ) : auth.teacherDetails?.usertype == 2 ? ( //in local storage it is structured as {message: "text", teacherDetails:{usertype:2}}
           <Routes>
@@ -129,6 +132,7 @@ function App() {
           <Route path="/examinationlist" element={<ExaminationView/>} ></Route>
           <Route path="/editexam/:examId" element={<EditExam/>} ></Route>
           <Route path="/exammark/:id" element={<ExamMark/>} ></Route>
+          <Route path="/studentmark" element={<StudentMark/>} ></Route>
           </Routes>
     ) : auth.studentDetails?.usertype == 3 ? ( //in local storage it is structured as {message: "text", studentDetails:{usertype:3}}
           <Routes>

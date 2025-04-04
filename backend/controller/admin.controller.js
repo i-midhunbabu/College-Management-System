@@ -1,5 +1,5 @@
 const { adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel, semestermodel, subjectmodel, exammodel } = require('../model/admin.model');
-const { teacherlogmodel, teachernotificationmodel } = require('../model/teacher.model')
+const { teacherlogmodel, teachernotificationmodel, Exam } = require('../model/teacher.model')
 const { studentlogmodel, addparentmodel } = require('../model/student.model');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt'); //hashing passwords
@@ -624,3 +624,33 @@ exports.getStudents = async (req, res) => {
     }
 };
 
+exports.getPendingExamApplications = async (req, res) => {
+    try {
+        const pendingExams = await Exam.find({ examType: 'semester', approvalStatus: 'Pending' });
+        res.status(200).json(pendingExams);
+    } catch (err) {
+        console.error('Error fetching pending exam applications:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+exports.reviewExamApplication = async (req, res) => {
+    try {
+        const { examId } = req.params;
+        const { approvalStatus, remarks } = req.body;
+
+        const exam = await Exam.findById(examId);
+        if (!exam) {
+            return res.status(404).json({ message: 'Exam application not found' });
+        }
+
+        exam.approvalStatus = approvalStatus;
+        exam.remarks = approvalStatus === 'Rejected' ? remarks : null;
+        await exam.save();
+
+        res.status(200).json({ message: `Exam application ${approvalStatus.toLowerCase()} successfully`, exam });
+    } catch (err) {
+        console.error('Error reviewing exam application:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};

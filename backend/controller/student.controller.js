@@ -215,15 +215,26 @@ exports.getAttendance = async (req, res) => {
 
 exports.getStudentExams = async (req, res) => {
     try {
-        const { degree, department, semester } = req.query;
+        const { degree, department, semester, studentId } = req.query;
 
-        if (!degree || !department || !semester) {
-            return res.status(400).json({ message: "Degree, department, and semester are required" });
+        if (!degree || !department || !semester || !studentId) {
+            return res.status(400).json({ message: "Degree, department, semester, and studentId are required" });
         }
+        
 
+        //fetch exams corresponding to the students degree, dept, semester
         const exams = await Exam.find({ degree, department, semester });
 
-        res.status(200).json(exams);
+        //fetch submissions for the student
+        const submissions = await Submission.find({ studentId });
+
+        // Add an "attended" flag to each exam
+        const examsWithAttendance = exams.map((exam) => {
+            const hasAttended = submissions.some((submission) => submission.examId.toString() === exam._id.toString());
+            return { ...exam._doc, attended: hasAttended };
+        });
+
+        res.status(200).json(examsWithAttendance);
     } catch (err) {
         console.error("Error fetching student exams:", err);
         res.status(500).json({ message: "Internal server error" });

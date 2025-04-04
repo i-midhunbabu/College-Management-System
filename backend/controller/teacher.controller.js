@@ -306,10 +306,18 @@ exports.createExam = async (req, res) => {
             endTime,
             maximumMark,
             passMark,
-            questions,
         } = req.body;
 
-        const formattedDate = new Date(dateOfExamination).toISOString().split("T")[0];
+        let questions = [];
+        if (req.body.questions) {
+            try {
+                // Parse questions if they are sent as a string
+                questions = JSON.parse(req.body.questions);
+            } catch (err) {
+                console.error("Error parsing questions:", err);
+                return res.status(400).json({ error: "Invalid questions format" });
+            }
+        }
 
         const examData = {
             examType,
@@ -318,7 +326,7 @@ exports.createExam = async (req, res) => {
             department,
             semester,
             subject,
-            dateOfExamination: formattedDate,
+            dateOfExamination,
             startTime,
             endTime,
             maximumMark,
@@ -326,13 +334,24 @@ exports.createExam = async (req, res) => {
             questions,
         };
 
-        // Include questions only if not internal-assignment
-        if (!(examType === "internal" && mode === "assignment")) {
-            examData.questions = questions;
+        // Handle file upload for questionFile
+        if (req.files?.questionFile) {
+            const file = req.files.questionFile;
+            const uploadDir = path.join(__dirname, '..', 'public', 'uploads');
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+            const uploadPath = path.join(uploadDir, file.name);
+            file.mv(uploadPath, (err) => {
+                if (err) {
+                    console.error("Error uploading file:", err);
+                    return res.status(500).json({ error: "Error uploading file" });
+                }
+            });
+            examData.questionFile = file.name;
         }
 
         const newExam = new Exam(examData);
-
         await newExam.save();
         res.status(201).json({ message: "Exam created successfully", exam: newExam });
     } catch (error) {
@@ -454,6 +473,7 @@ exports.getStudentSubmissions = async (req, res) => {
         const { examId } = req.params;
 
         const exam = await Exam.findById(examId);
+
         if (!exam) {
             return res.status(404).json({ message: "Exam not found" });
         }
@@ -481,11 +501,17 @@ exports.saveMark = async (req, res) => {
         const { submissionId } = req.params;
         const { examId, studentId, studentid, studentname, mark, isPass } = req.body;
 
+        // Validate ObjectId's
+        if (!ObjectId.isValid(examId) || !ObjectId.isValid(studentId)) {
+            return res.status(400).json({ message: "Invalid examId or studentId" });
+        }
+
+        //Convert to ObjectId
         const examObjectId = new ObjectId(examId);
         const studentObjectId = new ObjectId(studentId);
 
         // Fetch the exam to get the maximum mark
-        const exam = await Exam.findById(examId);
+        const exam = await Exam.findById(examObjectId);
         if (!exam) {
             return res.status(404).json({ message: "Exam not found" });
         }
@@ -497,16 +523,16 @@ exports.saveMark = async (req, res) => {
 
         // Check if a mark entry already exists for this student and exam
         const existingMark = await Mark.findOne({ examId: examObjectId, studentId: studentObjectId });
-        console.log("Existing Mark:", existingMark);
+        // console.log("Existing Mark:", existingMark);
 
         if (existingMark) {
             // Update the existing mark entry
-            existingMark.mark = mark;
-            existingMark.isPass = isPass;
-            existingMark.studentname = studentname;
-            existingMark.studentid = studentid;
+            existingMark.mark = mark ?? existingMark.mark;
+            existingMark.isPass = isPass ?? existingMark.isPass;
+            existingMark.studentname = studentname ?? existingMark.studentname;
+            existingMark.studentid = studentid ?? existingMark.studentid;
             await existingMark.save();
-            console.log("Updated Mark:", existingMark);
+            // console.log("Updated Mark:", existingMark);
         } else {
             // Create a new mark entry
             const newMark = new Mark({
@@ -566,3 +592,91 @@ exports.downloadAnswerSheet = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+exports.getStudentExamMarks = async (req, res) => {
+    try {
+        const { degree, department, semester } = req.query;
+
+        // Fetch all exams for the given degree, department, and semester
+        const exams = await Exam.find({ degree, department, semester });
+
+        // Fetch all marks for the exams
+        const examIds = exams.map((exam) => exam._id);
+        const marks = await Mark.find({ examId: { $in: examIds } });
+
+        // Combine exam and mark data
+        const combinedData = marks.map((mark) => {
+            const exam = exams.find((exam) => exam._id.toString() === mark.examId.toString());
+            return {
+                studentid: mark.studentid,
+                studentName: mark.studentname,
+                examType: exam.examType,
+                mode: exam.mode,
+                subject: exam.subject,
+                dateOfExamination: exam.dateOfExamination,
+                maximumMark: exam.maximumMark,
+                markObtained: mark.mark,
+                isPass: mark.isPass,
+            };
+        });
+
+        res.status(200).json(combinedData);
+    } catch (err) {
+        console.error('Error fetching student exam marks:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+exports.submitExamApplication = async (req, res) => {
+    try {
+        const { examType, mode, degree, department, semester, subject, dateOfExamination, startTime, endTime, maximumMark, passMark, teacherid, teacherId, teachername } = req.body;
+
+        const file = req.files?.questionFile;
+
+        const examData = {
+            examType,
+            mode,
+            degree,
+            department,
+            semester,
+            subject,
+            dateOfExamination,
+            startTime,
+            endTime,
+            maximumMark,
+            passMark
+        };
+
+        if (file) {
+            const uploadDir = path.join(__dirname, '..', 'public', 'uploads');
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+            const uploadPath = path.join(uploadDir, file.name);
+            file.mv(uploadPath, (err) => {
+                if (err) {
+                    console.error('Error uploading file:', err);
+                    return res.status(500).json({ message: 'Error uploading file' });
+                }
+            });
+            examData.questionFile = file.name;
+        }
+
+        // Add approval-related fields only for semester exams
+        if (examType === 'semester') {
+            examData.approvalStatus = 'Pending';
+            examData.teacherid = teacherid;
+            examData.teacherId = teacherId;
+            examData.teachername = teachername;
+        }
+
+        const exam = new Exam(examData);
+        await exam.save();
+
+        res.status(201).json({ message: 'Exam application submitted successfully', exam });
+    } catch (err) {
+        console.error('Error submitting exam application:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+

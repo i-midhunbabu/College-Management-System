@@ -217,6 +217,12 @@ function AdminSidebar() {
                                         <span className="text">Examination List</span>
                                     </a>
                                 </li>
+                                <li className={location.pathname === "/examapprove" ? "active" : ""}>
+                                    <a href="/examapprove">
+                                        <i className='bx bxs-check-square'/>
+                                        <span className="text">Approve or Reject </span>
+                                    </a>
+                                </li>
                             </ul>
                         )}
                     </li>

@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import StudentNavBar from "./studentnavbar";
 import './student.css'
 import { useNavigate } from "react-router-dom";
+
 function StudentExam() {
     const [exams, setExams] = useState([]);
+    const [filteredExams, setFilteredExams] = useState([]);
+    const [filter, setFilter] = useState("All"); // Default filter is "Available"
     const [studentDetails, setStudentDetails] = useState({
         degree: "",
         department: "",
@@ -28,8 +31,9 @@ function StudentExam() {
 
     const fetchExams = async () => {
         try {
+            const studentData = JSON.parse(localStorage.getItem("get"));
             const response = await fetch(
-                `http://localhost:8000/studentrouter/getstudentexams?degree=${studentDetails.degree}&department=${studentDetails.department}&semester=${studentDetails.semester}`
+                `http://localhost:8000/studentrouter/getstudentexams?degree=${studentDetails.degree}&department=${studentDetails.department}&semester=${studentDetails.semester}&studentId=${studentData._id}`
             );
             const data = await response.json();
 
@@ -49,6 +53,7 @@ function StudentExam() {
             });
 
             setExams(sortedExams);
+            setFilteredExams(sortedExams);
         } catch (err) {
             console.error("Error fetching exams:", err);
         }
@@ -63,7 +68,7 @@ function StudentExam() {
     };
 
 
-    const isAttendButtonEnabled = (startTime, endTime, dateOfExamination) => {
+    const isAttendButtonEnabled = (startTime, endTime, dateOfExamination, attended) => {
         const now = new Date();
         const examDate = new Date(dateOfExamination);
 
@@ -77,12 +82,67 @@ function StudentExam() {
         endDate.setHours(endHours, endMinutes, 0, 0);
         endDate.setMinutes(endDate.getMinutes() + 5); // Add 5 minutes to the end time
 
-        if (now >= examDate && now <= endDate) {
-            return "attend"; 
-        } else if (now > endDate) {
-            return "view"; 
+        if (attended) {
+            return "attended"; // Exam has been attended and submitted
+        } else if (now < examDate) {
+            return "upcoming"; // Exam has not started yet
+        } else if (now >= examDate && now <= endDate) {
+            return "attend"; // Exam is currently available to attend
         } else {
-            return "upcoming"; 
+            return "unattended"; // Exam has ended but was not attended
+        }
+    };
+
+    const handleFilterChange = (e) => {
+        const selectedFilter = e.target.value;
+        setFilter(selectedFilter);
+
+        if (selectedFilter === "All") {
+            setFilteredExams(exams);
+        } else if (selectedFilter === "Attend") {
+            const filtered = exams.filter((exam) => {
+                const buttonState = isAttendButtonEnabled(
+                    exam.startTime,
+                    exam.endTime,
+                    exam.dateOfExamination,
+                    exam.attended
+                );
+                return buttonState === "attend";
+            });
+            setFilteredExams(filtered);
+        } else if (selectedFilter === "Upcoming") {
+            const filtered = exams.filter((exam) => {
+                const buttonState = isAttendButtonEnabled(
+                    exam.startTime,
+                    exam.endTime,
+                    exam.dateOfExamination,
+                    exam.attended
+                );
+                return buttonState === "upcoming";
+            });
+            setFilteredExams(filtered);
+        } else if (selectedFilter === "Attended") {
+            const filtered = exams.filter((exam) => {
+                const buttonState = isAttendButtonEnabled(
+                    exam.startTime,
+                    exam.endTime,
+                    exam.dateOfExamination,
+                    exam.attended
+                );
+                return buttonState === "attended";
+            });
+            setFilteredExams(filtered);
+        } else if (selectedFilter === "Unattended") {
+            const filtered = exams.filter((exam) => {
+                const buttonState = isAttendButtonEnabled(
+                    exam.startTime,
+                    exam.endTime,
+                    exam.dateOfExamination,
+                    exam.attended
+                );
+                return buttonState === "unattended";
+            });
+            setFilteredExams(filtered);
         }
     };
 
@@ -106,7 +166,22 @@ function StudentExam() {
                 <StudentNavBar />
                 <main>
                     <div style={{ padding: "20px" }}>
-                        <h2 style={{ textAlign: "center" }}>Available Exams</h2>
+                        <h2 style={{ textAlign: "center" }}>Examination List</h2>
+                        <div style={{ textAlign: "right", marginBottom: "10px" }}>
+                            <select
+                                value={filter}
+                                onChange={handleFilterChange}
+                                className="form-select"
+                                style={{ width: "200px", display: "inline-block" }}
+                            >
+                                <option value="All">All</option>
+                                <option value="Attend">Attend</option>
+                                <option value="Upcoming">Upcoming</option>
+                                <option value="Attended">Attended</option>
+                                <option value="Unattended">Unattended</option>
+                            </select>
+                        </div>
+
                         <table
                             className="table table-bordered table-secondary table-hover"
                             style={{ width: "90%", fontSize: "0.9rem", margin: "0 auto" }}
@@ -125,9 +200,8 @@ function StudentExam() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {exams.map((exam, index) => {
-                                    const buttonState = isAttendButtonEnabled(exam.startTime, exam.endTime, exam.dateOfExamination);
-                                    // const isButtonEnabled = isAttendButtonEnabled(exam.startTime, exam.dateOfExamination);
+                                {filteredExams.map((exam, index) => {
+                                    const buttonState = isAttendButtonEnabled(exam.startTime, exam.endTime, exam.dateOfExamination, exam.attended);
                                     return (
                                         <tr key={index}>
                                             <td>{exam.examType}</td>
@@ -147,17 +221,25 @@ function StudentExam() {
                                                         Attend
                                                     </button>
                                                 )}
-                                                {buttonState === "view" && (
+                                                {buttonState === "attended" && (
                                                     <button
                                                         className="btn btn-primary"
                                                         onClick={() => navigate(`/studentexamattend/${exam._id}`)}
                                                     >
-                                                        View
+                                                        Attended
                                                     </button>
                                                 )}
                                                 {buttonState === "upcoming" && (
                                                     <button className="btn btn-secondary" disabled>
                                                         Upcoming
+                                                    </button>
+                                                )}
+                                                {buttonState === "unattended" && (
+                                                    <button
+                                                        className="btn btn-danger"
+                                                        onClick={() => navigate(`/studentexamattend/${exam._id}`)}
+                                                    >
+                                                        Unattended
                                                     </button>
                                                 )}
                                             </td>

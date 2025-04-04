@@ -62,6 +62,8 @@ function TeacherSidebar() {
                             <span className="text">Dashboard</span>
                         </a>
                     </li>
+
+                    {/* Student Sidemenu- View Mark */}
                     <li className={location.pathname.startsWith("#") ? "active" : ""}>
                         <a href="#" onClick={() => toggleSubMenu('student')} >
                             <i class='bx bxs-chalkboard'></i>
@@ -70,22 +72,17 @@ function TeacherSidebar() {
                         </a>
                         {openSubMenu === 'student' && (
                             <ul className="sub-menu">
-                                <li className={location.pathname === "#" ? "active" : ""}>
-                                    <a href="#">
-                                        <i className='bx bxs-user' />
-                                        <span className="text">Add Teacher</span>
-                                    </a>
-                                </li>
-                                <li className={location.pathname === "#" ? "active" : ""}>
-                                    <a href="#">
-                                        <i className='bx bxs-user-detail' />
-                                        <span className="text">View Teacher</span>
+                                <li className={location.pathname === "/studentmark" ? "active" : ""}>
+                                    <a href="/studentmark">
+                                        <i className='bx bxs-file-find' />
+                                        <span className="text">View Mark</span>
                                     </a>
                                 </li>
                             </ul>
                         )}
                     </li>
-
+                    
+                    {/* Class Sidemenu- Attendance, Course Material */}
                     <li className={location.pathname.startsWith("#") ? "active" : ""}>
                         <a href="#" onClick={() => toggleSubMenu('class')}>
                             <i className='bx bxs-graduation'></i>
@@ -100,12 +97,6 @@ function TeacherSidebar() {
                                         <span className="text">Mark Attendance</span>
                                     </a>
                                 </li>
-                                <li className={location.pathname === "#" ? "active" : ""}>
-                                    <a href="#">
-                                        <i class='bx bxs-user-check'></i>
-                                        <span className="text">Add / Update Mark</span>
-                                    </a>
-                                </li>
                                 <li className={location.pathname === "/uploadcoursematerial" ? "active" : ""}>
                                     <a href="/uploadcoursematerial">
                                         <i class='bx bx-upload'></i>
@@ -117,6 +108,7 @@ function TeacherSidebar() {
                         )}
                     </li>
 
+                    {/* //Examination Sidemenu- Schedule Exam, Exam Marklist */}
                     <li className={location.pathname.startsWith("#") ? "active" : ""}>
                         <a href="#" onClick={() => toggleSubMenu('exam')}>
                             <i className='bx bxs-graduation'></i>
@@ -137,18 +129,12 @@ function TeacherSidebar() {
                                         <span className="text">Examination List</span>
                                     </a>
                                 </li>
-
                             </ul>
                         )}
                     </li>
                 </ul>
+
                 <ul className="side-menu">
-                    <li className={location.pathname === "#" ? "active" : ""}>
-                        <a href="#">
-                            <i className='bx bxs-cog' />
-                            <span className="text">Settings</span>
-                        </a>
-                    </li>
                     <li>
                         <a href="#" className="logout" onClick={handleLogout}>
                             <i className='bx bxs-log-out-circle' />

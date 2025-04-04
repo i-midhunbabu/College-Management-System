@@ -33,17 +33,21 @@ function StudentExamAttend() {
 
     const handleAnswerSheetUpload = (e) => {
         setAnswerSheet(e.target.files[0]);
+        console.log("Uploaded file:", e.target.files[0]);
     };
 
     const isSubmissionAllowed = () => {
+        if (examDetails.attended) {
+            return false; // Disable submission if the exam is already attended
+        }
         const now = new Date();
         const examDate = new Date(examDetails.dateOfExamination);
-    
+
         // Set the end time + 5 minutes
         const [endHours, endMinutes] = examDetails.endTime.split(":");
         examDate.setHours(endHours, endMinutes, 0, 0);
         examDate.setMinutes(examDate.getMinutes() + 5); // Add 5 minutes to the end time
-    
+
         return now <= examDate; // Allow submission only if the current time is before endTime + 5 minutes
     };
 
@@ -61,7 +65,7 @@ function StudentExamAttend() {
             formData.append("semester", studentData.studentDetails.semester);
             formData.append("examDate", examDetails.dateOfExamination);
 
-            if (examDetails.mode === "assignment") {
+            if (examDetails.mode === "assignment" || examDetails.examType === "semester") {
                 formData.append("answerSheet", answerSheet);
             } else if (examDetails.mode === "mcq") {
                 formData.append("answers", JSON.stringify(answers));
@@ -77,7 +81,7 @@ function StudentExamAttend() {
                 // alert("Answers submitted successfully!");
 
                 // Show success notification based on mode
-                if (examDetails.mode === "assignment") {
+                if (examDetails.mode === "assignment" || examDetails.examType === "semester") {
                     toast.success("Answer Sheet Submitted Successfully!", {
                         position: "top-right",
                         autoClose: 3000,
@@ -154,7 +158,7 @@ function StudentExamAttend() {
                             </div>
                         </div>
 
-                        {examDetails.mode === "assignment" && (
+                        {(examDetails.mode === "assignment" || examDetails.examType === "semester") && (
                             <>
                                 <div>
                                     <h4>Question Paper:</h4>
@@ -186,21 +190,21 @@ function StudentExamAttend() {
                                     <div style={{ marginBottom: "20px" }}>
                                         <label>
                                             Upload Answer Sheet:
-                                            <input 
-                                            type="file" 
-                                            onChange={handleAnswerSheetUpload}
-                                            disabled={!isSubmissionAllowed()} 
+                                            <input
+                                                type="file"
+                                                onChange={handleAnswerSheetUpload}
+                                                disabled={!isSubmissionAllowed()}
                                             />
-                                            
+
                                         </label>
                                     </div>
 
                                     {/* Submit Answer Sheet */}
                                     <div style={{ textAlign: "center" }}>
-                                        <button 
-                                        onClick={handleSubmit} 
-                                        className="btn btn-primary" 
-                                        disabled={!isSubmissionAllowed()} 
+                                        <button
+                                            onClick={handleSubmit}
+                                            className="btn btn-primary"
+                                            disabled={!isSubmissionAllowed()}
                                         >
                                             Submit Answer Sheet
                                         </button>
@@ -234,10 +238,10 @@ function StudentExamAttend() {
                                 ))}
 
                                 <div style={{ textAlign: "center" }}>
-                                    <button 
-                                    onClick={handleSubmit} 
-                                    className="btn btn-primary"
-                                    disabled={!isSubmissionAllowed()}
+                                    <button
+                                        onClick={handleSubmit}
+                                        className="btn btn-primary"
+                                        disabled={!isSubmissionAllowed()}
                                     >
                                         {examDetails.mode === "assignment" ? "Submit Answer Sheet" : "Submit Answers"}
                                     </button>

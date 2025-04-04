@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import TeacherSidebar from "./teachersidebar";
 import TeacherNav from "./teachernavbar";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function ExaminationView() {
     const [examData, setExamData] = useState([]);
@@ -23,21 +25,57 @@ function ExaminationView() {
 
     const handleDelete = async (examId) => {
         try {
+            const examToDelete = examData.find((exam) => exam._id === examId); 
             const response = await fetch(`http://localhost:8000/teacherrouter/deleteexam/${examId}`, {
                 method: "DELETE",
             });
 
             if (response.ok) {
                 setExamData(examData.filter((exam) => exam._id !== examId));
-                console.log("Exam deleted successfully");
+
+                // Show success toast based on exam type
+                if (examToDelete.examType === "internal") {
+                    toast.success("Internal Exam Deleted!", {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                } else if (examToDelete.examType === "semester") {
+                    toast.success("Semester Exam Deleted!", {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
             } else {
                 console.error("Error deleting exam");
+                toast.error("Failed to delete the exam. Please try again.", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
             }
         } catch (error) {
             console.error("Error deleting exam:", error);
+            toast.error("An error occurred while deleting the exam.", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
         }
     };
-
 
     return (
         <>
@@ -51,9 +89,9 @@ function ExaminationView() {
                     </div>
                     <table
                         className="table table-bordered table-secondary table-hover"
-                        style={{ width: "90%", fontSize: "0.9rem", margin: "0 auto" }}
+                        style={{ width: "80%", fontSize: "0.8rem", margin: "10px auto", borderCollapse: "collapse" }}
                     >
-                        <thead style={{verticalAlign: "middle", textAlign: "center"}}>
+                        <thead style={{ verticalAlign: "middle", textAlign: "center" }}>
                             <tr>
                                 <th>Exam Type</th>
                                 <th>Exam Mode</th>
@@ -69,7 +107,7 @@ function ExaminationView() {
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody style={{ textAlign: "center"}}>
+                        <tbody style={{ textAlign: "center" }}>
                             {examData.map((exam, index) => (
                                 <tr key={index}>
                                     <td>{exam.examType}</td>
@@ -85,7 +123,7 @@ function ExaminationView() {
                                     <td>
                                         <Link to={`/exammark/${exam._id}`}>
                                             <button type="button" className="btn btn-success">
-                                            <i class="fa fa-eye" aria-hidden="true"></i> View
+                                                <i class="fa fa-eye" aria-hidden="true"></i> View
                                             </button>
                                         </Link>
                                     </td>
@@ -110,6 +148,7 @@ function ExaminationView() {
                     </table>
                 </main>
             </section>
+            <ToastContainer/>
         </>
     );
 }

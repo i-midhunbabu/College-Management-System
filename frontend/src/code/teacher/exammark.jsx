@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import TeacherSidebar from "./teachersidebar";
 import TeacherNav from "./teachernavbar";
 import Modal from "react-modal";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 Modal.setAppElement("#root");
 
@@ -66,7 +68,15 @@ function ExamMark() {
 
         // Validate if the mark exceeds the maximum mark
         if (mark > maximumMark) {
-            console.log(`Mark cannot exceed the maximum mark of ${maximumMark}.`);
+            // console.log(`Mark cannot exceed the maximum mark of ${maximumMark}.`);
+            toast.error(`Mark cannot exceed the maximum mark of ${maximumMark}`, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
             return;
         }
 
@@ -78,7 +88,15 @@ function ExamMark() {
         })
             .then((res) => res.json())
             .then(() => {
-                console.log("Mark saved successfully");
+                // console.log("Mark saved successfully");
+                toast.success("Mark saved successfully!", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
 
                 // Fetch updated marks from the backend
                 fetch(`http://localhost:8000/teacherrouter/getmarks/${examId}`)
@@ -89,7 +107,17 @@ function ExamMark() {
                     })
                     .catch((err) => console.error("Error fetching updated marks:", err));
             })
-            .catch((err) => console.error("Error saving mark:", err));
+            .catch((err) => {
+                console.error("Error saving mark:", err);
+                toast.error("Failed to save the mark. Please try again.", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+            });
     };
 
     const handleViewAnswers = async (submission) => {
@@ -143,7 +171,7 @@ function ExamMark() {
                                     <th>Student Name</th>
                                     <th>Uploaded Answer</th>
                                     <th>Mark</th>
-                                    <th>Uploaded Mark</th>
+                                    <th>Max Mark</th>
                                     <th>Pass / Fail</th>
                                     <th>Action</th>
                                 </tr>
@@ -211,7 +239,7 @@ function ExamMark() {
                                                     />
                                                 </td>
 
-                                                <td>{submission.mark || 0}</td> 
+                                                <td>{examDetails.maximumMark}</td>
 
                                                 <td>{isPass ? "Pass" : "Fail"}</td>
 
@@ -245,6 +273,7 @@ function ExamMark() {
                     </div>
                 </main>
             </section>
+            <ToastContainer />
 
             {/* Modal for viewing answers */}
             <Modal

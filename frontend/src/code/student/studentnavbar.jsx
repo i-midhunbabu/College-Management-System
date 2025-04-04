@@ -99,7 +99,7 @@ function StudentNavBar() {
                         <li className={location.pathname.startsWith("#") ? "active" : ""} ref={parentSubMenuRef}>
                             <Link to="#" className="nav-link" onClick={toggleParentSubMenu}>
                                 <i class='bx bxs-user'></i> Parent
-                                <i className={`bx bx-caret-${parentSubMenuOpen === 'parent' ? 'up' : 'down'}`}></i>
+                                {/* <i className={`bx bx-caret-${parentSubMenuOpen === 'parent' ? 'up' : 'down'}`}></i> */}
                             </Link>
                             {/* <Link to="#" className="nav-link" onClick={toggleParentSubMenu}>
                             <i class='bx bxs-user'></i>Parent
@@ -119,7 +119,7 @@ function StudentNavBar() {
                         <li className={location.pathname.startsWith("#") ? "active" : ""} ref={classSubMenuRef}>
                             <Link to="#" className="nav-link" onClick={toggleClassSubMenu}>
                                 <i className='bx bxs-chalkboard'></i> Class
-                                <i className={`bx bx-caret-${classSubMenuOpen === 'class' ? 'up' : 'down'}`}></i>
+                                {/* <i className={`bx bx-caret-${classSubMenuOpen === 'class' ? 'up' : 'down'}`}></i> */}
                             </Link>
                             {classSubMenuOpen && (
                                 <ul className="sub-menu">
@@ -142,7 +142,7 @@ function StudentNavBar() {
                         <li className={location.pathname.startsWith("#") ? "active" : ""} ref={examSubMenuRef}>
                             <Link to="#" className="nav-link" onClick={toggleExamSubMenu}>
                             <i class='bx bxs-bar-chart-square' undefined ></i> Exam
-                            <i className={`bx bx-caret-${examSubMenuOpen === 'exam' ? 'up' : 'down'}`}></i>
+                            {/* <i className={`bx bx-caret-${examSubMenuOpen === 'exam' ? 'up' : 'down'}`}></i> */}
                             </Link>
                             {examSubMenuOpen && (
                                 <ul className="sub-menu">

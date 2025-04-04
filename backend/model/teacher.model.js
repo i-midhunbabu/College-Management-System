@@ -101,7 +101,8 @@ const attendanceSchema = new mongoose.Schema({
 const examSchema = new mongoose.Schema({
     examType: {
         type: String,
-        required: true
+        required: true,
+        enum: ['internal', 'semester']
     },
     mode: {
         type: String,
@@ -152,7 +153,43 @@ const examSchema = new mongoose.Schema({
     ],
     questionFile: {
         type: String
+    },
+    approvalStatus: {
+        type: String,
+        enum: ['Pending', 'Approved', 'Rejected'],
+        default: 'Pending',
+        required: function () {
+            return this.examType === 'semester';
+        }
+    },
+    remarks: {
+        type: String,
+        default: null,
+        required: function () {
+            return this.examType === 'semester' && this.approvalStatus === 'Rejected';
+        }
+    },
+    teacherid: {
+        type: String,
+        ref: 'AdminAddTeacher',
+        required: function () {
+            return this.examType === 'semester';
+        }
+    },
+    teacherId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'AdminAddTeacher',
+        required: function () {
+            return this.examType === 'semester';
+        }
+    },
+    teachername: {
+        type: String,
+        required: function () {
+            return this.examType === 'semester';
+        }
     }
+
 }, { timestamps: true });
 
 

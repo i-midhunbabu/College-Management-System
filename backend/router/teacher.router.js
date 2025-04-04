@@ -29,6 +29,8 @@ router.get('/getstudentsubmissions/:examId', teacherController.getStudentSubmiss
 router.post('/savemark/:submissionId', teacherController.saveMark);
 router.get('/getmarks/:examId', teacherController.getMarks);
 router.get('/download/:fileName', teacherController.downloadAnswerSheet);
+router.get('/getStudentExamMarks', teacherController.getStudentExamMarks);
+router.post('/submitExamApplication', teacherController.submitExamApplication);
 
 
 module.exports = router;
