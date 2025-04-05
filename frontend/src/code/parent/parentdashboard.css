@@ -1,29 +1,29 @@
 /* Centering the profile container */
 .profile-container3 {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 100vh;
-	/* Full screen height */
-	background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* Full screen height */
+    background-color: #f4f4f4;
 }
 
 /* Profile box design */
 .profile-box {
-	background: #C5CDE0;
-	/* background: rgb(230, 239, 173); */
-	padding: 30px;
-	border-radius: 25px;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-	text-align: left;
-	width: 500px;
+    background: #C5CDE0;
+    /* background: rgb(230, 239, 173); */
+    padding: 30px;
+    border-radius: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    text-align: left;
+    width: 500px;
 }
 
 /* Profile title styling */
 .profile-title {
-	text-align: center;
-	color: rgb(0, 0, 0);
-	font-weight: bolder;
+    text-align: center;
+    color: rgb(0, 0, 0);
+    font-weight: bolder;
 }
 
 /* Styling for password input */
@@ -46,7 +46,8 @@
 .message-icon {
     position: fixed;
     bottom: 20px;
-    right: 20px; /* Changed from left to right */
+    right: 20px;
+    /* Changed from left to right */
     background-color: #003399;
     color: white;
     padding: 10px;
@@ -69,4 +70,75 @@
     border-radius: 50%;
     font-size: 20px;
     font-weight: bold;
+}
+/* Chatbox */
+.chatbox {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 300px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.chatbox-header {
+    background-color: #003399;
+    color: white;
+    padding: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chatbox-header h4 {
+    margin: 0;
+}
+
+.chatbox-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.chatbox-body {
+    padding: 10px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.chatbox-footer {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+}
+
+.chatbox-footer input {
+    flex: 1;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 5px;
+}
+
+.chatbox-footer button {
+    background-color: #003399;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+main {
+    padding-bottom: 100px;
+    overflow-x: hidden;
 }

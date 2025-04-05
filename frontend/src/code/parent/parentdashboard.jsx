@@ -1,155 +1,176 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ParentSidebar from "./parentsidebar";
 import ParentNav from "./parentnavbar";
-function Parentdashboard (){
-    return(
+
+function Parentdashboard() {
+    const [isChatboxOpen, setIsChatboxOpen] = useState(false);
+    const [teachers, setTeachers] = useState([]);
+    const [selectedTeacher, setSelectedTeacher] = useState(null);
+
+    const toggleChatbox = () => {
+        setIsChatboxOpen(!isChatboxOpen);
+        setSelectedTeacher(null);
+    };
+
+    const handleTeacherClick = (teacher) => {
+        setSelectedTeacher(teacher);
+    };
+
+    const handleBackClick = () => {
+        setSelectedTeacher(null);
+    };
+
+    useEffect(() => {
+        if (isChatboxOpen) {
+            fetch("http://localhost:8000/adminrouter/adminteacherview")
+                .then((response) => response.json())
+                .then((data) => {
+                    setTeachers(data);
+                })
+                .catch((error) => {
+                    console.error("Error fetching teachers:", error);
+                });
+        }
+    }, [isChatboxOpen]);
+
+    return (
         <>
-        <ParentSidebar/>
+            <ParentSidebar />
             {/* Content */}
             <section id="content">
                 <ParentNav />
                 {/* Main */}
-                <main>
-                    {/* <div className="head-title">
-                        <div className="left">
-                            <h1>Dashboard</h1>
-                            <ul className="breadcrumb">
-                                <li>
-                                    <a href="#">Dashboard</a>
-                                </li>
-                                <li><i className='bx bx-chevron-right' ></i></li>
-                                <li>
-                                    <a className="active" href="#">Home</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <a href="#" className="btn-download">
-                            <i className='bx bxs-cloud-download' />
-                            <span className="text">Download PDF</span>
-                        </a>
-                    </div> */}
+                <main style={{ paddingBottom: "100px" }}>
 
-                    <ul className="box-info">
-                        <li>
-                            <i className='bx bxs-calendar-check' ></i>
-                            <span className="text">
-                                <h3>1020</h3>
-                                <p>New Order</p>
-                            </span>
-                        </li>
-                        <li>
-                            <i className='bx bxs-group' ></i>
-                            <span className="text">
-                                <h3>2834</h3>
-                                <p>Visitors</p>
-                            </span>
-                        </li>
-                        <li>
-                            <i className='bx bxs-dollar-circle' ></i>
-                            <span className="text">
-                                <h3>$2543</h3>
-                                <p>Total Sales</p>
-                            </span>
-                        </li>
-                    </ul>
-
-
-                    <div className="table-data">
-                        <div className="order">
-                            <div className="head">
-                                <h3>Recent Orders</h3>
-                                <i className='bx bx-search' ></i>
-                                <i className='bx bx-filter' ></i>
+                    {/* Chatbox */}
+                    {isChatboxOpen && (
+                        <div className="chatbox">
+                            <div className="chatbox-header">
+                                {selectedTeacher ? (
+                                    <>
+                                        <button
+                                            className="chatbox-back"
+                                            onClick={handleBackClick}
+                                            style={{
+                                                background: "none",
+                                                border: "none",
+                                                color: "white",
+                                                fontSize: "16px",
+                                                cursor: "pointer",
+                                                marginRight: "10px",
+                                            }}
+                                        >
+                                            &lt;
+                                        </button>
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "10px",
+                                            }}
+                                        >
+                                            <div
+                                                style={{
+                                                    width: "40px",
+                                                    height: "40px",
+                                                    borderRadius: "50%",
+                                                    backgroundColor: "#FFFFFF",
+                                                    color: "#003399",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+                                                    fontSize: "16px",
+                                                    fontWeight: "bold",
+                                                }}
+                                            >
+                                                {selectedTeacher.teachername.charAt(0).toUpperCase()}
+                                                </div>
+                                        <h4 style={{ margin: 0 }}>{selectedTeacher.teachername}</h4>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <h4>Chat</h4>
+                                )}
+                                <button
+                                    className="chatbox-close"
+                                    onClick={toggleChatbox}
+                                    style={{
+                                        background: "none",
+                                        border: "none",
+                                        color: "white",
+                                        fontSize: "16px",
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    ✖
+                                </button>
                             </div>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>User</th>
-                                        <th>Date Order</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <img src="assets2/img/people.png" alt="" />
-                                            <p>John Doe</p>
-                                        </td>
-                                        <td>01-10-2021</td>
-                                        <td><span className="status completed">Completed</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <img src="assets2/img/people.png" alt="" />
-                                            <p>John Doe</p>
-                                        </td>
-                                        <td>01-10-2021</td>
-                                        <td><span className="status pending">Pending</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <img src="assets2/img/people.png" alt="" />
-                                            <p>John Doe</p>
-                                        </td>
-                                        <td>01-10-2021</td>
-                                        <td><span className="status process">Process</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <img src="assets2/img/people.png" alt="" />
-                                            <p>John Doe</p>
-                                        </td>
-                                        <td>01-10-2021</td>
-                                        <td><span className="status pending">Pending</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <img src="assets2/img/people.png" alt=""/>
-                                            <p>John Doe</p>
-                                        </td>
-                                        <td>01-10-2021</td>
-                                        <td><span className="status completed">Completed</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="todo">
-                            <div className="head">
-                                <h3>Todos</h3>
-                                <i className='bx bx-plus' ></i>
-                                <i className='bx bx-filter' ></i>
+                            <div className="chatbox-body">
+                                {selectedTeacher ? (
+                                    <div>
+                                        <p>Chat with {selectedTeacher.teachername}</p>
+                                        {/* Add chat functionality here */}
+                                    </div>
+                                ) : (
+                                    <>
+                                        <p>Available Teachers:</p>
+                                        <ul style={{ listStyleType: "none", padding: 0 }}>
+                                            {teachers.map((teacher) => (
+                                                <li
+                                                    key={teacher._id}
+                                                    style={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        marginBottom: "10px",
+                                                        cursor: "pointer",
+                                                    }}
+                                                    onClick={() => handleTeacherClick(teacher)}
+                                                >
+                                                    <div
+                                                        style={{
+                                                            width: "40px",
+                                                            height: "40px",
+                                                            borderRadius: "50%",
+                                                            backgroundColor: "#003399",
+                                                            color: "white",
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            justifyContent: "center",
+                                                            marginRight: "10px",
+                                                            fontSize: "16px",
+                                                            fontWeight: "bold",
+                                                        }}
+                                                    >
+                                                        {teacher.teachername.charAt(0).toUpperCase()}
+                                                    </div>
+                                                    <div>
+                                                        <strong>{teacher.teachername}</strong>
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </>
+                                )}
                             </div>
-                            <ul className="todo-list">
-                                <li className="completed">
-                                    <p>Todo List</p>
-                                    <i className='bx bx-dots-vertical-rounded' ></i>
-                                </li>
-                                <li className="completed">
-                                    <p>Todo List</p>
-                                    <i className='bx bx-dots-vertical-rounded' ></i>
-                                </li>
-                                <li className="not-completed">
-                                    <p>Todo List</p>
-                                    <i className='bx bx-dots-vertical-rounded' ></i>
-                                </li>
-                                <li className="completed">
-                                    <p>Todo List</p>
-                                    <i className='bx bx-dots-vertical-rounded' ></i>
-                                </li>
-                                <li className="not-completed">
-                                    <p>Todo List</p>
-                                    <i className='bx bx-dots-vertical-rounded' ></i>
-                                </li>
-                            </ul>
+                            {selectedTeacher && (
+                                <div className="chatbox-footer">
+                                    <input
+                                        type="text"
+                                        placeholder={`Message ${selectedTeacher.teachername}...`}
+                                    />
+                                    <button>
+                                    <i class='bx bxs-send'></i>
+                                    </button>
+                                </div>
+                            )}
                         </div>
-                    </div>
-                </main>
+                    )}
+                </main >
                 {/* Main */}
-            </section>
+            </section >
             {/* Content */}
-            <a href="#" className="message-icon">
-            {/* <i className='bx bxs-message-square-dots' style={{color:'#1760e2'}}  ></i> */}
-            <img src="chat1.png" alt="chat" style={{width: '40px',  height: '40px'}} />
+            <a a href="#" className="message-icon" onClick={toggleChatbox} >
+                < img src="chat1.png" alt="chat" style={{ width: '40px', height: '40px' }} />
             </a>
         </>
     )
