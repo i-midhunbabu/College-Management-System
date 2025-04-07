@@ -151,6 +151,8 @@ const submissionSchema = new mongoose.Schema({
     },
 });
 
+
+
 const studentlogmodel = mongoose.model('StudentLogin', studentLoginSchema);
 const addparentmodel = mongoose.model('AddParent', studentaddparentSchema);
 const Submission = mongoose.model('Submission', submissionSchema);

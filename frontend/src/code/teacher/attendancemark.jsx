@@ -121,6 +121,9 @@ function MarkAttendance() {
             status: attendance[student._id] || 'Absent',
             // subject: selectedSubject,
             teacherId,
+            degree: selectedDegree,
+            department: selectedDepartment,
+            semester: selectedSemester
         }));
 
         try {
@@ -171,6 +174,7 @@ function MarkAttendance() {
             
         }
     };
+    
 
     return (
         <>

@@ -18,5 +18,6 @@ router.get('/getexamdetails/:examId', studentController.getExamDetails);
 router.post('/submitanswers', studentController.submitAnswers);
 router.get('/download/:fileName', studentController.downloadQuestionFile);
 router.get('/getstudentexamresults', studentController.getStudentExamResults);
+router.get('/getsubjects', studentController.getSubjects);
 
 module.exports = router;

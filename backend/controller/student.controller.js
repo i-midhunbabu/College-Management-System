@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { studentlogmodel, addparentmodel, Submission } = require('../model/student.model');
-const { adminaddstudentmodel } = require('../model/admin.model');
+const { adminaddstudentmodel, subjectmodel } = require('../model/admin.model');
 const { parentlogmodel } = require('../model/parent.model');
 const { Attendance, Exam, Mark } = require('../model/teacher.model');
 const nodemailer = require('nodemailer');
@@ -336,6 +336,7 @@ exports.getStudentExamResults = async (req, res) => {
          // Convert studentId to ObjectId
          const studentObjectId = new mongoose.Types.ObjectId(studentId);
 
+         
         // Fetch all exams for the student
         const exams = await Exam.find();
 
@@ -355,6 +356,27 @@ exports.getStudentExamResults = async (req, res) => {
         res.status(200).json(examResults);
     } catch (err) {
         console.error("Error fetching student exam results:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.getSubjects = async (req, res) => {
+    try {
+        const { degree, department, semester } = req.query;
+
+        if (!degree || !department || !semester) {
+            return res.status(400).json({ message: "Degree, department, and semester are required" });
+        }
+
+        const subjects = await subjectmodel.find({ degree, department, semester });
+
+        if (!subjects || subjects.length === 0) {
+            return res.status(404).json({ message: "No subjects found" });
+        }
+
+        res.status(200).json(subjects);
+    } catch (err) {
+        console.error("Error fetching subjects:", err);
         res.status(500).json({ message: "Internal server error" });
     }
 };

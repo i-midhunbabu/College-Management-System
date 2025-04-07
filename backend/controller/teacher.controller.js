@@ -235,6 +235,9 @@ exports.markAttendance = async (req, res) => {
             date: record.date,
             status: record.status,
             teacherId: record.teacherId,
+            degree: record.degree,
+            department: record.department,
+            semester: record.semester
         }));
 
         await Attendance.insertMany(attendanceRecords);
@@ -248,7 +251,17 @@ exports.markAttendance = async (req, res) => {
 exports.getAttendance = async (req, res) => {
     try {
         const { studentId, date } = req.query;
-        const attendance = await Attendance.find({ studentId, date });
+
+        // Convert studentId to ObjectId
+        if (!mongoose.Types.ObjectId.isValid(studentId)) {
+            return res.status(400).json({ success: false, message: "Invalid studentId" });
+        }
+
+        const attendance = await Attendance.find({
+            studentId: new mongoose.Types.ObjectId(studentId),
+            ...(date && { date })
+        });
+
         res.status(200).json(attendance);
     } catch (err) {
         console.error("Error fetching attendance:", err);
@@ -680,3 +693,48 @@ exports.submitExamApplication = async (req, res) => {
     }
 };
 
+exports.getMonthlyAttendance = async (req, res) => {
+    try {
+        const { degree, department, semester, month } = req.query;
+
+        if (!degree || !department || !semester || !month) {
+            return res.status(400).json({ message: "Missing required parameters" });
+        }
+
+        // Fetch attendance for the specified month
+        const attendance = await Attendance.find({
+            degree,
+            department,
+            semester,
+            date: { $regex: `^${month}` } // Match dates starting with the month (e.g., "2025-04")
+        }).populate("studentId", "studentid studentname degree department");
+
+        if (attendance.length === 0) {
+            return res.status(404).json({ message: "No attendance data found for the specified parameters." });
+        }
+
+        res.status(200).json(attendance);
+    } catch (err) {
+        console.error("Error fetching monthly attendance:", err);
+        res.status(500).json({ message: "Failed to fetch monthly attendance" });
+    }
+};
+
+// Run this script once to update existing attendance records
+// const updateAttendanceRecords = async () => {
+//     const attendanceRecords = await Attendance.find();
+
+//     for (const record of attendanceRecords) {
+//         const student = await adminaddstudentmodel.findById(record.studentId);
+//         if (student) {
+//             record.degree = student.degree;
+//             record.department = student.department;
+//             record.semester = student.semester;
+//             await record.save();
+//         }
+//     }
+
+//     console.log("Attendance records updated successfully!");
+// };
+
+// updateAttendanceRecords();

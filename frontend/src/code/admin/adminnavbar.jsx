@@ -1,11 +1,15 @@
-import React, {useState, useRef, useEffect} from "react";
+import React, { useState, useRef, useEffect } from "react";
 import './admindashboard.css'
 function AdminNav() {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isBellOpen, setIsBellOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const [notifications, setNotifications] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const [adminName, setAdminName] = useState('');
     const [initial, setInitial] = useState('');
+    const profileRef = useRef(null);
+    const bellRef = useRef(null);
 
     useEffect(() => {
         // Fetch the admin's name from local storage or backend
@@ -20,16 +24,33 @@ function AdminNav() {
         window.location.href = '/'
     }
 
-    const toggleDropdown = () => {
-        setIsOpen(!isOpen);
-        setShowDropdown(!showDropdown);
+    const toggleBellDropdown = () => {
+        setIsBellOpen(!isBellOpen);
+        setIsProfileOpen(false);
+        fetchNotifications();
+    };
+
+    const toggleProfileDropdown = () => {
+        setIsProfileOpen(!isProfileOpen);
+        setIsBellOpen(false);
+    };
+
+    const fetchNotifications = () => {
+        fetch('http://localhost:8000/adminrouter/getnotifications')
+            .then((res) => res.json())
+            .then((data) => setNotifications(data))
+            .catch((err) => console.error("Error fetching notifications:", err));
     };
 
     // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setIsOpen(false);
+            if (
+                bellRef.current && !bellRef.current.contains(event.target) &&
+                profileRef.current && !profileRef.current.contains(event.target)
+            ) {
+                setIsBellOpen(false);
+                setIsProfileOpen(false);
             }
         };
 
@@ -43,26 +64,41 @@ function AdminNav() {
         <>
             {/* Navbar */}
             <nav>
-                <form action="#">
-                    <div className="form-input">
-                        <input type="search" placeholder="Search..." />
-                        <button type="submit" className="search-btn"><i className='bx bx-search' ></i></button>
+                <div className="nav-items">
+                    <div className="notification" ref={bellRef}>
+                        <a
+                            href="#"
+                            onClick={toggleBellDropdown}
+                        >
+                            <i className='bx bxs-bell' />
+                            <span className="num">{notifications.length}</span>
+                        </a>
+                        {isBellOpen && (
+                            <div className="dropdown-menu">
+                                {notifications.length > 0 ? (
+                                    notifications.map((notification, index) => (
+                                        <div key={index} className="notification-item">
+                                            {notification.message}
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="notification-item">No notifications</div>
+                                )}
+                            </div>
+                        )}
                     </div>
-                </form>
-                <a href="#" className="notification">
-                    <i className='bx bxs-bell' />
-                    <span className="num">8</span>
-                </a>
-                <div className="profile-container" ref={dropdownRef}>
-                    <a href="#" className="profile" onClick={toggleDropdown}>
-                        {/* <img src="/assets2/img/people.png" alt="" /> */}
-                        <div className="profile-initial">{initial}</div>
-                    </a>
-                    {isOpen && (
-                        <div className="dropdown-menu">
-                            <a href="#" onClick={handleLogout}>Logout <i className='bx bx-log-out-circle' style={{color:' #b23b3b'}}></i></a>
-                        </div>
-                    )}
+                    <div className="profile-container" ref={profileRef}>
+                        <a href="#" className="profile" onClick={toggleProfileDropdown}>
+                            <div className="profile-initial">{initial}</div>
+                        </a>
+                        {isProfileOpen && (
+                            <div className="dropdown-menu">
+                                <a href="#" onClick={handleLogout}>
+                                    Logout <i className='bx bx-log-out-circle' style={{ color: '#b23b3b' }}></i>
+                                </a>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </nav>
             {/* Navbar */}

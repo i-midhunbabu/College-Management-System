@@ -95,6 +95,18 @@ const attendanceSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'AdminAddTeacher',
         required: true
+    },
+    degree: {
+        type: String, // Add degree field
+        required: true
+    },
+    department: {
+        type: String,
+        required: true
+    },
+    semester: {
+        type: String,
+        required: true
     }
 }, { timestamps: true });
 

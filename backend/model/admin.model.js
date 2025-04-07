@@ -257,6 +257,17 @@ const examSchema = mongoose.Schema({
     },
 });
 
+const adminnotification = mongoose.Schema({
+    message: {
+        type: String,
+        required: true,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+});
+
 
 const adminregmodel = mongoose.model('AdminReg', adminregScheme);
 const adminloginmodel = mongoose.model('AdminLogin', adminloginScheme);
@@ -267,4 +278,6 @@ const assignedteachermodel = mongoose.model('AssignedTeacher', assignedTeacherSc
 const semestermodel = mongoose.model('Semester', semesterSchema);
 const subjectmodel = mongoose.model('Subject', subjectSchema);
 const exammodel = mongoose.model('Exam', examSchema);
-module.exports = { adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel, semestermodel, subjectmodel, exammodel }
+const notificationModel = mongoose.model('AdminNotification', adminnotification);
+
+module.exports = { adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel, semestermodel, subjectmodel, exammodel, notificationModel }

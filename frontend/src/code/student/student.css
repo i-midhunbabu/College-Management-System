@@ -132,31 +132,34 @@
     border-radius: 50%;
 }
 
-#content nav .switch-mode {
-    display: block;
-    min-width: 50px;
-    height: 25px;
-    border-radius: 25px;
-    background: var(--grey);
-    cursor: pointer;
-    position: relative;
-}
-
-#content nav .switch-mode::before {
-    content: '';
+.notification-dropdown {
     position: absolute;
-    top: 2px;
-    left: 2px;
-    bottom: 2px;
-    width: calc(25px - 4px);
-    background: var(--blue);
-    border-radius: 50%;
-    transition: all 0.3s ease;
+    top: 50px;
+    right: 10px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 250px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
 }
 
-#content nav #switch-mode:checked+.switch-mode::before {
-    left: calc(100% - (25px - 4px) - 2px);
+.notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    color: #333;
 }
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item:hover {
+    background: #f9f9f9;
+    cursor: pointer;
+}
+
 
 /* Profile Dropdown */
 .profile-container {

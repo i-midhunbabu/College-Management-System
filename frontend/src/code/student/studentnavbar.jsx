@@ -15,8 +15,11 @@ function StudentNavBar() {
     const classSubMenuRef = useRef(null);
     const examSubMenuRef = useRef(null);
     const recordSubMenuRef = useRef(null);
+    const [notifications, setNotifications] = useState([]);
+    const [showNotifications, setShowNotifications] = useState(false);
     // const [showDropdown, setShowDropdown] = useState(false);
     const [initial, setInitial] = useState('');
+    const notificationRef = useRef(null);
 
     useEffect(() => {
         // Fetch the student's name from local storage or backend
@@ -37,10 +40,24 @@ function StudentNavBar() {
     //     }
     // }, []);
 
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            const mockNotifications = [
+                { id: 1, message: "Your exam results are available." },
+            ];
+            setNotifications(mockNotifications);
+        };
+        fetchNotifications();
+    }, []);
+
     const handleLogout = () => {
         localStorage.clear();
         window.location.href = '/'
     }
+
+    const toggleNotifications = () => {
+        setShowNotifications(!showNotifications);
+    };
 
     const toggleParentSubMenu = () => {
         setParentSubMenuOpen(!parentSubMenuOpen);
@@ -81,6 +98,9 @@ function StudentNavBar() {
             if (recordSubMenuOpen && recordSubMenuRef.current && !recordSubMenuRef.current.contains(event.target)) {
                 setRecordSubMenuOpen(false);
             }
+            if (showNotifications && notificationRef.current && !notificationRef.current.contains(event.target)) {
+                setShowNotifications(false);
+            }
 
         };
 
@@ -88,7 +108,7 @@ function StudentNavBar() {
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [isOpen, parentSubMenuOpen, classSubMenuOpen, examSubMenuOpen, recordSubMenuOpen]);
+    }, [isOpen, parentSubMenuOpen, classSubMenuOpen, examSubMenuOpen, recordSubMenuOpen, showNotifications]);
 
     return (
         <>
@@ -181,10 +201,25 @@ function StudentNavBar() {
                             )}
                         </li>
 
-                        <a href="#" className="notification">
-                            <i className='bx bxs-bell' />
-                            <span className="num">1</span>
-                        </a>
+                        <div className="notification-container" ref={notificationRef}>
+                            <a href="#" className="notification" onClick={toggleNotifications}>
+                                <i className='bx bxs-bell' />
+                                {notifications.length > 0 && <span className="num">{notifications.length}</span>}
+                            </a>
+                            {showNotifications && (
+                                <div className="notification-dropdown">
+                                    {notifications.length > 0 ? (
+                                        notifications.map((notification) => (
+                                            <div key={notification.id} className="notification-item">
+                                                {notification.message}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="notification-item">No notifications</div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
 
                         <div className="profile-container" ref={dropdownRef}>
                             <a href="#" className="profile" onClick={toggleDropdown}>

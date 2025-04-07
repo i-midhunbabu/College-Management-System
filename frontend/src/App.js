@@ -45,6 +45,7 @@ import ExaminationView from "./code/teacher/examinationview";
 import EditExam from "./code/teacher/editexam";
 import ExamMark from "./code/teacher/exammark";
 import StudentMark from "./code/teacher/studentmark";
+import MonthlyAttendance from "./code/teacher/monthlyattend";
 
 //Student Module
 import StudentLogin from "./code/student/studentlogin";
@@ -133,6 +134,7 @@ function App() {
           <Route path="/editexam/:examId" element={<EditExam/>} ></Route>
           <Route path="/exammark/:id" element={<ExamMark/>} ></Route>
           <Route path="/studentmark" element={<StudentMark/>} ></Route>
+          <Route path="/monthlyattendance" element={<MonthlyAttendance />} ></Route>
           </Routes>
     ) : auth.studentDetails?.usertype == 3 ? ( //in local storage it is structured as {message: "text", studentDetails:{usertype:3}}
           <Routes>

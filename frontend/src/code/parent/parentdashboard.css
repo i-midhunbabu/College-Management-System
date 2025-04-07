@@ -200,3 +200,12 @@ main {
     font-size: 24px;
     color: #007bff;
 }
+
+.navbar-in {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-left: auto;
+    
+}
+

@@ -153,6 +153,13 @@ function Parentdashboard() {
                             </Link>
                         </div>
 
+                        <div className="add-parent1-box">
+                            <Link to="/parentprofile" className="add-parent1-link">
+                                <i class='bx bx-user' ></i>
+                                <span>Profile</span>
+                            </Link>
+                        </div>
+
                         <div className="add-parent1-box" onClick={() => {
                             localStorage.clear();
                             window.location.href = '/'; 

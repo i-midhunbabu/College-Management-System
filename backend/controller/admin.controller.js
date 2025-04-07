@@ -1,4 +1,4 @@
-const { adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel, semestermodel, subjectmodel, exammodel } = require('../model/admin.model');
+const { adminregmodel, adminloginmodel, adminaddteachermodel, adminaddstudentmodel, departmentmodel, assignedteachermodel, semestermodel, subjectmodel, exammodel, notificationModel } = require('../model/admin.model');
 const { teacherlogmodel, teachernotificationmodel, Exam } = require('../model/teacher.model')
 const { studentlogmodel, addparentmodel } = require('../model/student.model');
 const nodemailer = require('nodemailer');
@@ -652,5 +652,30 @@ exports.reviewExamApplication = async (req, res) => {
     } catch (err) {
         console.error('Error reviewing exam application:', err);
         res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+exports.getStudentDetailsById = async (req, res) => {
+    try {
+        const { studentid } = req.params;
+        const student = await adminaddstudentmodel.findOne({ studentid });
+        if (!student) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+        res.status(200).json(student);
+    } catch (err) {
+        console.error("Error fetching student details:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.getNotifications = async (req, res) => {
+    try {
+        // Fetch notifications from the database
+        const notifications = await notificationModel.find().sort({ createdAt: -1 }); // Sort by latest first
+        res.status(200).json(notifications);
+    } catch (err) {
+        console.error("Error fetching notifications:", err);
+        res.status(500).json({ message: "Failed to fetch notifications" });
     }
 };

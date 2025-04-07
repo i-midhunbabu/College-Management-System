@@ -97,6 +97,12 @@ function TeacherSidebar() {
                                         <span className="text">Mark Attendance</span>
                                     </a>
                                 </li>
+                                <li className={location.pathname === "/monthlyattendance" ? "active" : ""}>
+                                    <a href="/monthlyattendance">
+                                        <i class='bx bxs-download'></i>
+                                        <span className="text">Monthly Attendance</span>
+                                    </a>
+                                </li>
                             </ul>
                         )}
                     </li>

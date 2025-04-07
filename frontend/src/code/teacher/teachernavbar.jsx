@@ -69,41 +69,33 @@ function TeacherNav() {
         <>
             {/* Navbar */}
             <nav>
-                {/* <i className='bx bx-menu' /> */}
-                {/* <a href="#" className="nav-link">Categories</a> */}
-                <form action="#">
-                    <div className="form-input">
-                        <input type="search" placeholder="Search..." />
-                        <button type="submit" className="search-btn"><i className='bx bx-search' ></i></button>
+                <div className="navbar-items">
+                    <div className="notification" ref={notificationRef} onClick={toggleNotificationDropdown}>
+                        <i className='bx bxs-bell' />
+                        <span className="num">{notifications.length}</span>
+                        {isNotificationOpen && (
+                            <div className="dropdown-menu">
+                                {notifications.map((notification, index) => (
+                                    <div key={index} className="notification-item">
+                                        {notification.message}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
-                </form>
-                {/* <input type="checkbox" id="switch-mode" hidden />
-                <label htmlFor="switch-mode" className="switch-mode"></label> */}
-                <div className="notification" ref={notificationRef} onClick={toggleNotificationDropdown}>
-                    <i className='bx bxs-bell' />
-                    <span className="num">{notifications.length}</span>
-                    {isNotificationOpen && (
-                        <div className="dropdown-menu">
-                            {notifications.map((notification, index) => (
-                                <div key={index} className="notification-item">
-                                    {notification.message}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-                <div className="profile-container" ref={profileRef}>
-                    <a href="#" className="profile" onClick={toggleProfileDropdown}>
-                        {/* <img src="/assets2/img/people.png" alt="" /> */}
-                        <div className="profile-initial">{initial}</div>
-                    </a>
-                    {isProfileOpen && (
-                        <div className="dropdown-menu">
-                            {/* <a href="/teacherprofile" className="profile"><i class='bx bxs-user-circle' style={{color:'#0000ff'}}></i> Profile</a> */}
-                            <a href="/teacherprofile" className="profile"><i class='bx bxs-user-circle' style={{ color: '#0000ff' }}></i> {teacherName} </a>
-                            <a href="#" onClick={handleLogout}><i className='bx bx-log-out-circle' style={{ color: ' #b23b3b' }}></i> Logout </a>
-                        </div>
-                    )}
+                    <div className="profile-container" ref={profileRef}>
+                        <a href="#" className="profile" onClick={toggleProfileDropdown}>
+                            {/* <img src="/assets2/img/people.png" alt="" /> */}
+                            <div className="profile-initial">{initial}</div>
+                        </a>
+                        {isProfileOpen && (
+                            <div className="dropdown-menu">
+                                {/* <a href="/teacherprofile" className="profile"><i class='bx bxs-user-circle' style={{color:'#0000ff'}}></i> Profile</a> */}
+                                <a href="/teacherprofile" className="profile"><i class='bx bxs-user-circle' style={{ color: '#0000ff' }}></i> {teacherName} </a>
+                                <a href="#" onClick={handleLogout}><i className='bx bx-log-out-circle' style={{ color: ' #b23b3b' }}></i> Logout </a>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </nav>
             {/* Navbar */}

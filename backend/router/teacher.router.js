@@ -15,6 +15,7 @@ router.get('/coursematerials/:id/download', teacherController.downloadCourseMate
 //attendance
 router.post('/mark', teacherController.markAttendance);
 router.get('/get', teacherController.getAttendance);
+router.get('/monthlyattendance', teacherController.getMonthlyAttendance);
 //exam
 router.post('/createexam', teacherController.createExam);
 router.post('/uploadquestionfile', teacherController.uploadQuestionFile);

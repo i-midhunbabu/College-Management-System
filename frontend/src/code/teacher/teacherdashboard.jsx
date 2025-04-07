@@ -140,6 +140,12 @@ function Teacherdashboard() {
                             </Link>
                         </div>
                         <div className="add-parent2-box">
+                            <Link to="/monthlyattendance" className="add-parent2-link">
+                                <i class='bx bxs-download'></i>
+                                <span>Monthly Attendance</span>
+                            </Link>
+                        </div>
+                        <div className="add-parent2-box">
                             <Link to="/teacherexam" className="add-parent2-link">
                                 <i class='bx bx-timer'></i>
                                 <span>Schedule Exam</span>
