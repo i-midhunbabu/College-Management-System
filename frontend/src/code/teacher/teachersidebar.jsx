@@ -97,13 +97,6 @@ function TeacherSidebar() {
                                         <span className="text">Mark Attendance</span>
                                     </a>
                                 </li>
-                                <li className={location.pathname === "/uploadcoursematerial" ? "active" : ""}>
-                                    <a href="/uploadcoursematerial">
-                                        <i class='bx bx-upload'></i>
-                                        <span className="text">Upload Course Materials</span>
-                                    </a>
-                                </li>
-
                             </ul>
                         )}
                     </li>

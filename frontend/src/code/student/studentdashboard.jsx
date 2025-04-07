@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import StudentNavBar from "./studentnavbar";
 import './student.css'
@@ -96,6 +97,33 @@ function Studentdashboard() {
                         </div>
                     </div>
 
+                    <div className="add-parent-container">
+                        <div className="add-parent-box">
+                            <Link to="/studentaddparent" className="add-parent-link">
+                                <i className="bx bxs-user-plus"></i>
+                                <span>Parent</span>
+                            </Link>
+                        </div>
+                        <div className="add-parent-box">
+                            <Link to="/viewattendance" className="add-parent-link">
+                                <i class='bx bx-search-alt-2'></i>
+                                <span>Attendance</span>
+                            </Link>
+                        </div>
+                        <div className="add-parent-box">
+                            <Link to="/examresult" className="add-parent-link">
+                                <i class='bx bx-file'></i>
+                                <span>Result</span>
+                            </Link>
+                        </div>
+                        <div className="add-parent-box">
+                            <Link to="/studentprogress" className="add-parent-link">
+                                <i class='bx bx-file'></i>
+                                <span> Progress</span>
+                            </Link>
+                        </div>
+                    </div>
+
                     <div
                         className="exam-list-container"
                         style={{
@@ -148,11 +176,6 @@ function Studentdashboard() {
                 {/* Main */}
             </section>
             {/* Content */}
-            <a href="#" className="message-icon">
-                {/* <i className='bx bxs-message-square-dots' style={{color:'#1760e2'}}  >Feedback</i> */}
-                <img src="chat1.png" alt="chat" />
-                <span className="feedback-text">Feedback</span>
-            </a>
 
         </>
     )

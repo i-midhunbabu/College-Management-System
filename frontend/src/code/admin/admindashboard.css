@@ -69,16 +69,17 @@
     display: flex;
     align-items: center;
     background: #fff;
-    padding: 20px;
+    padding: 15px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 100%;
+    width: 200px;
+    height: 190px;
 }
 
 .box-info .icon {
-    font-size: 40px;
+    font-size: 30px;
     color: #ff6b6b;
-    margin-right: 20px;
+    margin-bottom: 10px;
 }
 
 .box-info .text {
@@ -89,13 +90,13 @@
 
 .box-info .text h3 {
     margin: 0;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: bold;
 }
 
 .box-info .text p {
     margin: 0;
-    font-size: 16px;
+    font-size: 14px;
     color: #666;
 }
 

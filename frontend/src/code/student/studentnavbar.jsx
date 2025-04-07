@@ -8,11 +8,13 @@ function StudentNavBar() {
     const [parentSubMenuOpen, setParentSubMenuOpen] = useState(false);
     const [classSubMenuOpen, setClassSubMenuOpen] = useState(false);
     const [examSubMenuOpen, setExamSubMenuOpen] = useState(false);
+    const [recordSubMenuOpen, setRecordSubMenuOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
     const parentSubMenuRef = useRef(null);
     const classSubMenuRef = useRef(null);
     const examSubMenuRef = useRef(null);
+    const recordSubMenuRef = useRef(null);
     // const [showDropdown, setShowDropdown] = useState(false);
     const [initial, setInitial] = useState('');
 
@@ -52,6 +54,10 @@ function StudentNavBar() {
         setExamSubMenuOpen(!examSubMenuOpen);
     };
 
+    const toggleRecordSubMenu = () => {
+        setRecordSubMenuOpen(!recordSubMenuOpen);
+    };
+
 
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
@@ -72,7 +78,9 @@ function StudentNavBar() {
             if (examSubMenuOpen && examSubMenuRef.current && !examSubMenuRef.current.contains(event.target)) {
                 setExamSubMenuOpen(false);
             }
-
+            if (recordSubMenuOpen && recordSubMenuRef.current && !recordSubMenuRef.current.contains(event.target)) {
+                setRecordSubMenuOpen(false);
+            }
 
         };
 
@@ -80,7 +88,7 @@ function StudentNavBar() {
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [isOpen, parentSubMenuOpen, classSubMenuOpen, examSubMenuOpen]);
+    }, [isOpen, parentSubMenuOpen, classSubMenuOpen, examSubMenuOpen, recordSubMenuOpen]);
 
     return (
         <>
@@ -123,12 +131,6 @@ function StudentNavBar() {
                             </Link>
                             {classSubMenuOpen && (
                                 <ul className="sub-menu">
-                                    <li className={location.pathname === "/downloadcoursematerial" ? "active" : ""}>
-                                        <Link to="/downloadcoursematerial">
-                                            <i class='bx bxs-file-find'></i>
-                                            <span className="text"> View Course Material</span>
-                                        </Link>
-                                    </li>
                                     <li className={location.pathname === "/viewattendance" ? "active" : ""}>
                                         <Link to="/viewattendance">
                                             <i class='bx bxs-file-find'></i>
@@ -141,8 +143,8 @@ function StudentNavBar() {
 
                         <li className={location.pathname.startsWith("#") ? "active" : ""} ref={examSubMenuRef}>
                             <Link to="#" className="nav-link" onClick={toggleExamSubMenu}>
-                            <i class='bx bxs-bar-chart-square' undefined ></i> Exam
-                            {/* <i className={`bx bx-caret-${examSubMenuOpen === 'exam' ? 'up' : 'down'}`}></i> */}
+                                <i class='bx bxs-bar-chart-square' undefined ></i> Exam
+                                {/* <i className={`bx bx-caret-${examSubMenuOpen === 'exam' ? 'up' : 'down'}`}></i> */}
                             </Link>
                             {examSubMenuOpen && (
                                 <ul className="sub-menu">
@@ -162,11 +164,26 @@ function StudentNavBar() {
                             )}
                         </li>
 
-                        <a href="#" className="nav-link"><i class='bx bxs-bar-chart-square' undefined ></i> My Performance</a>
+                        <li className={location.pathname.startsWith("#") ? "active" : ""} ref={recordSubMenuRef}>
+                            <Link to="#" className="nav-link" onClick={toggleRecordSubMenu}>
+                                <i class='bx bxs-file'></i> My Records
+                                {/* <i className={`bx bx-caret-${recordSubMenuOpen === 'record' ? 'up' : 'down'}`}></i> */}
+                            </Link>
+                            {recordSubMenuOpen && (
+                                <ul className="sub-menu">
+                                    <li className={location.pathname === "/studentprogress" ? "active" : ""}>
+                                        <Link to="/studentprogress">
+                                            <i class='bx bxs-file'></i>
+                                            <span className="text"> Progress Report </span>
+                                        </Link>
+                                    </li>
+                                </ul>
+                            )}
+                        </li>
 
                         <a href="#" className="notification">
                             <i className='bx bxs-bell' />
-                            <span className="num">8</span>
+                            <span className="num">1</span>
                         </a>
 
                         <div className="profile-container" ref={dropdownRef}>

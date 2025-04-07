@@ -1,157 +1,342 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import TeacherSidebar from "./teachersidebar";
 import TeacherNav from "./teachernavbar";
+import './teacher.css';
+
 function Teacherdashboard() {
+    const [isChatboxOpen, setIsChatboxOpen] = useState(false);
+    const [students, setStudents] = useState([]);
+    const [parents, setParents] = useState([]);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [messages, setMessages] = useState([]);
+    const [newMessage, setNewMessage] = useState('');
+    const [teacherid, setTeacherId] = useState('');
+    const lastMessageRef = useRef(null); // Ref for the last message
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem('get');
+        if (storedUser) {
+            const userData = JSON.parse(storedUser);
+            if (userData.teacherDetails?._id) {
+                setTeacherId(userData.teacherDetails._id);
+            }
+        }
+    }, []);
+
+    const toggleChatbox = () => {
+        setIsChatboxOpen(!isChatboxOpen);
+        setSelectedUser(null);
+    };
+
+    useEffect(() => {
+        if (isChatboxOpen) {
+            // Fetch students
+            fetch("http://localhost:8000/adminrouter/adminstudentview")
+                .then((response) => response.json())
+                .then((data) => setStudents(data))
+                .catch((error) => console.error("Error fetching students:", error));
+
+            // Fetch parents
+            fetch("http://localhost:8000/adminrouter/admingetparent")
+                .then((response) => response.json())
+                .then((data) => setParents(data))
+                .catch((error) => console.error("Error fetching parents:", error));
+        }
+    }, [isChatboxOpen]);
+
+    const handleUserClick = (user) => {
+        setSelectedUser(user);
+        fetchMessages();
+    };
+
+    const handleBackClick = () => {
+        setSelectedUser(null);
+    };
+
     const handleLogout = () => {
         localStorage.clear();
         window.location.href = '/'
     }
 
+    const fetchMessages = async () => {
+        try {
+            const requestId = `${selectedUser.parentid}_${teacherid}`;
+            // console.log("Fetching messages for Request ID:", requestId);
+
+            const response = await fetch(`http://localhost:8000/parentrouter/getMessages/${requestId}`);
+            const data = await response.json();
+            // console.log("Fetched messages:", data);
+
+            setMessages(data);
+            scrollToLastMessage(); // Scroll to the last message after fetching
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+        }
+    };
+
+    const sendMessage = async () => {
+        try {
+            const requestId = `${selectedUser.parentid}_${teacherid}`;
+            // console.log("Request ID:", requestId);
+            // console.log("Sender ID:", teacherid);
+            // console.log("Receiver ID:", selectedUser?._id);
+            // console.log("Message:", newMessage);
+
+            const response = await fetch('http://localhost:8000/parentrouter/sendMessage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    requestId,
+                    senderId: teacherid,
+                    receiverId: selectedUser?.id,
+                    message: newMessage,
+                }),
+            });
+            // console.log("Selected User:", selectedUser);
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Error Response:", errorData);
+                alert("Failed to send message: " + errorData.error);
+                return;
+            }
+            setNewMessage('');
+            fetchMessages();
+        } catch (error) {
+            console.error('Error sending message:', error);
+        }
+    };
+
+    useEffect(() => {
+        if (isChatboxOpen && selectedUser) {
+            fetchMessages();
+        }
+    }, [isChatboxOpen, selectedUser]);
+
+    const scrollToLastMessage = () => {
+        if (lastMessageRef.current) {
+            lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    };
+
+    useEffect(() => {
+        scrollToLastMessage(); // Scroll when messages are updated
+    }, [messages]);
+
     return (
         <>
-        <TeacherSidebar/>
+            <TeacherSidebar />
             {/* Content */}
             <section id="content">
-            <TeacherNav/>
+                <TeacherNav />
                 {/* Main */}
-                <main>
-                    {/* <div className="head-title">
-                        <div className="left">
-                            <h1>Dashboard</h1>
-                            <ul className="breadcrumb">
-                                 <li>
-                                    <a href="#">Dashboard</a>
-                                 </li> 
-                                 <li><i className='bx bx-chevron-right' ></i></li> 
-                                 <li>
-                                    <a className="active" href="#">Home</a>
-                                </li> 
-                            </ul>
+                <main style={{ paddingBottom: "100px" }}>
+
+                <div className="add-parent2-container">
+                        <div className="add-parent2-box">
+                            <Link to="/markattendance" className="add-parent2-link">
+                                <i class='bx bxs-check-square'></i>
+                                <span>Mark Attendance</span>
+                            </Link>
                         </div>
-                         <a href="#" className="btn-download">
-                            <i className='bx bxs-cloud-download' />
-                            <span className="text">Download PDF</span>
-                        </a> 
-                    </div> */}
-
-                    <ul className="box-info">
-                        <li>
-                            <i className='bx bxs-calendar-check' ></i>
-                            <span className="text">
-                                <h3>1020</h3>
-                                <p>New Order</p>
-                            </span>
-                        </li>
-                        <li>
-                            <i className='bx bxs-group' ></i>
-                            <span className="text">
-                                <h3>2834</h3>
-                                <p>Visitors</p>
-                            </span>
-                        </li>
-                        <li>
-                            <i className='bx bxs-dollar-circle' ></i>
-                            <span className="text">
-                                <h3>$2543</h3>
-                                <p>Total Sales</p>
-                            </span>
-                        </li>
-                    </ul>
-
-
-                    <div className="table-data">
-                        <div className="order">
-                            <div className="head">
-                                <h3>Recent Orders</h3>
-                                <i className='bx bx-search' ></i>
-                                <i className='bx bx-filter' ></i>
-                            </div>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>User</th>
-                                        <th>Date Order</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <img src="assets2/img/people.png" alt="" />
-                                            <p>John Doe</p>
-                                        </td>
-                                        <td>01-10-2021</td>
-                                        <td><span className="status completed">Completed</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <img src="assets2/img/people.png" alt="" />
-                                            <p>John Doe</p>
-                                        </td>
-                                        <td>01-10-2021</td>
-                                        <td><span className="status pending">Pending</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <img src="assets2/img/people.png" alt="" />
-                                            <p>John Doe</p>
-                                        </td>
-                                        <td>01-10-2021</td>
-                                        <td><span className="status process">Process</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <img src="assets2/img/people.png" alt="" />
-                                            <p>John Doe</p>
-                                        </td>
-                                        <td>01-10-2021</td>
-                                        <td><span className="status pending">Pending</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <img src="assets2/img/people.png" alt="" />
-                                            <p>John Doe</p>
-                                        </td>
-                                        <td>01-10-2021</td>
-                                        <td><span className="status completed">Completed</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div className="add-parent2-box">
+                            <Link to="/teacherexam" className="add-parent2-link">
+                                <i class='bx bx-timer'></i>
+                                <span>Schedule Exam</span>
+                            </Link>
                         </div>
-                        <div className="todo">
-                            <div className="head">
-                                <h3>Todos</h3>
-                                <i className='bx bx-plus' ></i>
-                                <i className='bx bx-filter' ></i>
+                        <div className="add-parent2-box">
+                            <Link to="/examinationlist" className="add-parent2-link">
+                                <i class='bx bx-list-ul'></i>
+                                <span>Exam List</span>
+                            </Link>
+                        </div>
+                        <div className="add-parent2-box">
+                            <Link to="/studentmark" className="add-parent2-link">
+                                <i class='bx bx-search'></i>
+                                <span>View Mark</span>
+                            </Link>
+                        </div>
+                        <div className="add-parent2-box" onClick={() => {
+                            localStorage.clear();
+                            window.location.href = '/';
+                        }} style={{ cursor: 'pointer' }}>
+                            <div className="add-parent2-link">
+                            <i className='bx bx-power-off'></i>
+                            <span>Logout</span>
                             </div>
-                            <ul className="todo-list">
-                                <li className="completed">
-                                    <p>Todo List</p>
-                                    <i className='bx bx-dots-vertical-rounded' ></i>
-                                </li>
-                                <li className="completed">
-                                    <p>Todo List</p>
-                                    <i className='bx bx-dots-vertical-rounded' ></i>
-                                </li>
-                                <li className="not-completed">
-                                    <p>Todo List</p>
-                                    <i className='bx bx-dots-vertical-rounded' ></i>
-                                </li>
-                                <li className="completed">
-                                    <p>Todo List</p>
-                                    <i className='bx bx-dots-vertical-rounded' ></i>
-                                </li>
-                                <li className="not-completed">
-                                    <p>Todo List</p>
-                                    <i className='bx bx-dots-vertical-rounded' ></i>
-                                </li>
-                            </ul>
                         </div>
                     </div>
+
+                    {/* Chatbox */}
+                    {isChatboxOpen && (
+                        <div className="chatbox1">
+                            <div className="chatbox-header">
+                                {selectedUser ? (
+                                    <>
+                                        <button
+                                            className="chatbox-back"
+                                            onClick={handleBackClick}
+                                            style={{
+                                                background: "none",
+                                                border: "none",
+                                                color: "white",
+                                                fontSize: "16px",
+                                                cursor: "pointer",
+                                                marginRight: "10px",
+                                            }}
+                                        >
+                                            &lt;
+                                        </button>
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "10px",
+                                            }}
+                                        >
+                                            {/* Profile Picture */}
+                                            <div
+                                                style={{
+                                                    width: "40px",
+                                                    height: "40px",
+                                                    borderRadius: "50%",
+                                                    backgroundColor: "#FFFFFF",
+                                                    color: "#003399",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+                                                    fontSize: "16px",
+                                                    fontWeight: "bold",
+                                                }}
+                                            >
+                                                {selectedUser.name.charAt(0).toUpperCase()}
+                                            </div>
+                                            <h4 style={{ margin: 0 }}>{selectedUser.name}</h4>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <h4>Chat</h4>
+                                )}
+                                <button
+                                    className="chatbox-close"
+                                    onClick={toggleChatbox}
+                                >
+                                    ✖
+                                </button>
+                            </div>
+                            <div className="chatbox-body">
+                                {selectedUser ? (
+                                    <>
+                                        <p style={{ textAlign: "center", fontSize: "12px", color: "GrayText" }}>
+                                            Conversation with {selectedUser.name}
+                                        </p>
+                                        <div>
+                                            {messages.map((msg, index) => (
+                                                <div key={index} style={{ textAlign: msg.senderId === teacherid ? 'right' : 'left', marginBottom: '10px' }}>
+                                                    <p
+                                                        style={{
+                                                            backgroundColor: msg.senderId === teacherid ? '#d1e7dd' : '#f8d7da',
+                                                            padding: '10px',
+                                                            borderRadius: '10px',
+                                                            display: 'inline-block',
+                                                            maxWidth: '80%',
+                                                        }}
+                                                    >
+                                                        {msg.message}
+                                                    </p>
+                                                </div>
+                                            ))}
+                                            {/* Add a div with the ref at the end of the messages */}
+                                            <div ref={lastMessageRef}></div>
+
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p>Available Users:</p>
+                                        <ul style={{ listStyleType: "none", padding: 0 }}>
+                                            {[...students, ...parents]
+                                                .sort((a, b) => {
+                                                    const hasMessageA = messages.some(
+                                                        (msg) => msg.senderId === a.parentid || msg.senderId === a.id
+                                                    );
+                                                    const hasMessageB = messages.some(
+                                                        (msg) => msg.senderId === b.parentid || msg.senderId === b.id
+                                                    );
+                                                    return hasMessageB - hasMessageA; // Sort users with messages to the top
+                                                })
+                                                .map((user) => (
+                                                    <li
+                                                        key={user._id}
+                                                        style={{
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            marginBottom: "10px",
+                                                            cursor: "pointer",
+                                                        }}
+                                                        onClick={() =>
+                                                            handleUserClick({
+                                                                parentid: user.parentid,
+                                                                name: user.parentname || user.studentname,
+                                                                id: user._id,
+                                                                role: user.role || (user.parentname ? "Parent" : "Student"),
+                                                            })
+                                                        }
+                                                    >
+                                                        <div
+                                                            style={{
+                                                                width: "40px",
+                                                                height: "40px",
+                                                                borderRadius: "50%",
+                                                                backgroundColor: "#003399",
+                                                                color: "white",
+                                                                display: "flex",
+                                                                alignItems: "center",
+                                                                justifyContent: "center",
+                                                                marginRight: "10px",
+                                                                fontSize: "16px",
+                                                                fontWeight: "bold",
+                                                            }}
+                                                        >
+                                                            {(user.parentname || user.studentname).charAt(0).toUpperCase()}
+                                                        </div>
+                                                        <div>
+                                                            <strong>{user.parentname || user.studentname}</strong>{" "}
+                                                            <span style={{ color: "#888", fontSize: "12px" }}>
+                                                                ({user.role || (user.parentname ? "Parent" : "Student")})
+                                                            </span>
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                        </ul>
+                                    </>
+                                )}
+                            </div>
+                            {selectedUser && (
+                                <div className="chatbox-footer">
+                                    <input
+                                        type="text"
+                                        value={newMessage}
+                                        onChange={(e) => setNewMessage(e.target.value)}
+                                        placeholder={`Message ${selectedUser?.name || ''}...`}
+                                    />
+                                    <button onClick={sendMessage}>
+                                        <i class='bx bxs-send' />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </main>
                 {/* Main */}
             </section>
             {/* Content */}
+
+            <a a href="#" className="message-icon" onClick={toggleChatbox} >
+                < img src="chat1.png" alt="chat" style={{ width: '40px', height: '40px' }} />
+            </a>
+
 
         </>
     )

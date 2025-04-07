@@ -154,7 +154,7 @@
     transition: all 0.3s ease;
 }
 
-#content nav #switch-mode:checked + .switch-mode::before {
+#content nav #switch-mode:checked+.switch-mode::before {
     left: calc(100% - (25px - 4px) - 2px);
 }
 
@@ -270,33 +270,37 @@
     }
 }
 
-.message-icon {
-    position: fixed;
-    bottom: 20px;
-    right: 20px; /* Changed from left to right */
-    background-color: #003399;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 25%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    font-size: 24px;
-    z-index: 1000;
+.add-parent-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+
+.add-parent-box {
+    /* margin: 20px; */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
     text-align: center;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    width: 160px;
+    /* height: 100px; */
+}
+
+.add-parent-link {
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
     display: flex;
     align-items: center;
-    /* background: none; */
-    /* border-radius: 0; */
-    /* box-shadow: none; */
+    justify-content: center;
+    gap: 8px;
 }
 
-.message-icon img {
-    width: 40px;
-    height: 40px;
-}
-
-.feedback-text {
-    margin-left: 10px;
-    font-size: 16px;
-    color: white;
+.add-parent-link i {
+    font-size: 24px;
+    color: #007bff;
 }

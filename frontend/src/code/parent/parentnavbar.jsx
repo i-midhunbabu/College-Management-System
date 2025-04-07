@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import './parentdashboard.css'
 function ParentNav() {
@@ -7,15 +7,16 @@ function ParentNav() {
     const dropdownRef = useRef(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const [initial, setInitial] = useState('');
+    const [notifications, setNotifications] = useState([]);
 
-        useEffect(() => {
-            // Fetch the parent's name from local storage or backend
-            const parentDetails = JSON.parse(localStorage.getItem('get'));
-            const name = parentDetails?.parentDetails?.parentname || 'Parent';
-            setParentName(name);
-            setInitial(name.charAt(0).toUpperCase());
-        }, [])
-    
+    useEffect(() => {
+        // Fetch the parent's name from local storage or backend
+        const parentDetails = JSON.parse(localStorage.getItem('get'));
+        const name = parentDetails?.parentDetails?.parentname || 'Parent';
+        setParentName(name);
+        setInitial(name.charAt(0).toUpperCase());
+    }, [])
+
 
 
     const handleLogout = () => {
@@ -42,36 +43,83 @@ function ParentNav() {
         };
     }, []);
 
-            useEffect(() => {
-                // Fetch parent details from localStorage
-                const storedData = localStorage.getItem("get");
-                if (storedData) {
-                    const parentData = JSON.parse(storedData);
-                    if (parentData.parentDetails && parentData.parentDetails.parentname) {
-                        setParentName(parentData.parentDetails.parentname);
-                    }
+    useEffect(() => {
+        // Fetch parent details from localStorage
+        const storedData = localStorage.getItem("get");
+        if (storedData) {
+            const parentData = JSON.parse(storedData);
+            if (parentData.parentDetails && parentData.parentDetails.parentname) {
+                setParentName(parentData.parentDetails.parentname);
+            }
+        }
+    }, []);
+
+    const fetchNotifications = async () => {
+        try {
+            const storedData = localStorage.getItem("get");
+            if (storedData) {
+                const parentData = JSON.parse(storedData);
+                const parentId = parentData.parentDetails?.parentid;
+
+                if (parentId) {
+                    const response = await fetch(`http://localhost:8000/parentrouter/getNotifications/${parentId}`);
+                    const data = await response.json();
+                    setNotifications(data);
                 }
-            }, []);
-    
+            }
+        } catch (error) {
+            console.error("Error fetching notifications:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchNotifications();
+
+        const interval = setInterval(() => {
+            fetchNotifications();
+        }, 30000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const markNotificationsAsRead = async () => {
+        try {
+            const storedData = localStorage.getItem("get");
+            if (storedData) {
+                const parentData = JSON.parse(storedData);
+                const parentId = parentData.parentDetails?.parentid;
+
+                if (parentId) {
+                    await fetch(`http://localhost:8000/parentrouter/markNotificationsAsRead/${parentId}`, {
+                        method: "POST",
+                    });
+                    setNotifications([]);
+                }
+            }
+        } catch (error) {
+            console.error("Error marking notifications as read:", error);
+        }
+    };
+
 
     return (
         <>
             {/* Navbar */}
             <nav>
-                {/* <i className='bx bx-menu' /> */}
-                {/* <a href="#" className="nav-link">Categories</a> */}
                 <form action="#">
                     <div className="form-input">
                         <input type="search" placeholder="Search..." />
                         <button type="submit" className="search-btn"><i className='bx bx-search' ></i></button>
                     </div>
-                </form> 
-                {/* <input type="checkbox" id="switch-mode" hidden />
-                <label htmlFor="switch-mode" className="switch-mode"></label> */}
-                <a href="#" className="notification">
-                    <i className='bx bxs-bell' />
-                    <span className="num">8</span>
-                </a>
+                </form>
+
+                <div className="notification-bell" onClick={markNotificationsAsRead}>
+                    <i className="bx bxs-bell"></i>
+                    {notifications.length > 0 && (
+                        <span className="notification-badge">{notifications.length}</span>
+                    )}
+                </div>
+
                 <div className="profile-container" ref={dropdownRef}>
                     <a href="#" className="profile" onClick={toggleDropdown}>
                         {/* <img src="/assets2/img/people.png" alt="" /> */}
@@ -79,7 +127,7 @@ function ParentNav() {
                     </a>
                     {isOpen && (
                         <div className="dropdown-menu">
-                            <Link to="/parentprofile" className="profile"><i class='bx bxs-user-circle' style={{color:'#0000ff'}}></i> { parentName } </Link>
+                            <Link to="/parentprofile" className="profile"><i class='bx bxs-user-circle' style={{ color: '#0000ff' }}></i> {parentName} </Link>
                             <a href="#" onClick={handleLogout}>Logout <i className='bx bx-log-out-circle' style={{ color: ' #b23b3b' }}></i></a>
                         </div>
                     )}

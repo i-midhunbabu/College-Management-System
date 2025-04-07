@@ -1,5 +1,6 @@
-const { parentlogmodel } = require('../model/parent.model');
+const { parentlogmodel, Chat } = require('../model/parent.model');
 const { addparentmodel } = require('../model/student.model');
+const { teachernotificationmodel1 } = require('../model/teacher.model');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 
@@ -154,3 +155,64 @@ exports.parentUserProfile = async (req, res) => {
     }
 };
 
+exports.sendMessage = async (req, res) => {
+    try {
+        const { requestId, senderId, receiverId, message } = req.body;
+
+        // console.log("Received Payload:", req.body);
+
+        if (!requestId || !senderId || !receiverId || !message) {
+            return res.status(400).json({ error: 'All fields are required' });
+        }
+
+        const newMessage = new Chat({
+            requestId,
+            senderId,
+            receiverId,
+            message,
+        });
+
+        await newMessage.save();
+
+        // Create a notification for the receiver
+        const notification = new teachernotificationmodel1({
+            teacherid: receiverId,
+            message: `You have a new message from ${senderId}`,
+        });
+
+        await notification.save();
+
+        res.status(200).json({ message: 'Message sent successfully' });
+    } catch (err) {
+        console.error('Error sending message:', err);
+        res.status(500).json({ error: 'Failed to send message' });
+    }
+};
+
+exports.getMessages = async (req, res) => {
+    try {
+        const { requestId } = req.params;
+        // console.log("Fetching messages for Request ID:", requestId);
+
+        const messages = await Chat.find({ requestId }).sort({ createdAt: 1 });
+        // console.log("Fetched messages:", messages);
+        res.status(200).json(messages);
+    } catch (err) {
+        console.error('Error fetching messages:', err);
+        res.status(500).json({ error: 'Failed to fetch messages' });
+    }
+};
+
+exports.getNotifications = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        // Fetch notifications for the user
+        const notifications = await teachernotificationmodel1.find({ teacherid: userId }).sort({ createdAt: -1 });
+
+        res.status(200).json(notifications);
+    } catch (err) {
+        console.error('Error fetching notifications:', err);
+        res.status(500).json({ error: 'Failed to fetch notifications' });
+    }
+};

@@ -3,7 +3,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* Full screen height */
+    height: 100vh;
+    /* Full screen height */
     background-color: #f4f4f4;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
@@ -11,7 +12,7 @@
 /* Profile box design */
 .profile-container2 .profile-box {
     background: #C5CDE0;
-	/* background: rgb(230, 239, 173); */
+    /* background: rgb(230, 239, 173); */
     padding: 30px;
     border-radius: 25px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
@@ -45,10 +46,14 @@
 } */
 
 nav {
-    z-index: 1000; /* Ensure the navbar is above other elements */
-    position: relative; /* Ensure it is positioned correctly */
-    width: 100%; /* Ensure it takes the full width */
-    background-color: #fff; /* Add a background color if needed */
+    z-index: 1000;
+    /* Ensure the navbar is above other elements */
+    position: relative;
+    /* Ensure it is positioned correctly */
+    width: 100%;
+    /* Ensure it takes the full width */
+    background-color: #fff;
+    /* Add a background color if needed */
 }
 
 .notification .dropdown-menu {
@@ -58,14 +63,16 @@ nav {
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     position: absolute;
-    top: 40px; /* Adjust based on your layout */
+    top: 40px;
+    /* Adjust based on your layout */
     right: 0;
     z-index: 1000;
     padding: 10px;
     width: auto;
     font-weight: bolder;
     min-width: 350px;
-    max-width: 900px;;
+    max-width: 900px;
+    ;
 
 }
 
@@ -91,4 +98,120 @@ nav {
     font-weight: bold;
 }
 
+/* Chat Icon */
+.message-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: transparent;
+    cursor: pointer;
+    z-index: 1000;
+}
 
+/* Chatbox */
+.chatbox1 {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 300px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    max-height: 290px;
+}
+
+.chatbox1 .chatbox-header {
+    background-color: #003399;
+    color: white;
+    padding: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chatbox1 .chatbox-header h4 {
+    margin: 0;
+}
+
+.chatbox1 .chatbox-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.chatbox1 .chatbox-body {
+    padding: 10px;
+    flex: 1;
+    overflow-y: auto;
+    max-height: 400px;
+}
+
+.chatbox1 .chatbox-footer {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    background-color: #f9f9f9;
+}
+
+.chatbox1 .chatbox-footer input {
+    flex: 1;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 5px;
+}
+
+.chatbox1 .chatbox-footer button {
+    background-color: #003399;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.add-parent2-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+
+.add-parent2-box {
+    /* margin: 20px; */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    text-align: center;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    width: 200px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+
+}
+
+.add-parent2-link {
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.add-parent2-link i {
+    font-size: 24px;
+    color: #007bff;
+}

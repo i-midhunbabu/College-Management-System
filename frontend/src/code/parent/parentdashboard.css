@@ -71,6 +71,7 @@
     font-size: 20px;
     font-weight: bold;
 }
+
 /* Chatbox */
 .chatbox {
     position: fixed;
@@ -84,6 +85,7 @@
     z-index: 1000;
     display: flex;
     flex-direction: column;
+    max-height: 290px;
 }
 
 .chatbox-header {
@@ -109,16 +111,18 @@
     cursor: pointer;
 }
 
-.chatbox-body {
+.chatbox .chatbox-body {
     padding: 10px;
     flex: 1;
     overflow-y: auto;
+    max-height: 400px;
 }
 
-.chatbox-footer {
+.chatbox .chatbox-footer {
     display: flex;
     padding: 10px;
     border-top: 1px solid #ccc;
+    background-color: #f9f9f9;
 }
 
 .chatbox-footer input {
@@ -141,4 +145,58 @@
 main {
     padding-bottom: 100px;
     overflow-x: hidden;
+}
+
+.notification-bell {
+    position: relative;
+    cursor: pointer;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 5px 8px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.add-parent1-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+
+.add-parent1-box {
+    /* margin: 20px; */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    text-align: center;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+}
+
+.add-parent1-link {
+    text-decoration: none;
+    color: #333;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.add-parent1-link i {
+    font-size: 24px;
+    color: #007bff;
 }

@@ -226,11 +226,27 @@ const markSchema = new mongoose.Schema({
     }
 });
 
+const teachernotSchema = mongoose.Schema({
+    teacherid: {
+        type: String,
+        required: true,
+    },
+    message: {
+        type: String,
+        required: true,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+});
+
 const teacherlogmodel = mongoose.model('Teacherlogin', teacherloginSchema);
 const teachernotificationmodel = mongoose.model('TeacherNotification', teachernotificationSchema);
 const CourseMaterial = mongoose.model('CourseMaterial', courseMaterialSchema);
 const Attendance = mongoose.model('Attendance', attendanceSchema);
 const Exam = mongoose.model('Examination', examSchema);
 const Mark = mongoose.model('Mark', markSchema);
+const teachernotificationmodel1 = mongoose.model('TeacherNotification1', teachernotSchema);
 
-module.exports = { teacherlogmodel, teachernotificationmodel, CourseMaterial, Attendance, Exam, Mark };
+module.exports = { teacherlogmodel, teachernotificationmodel, CourseMaterial, Attendance, Exam, Mark, teachernotificationmodel1 };

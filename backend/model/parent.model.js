@@ -29,5 +29,29 @@ const parentloginSchema = mongoose.Schema({
     }
 })
 
+const chatSchema = mongoose.Schema({
+    requestId: {
+        type: String,
+        required: true,
+    },
+    senderId: {
+        type: String,
+        required: true,
+    },
+    receiverId: {
+        type: String,
+        required: true,
+    },
+    message: {
+        type: String,
+        required: true,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+});
+
 const parentlogmodel = mongoose.model('Parentlogin', parentloginSchema);
-module.exports= {parentlogmodel};
+const Chat = mongoose.model('Chat', chatSchema);
+module.exports= {parentlogmodel, Chat};

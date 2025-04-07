@@ -73,19 +73,7 @@ function ParentSidebar() {
                         {openSubMenu === 'student' && (
                             <ul className="sub-menu">
                                 <li className={location.pathname === "#" ? "active" : ""}>
-                                    <a href="#">
-                                        <i className='bx bxs-user-detail' />
-                                        <span className="text">View Mark</span>
-                                    </a>
-                                </li>
-                                <li className={location.pathname === "#" ? "active" : ""}>
-                                    <a href="#">
-                                        <i className='bx bxs-user-detail' />
-                                        <span className="text">Attendance Record</span>
-                                    </a>
-                                </li>
-                                <li className={location.pathname === "#" ? "active" : ""}>
-                                    <a href="#">
+                                    <a href="/studentprogresscard">
                                         <i className='bx bxs-user-detail' />
                                         <span className="text">Progress Card</span>
                                     </a>
@@ -94,7 +82,7 @@ function ParentSidebar() {
                         )}
                     </li>
 
-                    <li className={location.pathname.startsWith("#") ? "active" : ""}>
+                    {/* <li className={location.pathname.startsWith("#") ? "active" : ""}>
                         <a href="#" onClick={() => toggleSubMenu('teacher')}>
                             <i className='bx bxs-chalkboard'></i>
                             <span className="text">Teacher</span>
@@ -110,7 +98,7 @@ function ParentSidebar() {
                                 </li>
                             </ul>
                         )}
-                    </li>
+                    </li> */}
                 </ul>
                 <ul className="side-menu">
                     <li>

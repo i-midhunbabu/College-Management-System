@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const { studentlogmodel, addparentmodel, Submission } = require('../model/student.model');
 const { adminaddstudentmodel } = require('../model/admin.model');
 const { parentlogmodel } = require('../model/parent.model');
@@ -328,15 +329,18 @@ exports.getStudentExamResults = async (req, res) => {
     try {
         const { studentId } = req.query;
 
-        if (!studentId) {
+        if (!studentId || !mongoose.Types.ObjectId.isValid(studentId)) {
             return res.status(400).json({ message: "Student ID is required" });
         }
+
+         // Convert studentId to ObjectId
+         const studentObjectId = new mongoose.Types.ObjectId(studentId);
 
         // Fetch all exams for the student
         const exams = await Exam.find();
 
         // Fetch marks for the student
-        const marks = await Mark.find({ studentId });
+        const marks = await Mark.find({ studentId: studentObjectId });
 
         // Merge exams with marks
         const examResults = exams.map((exam) => {
