@@ -38,6 +38,5 @@ router.get('/getstudentsbyclass', adminController.getStudentsByClass);
 router.get('/pendingExamApplications', adminController.getPendingExamApplications);
 router.put('/reviewExamApplication/:examId', adminController.reviewExamApplication);
 router.get('/getstudentdetails/:studentid', adminController.getStudentDetailsById);
-router.get('/getnotifications', adminController.getNotifications);
 
 module.exports = router;

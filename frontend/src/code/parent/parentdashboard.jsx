@@ -11,7 +11,6 @@ function Parentdashboard() {
     const [newMessage, setNewMessage] = useState('');
     const [parentid, setParentId] = useState('');
     const lastMessageRef = useRef(null); // Ref for the last message
-    const [notifications, setNotifications] = useState([]);
 
     useEffect(() => {
         const storedUser = localStorage.getItem('get');
@@ -22,33 +21,6 @@ function Parentdashboard() {
             }
         }
     }, []);
-
-    const fetchNotifications = async () => {
-        try {
-            const response = await fetch(`http://localhost:8000/parentrouter/getNotifications/${parentid}`);
-            const data = await response.json();
-            setNotifications(data);
-        } catch (error) {
-            console.error('Error fetching notifications:', error);
-        }
-    };
-
-    useEffect(() => {
-        if (isChatboxOpen) {
-            fetchNotifications();
-        }
-    }, [isChatboxOpen]);
-
-    const markNotificationsAsRead = async () => {
-        try {
-            await fetch(`http://localhost:8000/parentrouter/markNotificationsAsRead/${parentid}`, {
-                method: 'POST',
-            });
-            setNotifications([]); // Clear notifications after marking as read
-        } catch (error) {
-            console.error('Error marking notifications as read:', error);
-        }
-    };
 
     const toggleChatbox = () => {
         setIsChatboxOpen(!isChatboxOpen);
@@ -145,7 +117,7 @@ function Parentdashboard() {
                 <ParentNav />
                 {/* Main */}
                 <main style={{ paddingBottom: "100px" }}>
-                <div className="add-parent1-container">
+                    <div className="add-parent1-container">
                         <div className="add-parent1-box">
                             <Link to="/studentprogresscard" className="add-parent1-link">
                                 <i class='bx bx-file'></i>
@@ -162,14 +134,14 @@ function Parentdashboard() {
 
                         <div className="add-parent1-box" onClick={() => {
                             localStorage.clear();
-                            window.location.href = '/'; 
+                            window.location.href = '/';
                         }} style={{ cursor: 'pointer' }}>
                             <div className="add-parent1-link">
-                            <i className='bx bx-power-off'></i>
-                            <span>Logout</span>
+                                <i className='bx bx-power-off'></i>
+                                <span>Logout</span>
                             </div>
                         </div>
-                </div>
+                    </div>
 
                     {/* Chatbox */}
                     {isChatboxOpen && (
@@ -303,7 +275,10 @@ function Parentdashboard() {
                                                         {teacher.teachername.charAt(0).toUpperCase()}
                                                     </div>
                                                     <div>
-                                                        <strong>{teacher.teachername}</strong>
+                                                        <strong>{teacher.teachername}</strong>{" "}
+                                                        <span style={{ color: "#888", fontSize: "10px" }}>
+                                                            ({(teacher.designation)})
+                                                        </span>
                                                     </div>
                                                 </li>
                                             ))}

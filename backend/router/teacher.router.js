@@ -8,10 +8,7 @@ router.post('/teacherforgotpassword', teacherController.teacherforgotpass);
 router.post('/teacherresetpassword', teacherController.teacherresetPass);
 router.get('/teacherprofile/:id', teacherController.teacherUserProfile);
 router.get('/teachernotifications/:teacherid', teacherController.getTeacherNotifications);
-//course materials
-router.post('/uploadcoursematerial', teacherController.uploadCourseMaterial);
-router.get('/coursematerials', teacherController.getCourseMaterials);
-router.get('/coursematerials/:id/download', teacherController.downloadCourseMaterial);
+router.put('/marknotificationsasread/:teacherid', teacherController.markNotificationsAsRead);
 //attendance
 router.post('/mark', teacherController.markAttendance);
 router.get('/get', teacherController.getAttendance);
@@ -32,6 +29,8 @@ router.get('/getmarks/:examId', teacherController.getMarks);
 router.get('/download/:fileName', teacherController.downloadAnswerSheet);
 router.get('/getStudentExamMarks', teacherController.getStudentExamMarks);
 router.post('/submitExamApplication', teacherController.submitExamApplication);
+
+router.get('/assignedclasses/:teacherid', teacherController.getAssignedClasses);
 
 
 module.exports = router;

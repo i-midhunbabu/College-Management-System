@@ -669,13 +669,3 @@ exports.getStudentDetailsById = async (req, res) => {
     }
 };
 
-exports.getNotifications = async (req, res) => {
-    try {
-        // Fetch notifications from the database
-        const notifications = await notificationModel.find().sort({ createdAt: -1 }); // Sort by latest first
-        res.status(200).json(notifications);
-    } catch (err) {
-        console.error("Error fetching notifications:", err);
-        res.status(500).json({ message: "Failed to fetch notifications" });
-    }
-};

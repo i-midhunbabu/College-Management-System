@@ -38,42 +38,14 @@ const teachernotificationSchema = mongoose.Schema({
         type: String,
         required: true,
     },
+    read: {
+        type: Boolean,
+        default: false,
+    },
     createdAt: {
         type: Date,
         default: Date.now,
     },
-});
-
-const courseMaterialSchema = mongoose.Schema({
-    teacherId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'TeacherLogin',
-        required: true
-    },
-    degree: {
-        type: String,
-        required: true
-    },
-    department: {
-        type: String,
-        required: true
-    },
-    semester: {
-        type: String,
-        required: true
-    },
-    title: {
-        type: String,
-        required: true
-    },
-    fileUrl: {
-        type: String,
-        required: true
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
 });
 
 const attendanceSchema = new mongoose.Schema({
@@ -191,15 +163,18 @@ const examSchema = new mongoose.Schema({
     teacherId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'AdminAddTeacher',
-        required: function () {
-            return this.examType === 'semester';
-        }
+        required: true,
+        // required: function () {
+        //     return this.examType === 'semester';
+        // }
     },
     teachername: {
         type: String,
-        required: function () {
-            return this.examType === 'semester';
-        }
+        required: true
+
+        // required: function () {
+        //     return this.examType === 'semester';
+        // }
     }
 
 }, { timestamps: true });
@@ -238,27 +213,10 @@ const markSchema = new mongoose.Schema({
     }
 });
 
-const teachernotSchema = mongoose.Schema({
-    teacherid: {
-        type: String,
-        required: true,
-    },
-    message: {
-        type: String,
-        required: true,
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
-
 const teacherlogmodel = mongoose.model('Teacherlogin', teacherloginSchema);
 const teachernotificationmodel = mongoose.model('TeacherNotification', teachernotificationSchema);
-const CourseMaterial = mongoose.model('CourseMaterial', courseMaterialSchema);
 const Attendance = mongoose.model('Attendance', attendanceSchema);
 const Exam = mongoose.model('Examination', examSchema);
 const Mark = mongoose.model('Mark', markSchema);
-const teachernotificationmodel1 = mongoose.model('TeacherNotification1', teachernotSchema);
 
-module.exports = { teacherlogmodel, teachernotificationmodel, CourseMaterial, Attendance, Exam, Mark, teachernotificationmodel1 };
+module.exports = { teacherlogmodel, teachernotificationmodel, Attendance, Exam, Mark };

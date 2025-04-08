@@ -6,12 +6,13 @@ import './teacher.css';
 
 function Teacherdashboard() {
     const [isChatboxOpen, setIsChatboxOpen] = useState(false);
-    const [students, setStudents] = useState([]);
     const [parents, setParents] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [teacherid, setTeacherId] = useState('');
+    const [assignedClasses, setAssignedClasses] = useState([]);
+    const [teacherName, setTeacherName] = useState("");
     const lastMessageRef = useRef(null); // Ref for the last message
 
     useEffect(() => {
@@ -24,6 +25,26 @@ function Teacherdashboard() {
         }
     }, []);
 
+    useEffect(() => {
+        // Fetch teacher details from local storage
+        const teacherDetails = JSON.parse(localStorage.getItem("get"));
+        const teacherId = teacherDetails?.teacherDetails?.teacherid;
+        const name = teacherDetails?.teacherDetails?.teachername || "Teacher";
+        setTeacherName(name);
+
+        // Fetch assigned classes for the teacher
+        fetch(`http://localhost:8000/teacherrouter/assignedclasses/${teacherId}`)
+            .then((res) => res.json())
+            .then((result) => {
+                if (result.message) {
+                    setAssignedClasses([]); // No assigned classes
+                } else {
+                    setAssignedClasses(result);
+                }
+            })
+            .catch((err) => console.error("Error fetching assigned classes:", err));
+    }, []);
+
     const toggleChatbox = () => {
         setIsChatboxOpen(!isChatboxOpen);
         setSelectedUser(null);
@@ -31,12 +52,6 @@ function Teacherdashboard() {
 
     useEffect(() => {
         if (isChatboxOpen) {
-            // Fetch students
-            fetch("http://localhost:8000/adminrouter/adminstudentview")
-                .then((response) => response.json())
-                .then((data) => setStudents(data))
-                .catch((error) => console.error("Error fetching students:", error));
-
             // Fetch parents
             fetch("http://localhost:8000/adminrouter/admingetparent")
                 .then((response) => response.json())
@@ -132,7 +147,7 @@ function Teacherdashboard() {
                 {/* Main */}
                 <main style={{ paddingBottom: "100px" }}>
 
-                <div className="add-parent2-container">
+                    <div className="add-parent2-container">
                         <div className="add-parent2-box">
                             <Link to="/markattendance" className="add-parent2-link">
                                 <i class='bx bxs-check-square'></i>
@@ -168,9 +183,29 @@ function Teacherdashboard() {
                             window.location.href = '/';
                         }} style={{ cursor: 'pointer' }}>
                             <div className="add-parent2-link">
-                            <i className='bx bx-power-off'></i>
-                            <span>Logout</span>
+                                <i className='bx bx-power-off'></i>
+                                <span>Logout</span>
                             </div>
+                        </div>
+                    </div>
+
+                    <div className="dashboard-container">
+                        <h2>Hello, <strong>{teacherName}</strong></h2>
+                        <div className="assigned-classes-note">
+                            <h3>Assigned Classes</h3>
+                            {assignedClasses.length > 0 ? (
+                                <ul>
+                                    {assignedClasses.map((assignedClass, index) => (
+                                        <li key={index}>
+                                            <strong>Class:</strong> {assignedClass.assignedclass.join(", ")} <br />
+                                            <strong>Subject:</strong> {assignedClass.subject.join(", ")} <br />
+                                            <strong>Department:</strong> {assignedClass.department.join(", ")}
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p>No classes assigned yet.</p>
+                            )}
                         </div>
                     </div>
 
@@ -255,66 +290,55 @@ function Teacherdashboard() {
                                             ))}
                                             {/* Add a div with the ref at the end of the messages */}
                                             <div ref={lastMessageRef}></div>
-
                                         </div>
                                     </>
                                 ) : (
                                     <>
                                         <p>Available Users:</p>
                                         <ul style={{ listStyleType: "none", padding: 0 }}>
-                                            {[...students, ...parents]
-                                                .sort((a, b) => {
-                                                    const hasMessageA = messages.some(
-                                                        (msg) => msg.senderId === a.parentid || msg.senderId === a.id
-                                                    );
-                                                    const hasMessageB = messages.some(
-                                                        (msg) => msg.senderId === b.parentid || msg.senderId === b.id
-                                                    );
-                                                    return hasMessageB - hasMessageA; // Sort users with messages to the top
-                                                })
-                                                .map((user) => (
-                                                    <li
-                                                        key={user._id}
+                                            {parents.map((user) => (
+                                                <li
+                                                    key={user._id}
+                                                    style={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        marginBottom: "10px",
+                                                        cursor: "pointer",
+                                                    }}
+                                                    onClick={() =>
+                                                        handleUserClick({
+                                                            parentid: user.parentid,
+                                                            name: user.parentname,
+                                                            id: user._id,
+                                                            role: "Parent",
+                                                        })
+                                                    }
+                                                >
+                                                    <div
                                                         style={{
+                                                            width: "40px",
+                                                            height: "40px",
+                                                            borderRadius: "50%",
+                                                            backgroundColor: "#003399",
+                                                            color: "white",
                                                             display: "flex",
                                                             alignItems: "center",
-                                                            marginBottom: "10px",
-                                                            cursor: "pointer",
+                                                            justifyContent: "center",
+                                                            marginRight: "10px",
+                                                            fontSize: "16px",
+                                                            fontWeight: "bold",
                                                         }}
-                                                        onClick={() =>
-                                                            handleUserClick({
-                                                                parentid: user.parentid,
-                                                                name: user.parentname || user.studentname,
-                                                                id: user._id,
-                                                                role: user.role || (user.parentname ? "Parent" : "Student"),
-                                                            })
-                                                        }
                                                     >
-                                                        <div
-                                                            style={{
-                                                                width: "40px",
-                                                                height: "40px",
-                                                                borderRadius: "50%",
-                                                                backgroundColor: "#003399",
-                                                                color: "white",
-                                                                display: "flex",
-                                                                alignItems: "center",
-                                                                justifyContent: "center",
-                                                                marginRight: "10px",
-                                                                fontSize: "16px",
-                                                                fontWeight: "bold",
-                                                            }}
-                                                        >
-                                                            {(user.parentname || user.studentname).charAt(0).toUpperCase()}
-                                                        </div>
-                                                        <div>
-                                                            <strong>{user.parentname || user.studentname}</strong>{" "}
-                                                            <span style={{ color: "#888", fontSize: "12px" }}>
-                                                                ({user.role || (user.parentname ? "Parent" : "Student")})
-                                                            </span>
-                                                        </div>
-                                                    </li>
-                                                ))}
+                                                        {user.parentname.charAt(0).toUpperCase()}
+                                                    </div>
+                                                    <div>
+                                                        <strong>{user.parentname}</strong>{" "}
+                                                        <span style={{ color: "#888", fontSize: "12px" }}>
+                                                            (Parent)
+                                                        </span>
+                                                    </div>
+                                                </li>
+                                            ))}
                                         </ul>
                                     </>
                                 )}
@@ -342,8 +366,6 @@ function Teacherdashboard() {
             <a a href="#" className="message-icon" onClick={toggleChatbox} >
                 < img src="chat1.png" alt="chat" style={{ width: '40px', height: '40px' }} />
             </a>
-
-
         </>
     )
 }

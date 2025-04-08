@@ -1,5 +1,5 @@
-const { teacherlogmodel, teachernotificationmodel, CourseMaterial, Attendance, Exam, Mark } = require('../model/teacher.model');
-const { adminaddteachermodel, adminaddstudentmodel, departmentmodel, semestermodel, subjectmodel } = require('../model/admin.model');
+const { teacherlogmodel, teachernotificationmodel, Attendance, Exam, Mark } = require('../model/teacher.model');
+const { adminaddteachermodel, adminaddstudentmodel, departmentmodel, semestermodel, subjectmodel, assignedteachermodel } = require('../model/admin.model');
 const { Submission } = require('../model/student.model');
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Types.ObjectId;
@@ -150,7 +150,7 @@ exports.teacherUserProfile = async (req, res) => {
 exports.getTeacherNotifications = async (req, res) => {
     try {
         const { teacherid } = req.params;
-        const notifications = await teachernotificationmodel.find({ teacherid });
+        const notifications = await teachernotificationmodel.find({ teacherid, read: false }); // Only fetch unread notifications
         res.json(notifications);
     } catch (err) {
         console.error("Error fetching notifications:", err);
@@ -158,69 +158,13 @@ exports.getTeacherNotifications = async (req, res) => {
     }
 };
 
-exports.uploadCourseMaterial = async (req, res) => {
+exports.markNotificationsAsRead = async (req, res) => {
     try {
-        const { degree, department, semester, title } = req.body;
-        const file = req.files.file;
-
-        if (!file) {
-            return res.status(400).json({ message: "No file uploaded" });
-        }
-
-        const uploadDir = path.join(__dirname, '..', 'public', 'uploads');
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-
-        const uploadPath = path.join(uploadDir, file.name);
-        file.mv(uploadPath, async (err) => {
-            if (err) {
-                console.error("Error moving file:", err);
-                return res.status(500).json({ message: "Internal server error" });
-            }
-
-            const courseMaterial = new CourseMaterial({
-                teacherId: req.user._id,
-                degree,
-                department,
-                semester,
-                title,
-                fileUrl: uploadPath
-            });
-
-            await courseMaterial.save();
-            res.status(201).json({ message: "Course material uploaded successfully" });
-        });
+        const { teacherid } = req.params;
+        await teachernotificationmodel.updateMany({ teacherid, read: false }, { $set: { read: true } });
+        res.status(200).json({ message: "Notifications marked as read" });
     } catch (err) {
-        console.error("Error uploading course material:", err);
-        res.status(500).json({ message: "Internal server error" });
-    }
-};
-
-exports.getCourseMaterials = async (req, res) => {
-    try {
-        const { degree, department, semester } = req.query;
-        const courseMaterials = await CourseMaterial.find({ degree, department, semester });
-        res.json(courseMaterials);
-    } catch (err) {
-        console.error("Error fetching course materials:", err);
-        res.status(500).json({ message: "Internal server error" });
-    }
-};
-
-exports.downloadCourseMaterial = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const courseMaterial = await CourseMaterial.findById(id);
-
-        if (!courseMaterial) {
-            return res.status(404).json({ message: "Course material not found" });
-        }
-
-        const filePath = path.resolve(courseMaterial.fileUrl);
-        res.download(filePath);
-    } catch (err) {
-        console.error("Error downloading course material:", err);
+        console.error("Error marking notifications as read:", err);
         res.status(500).json({ message: "Internal server error" });
     }
 };
@@ -319,6 +263,9 @@ exports.createExam = async (req, res) => {
             endTime,
             maximumMark,
             passMark,
+            teacherid,
+            teacherId,
+            teachername
         } = req.body;
 
         let questions = [];
@@ -345,6 +292,9 @@ exports.createExam = async (req, res) => {
             maximumMark,
             passMark,
             questions,
+            teacherid,
+            teacherId,
+            teachername
         };
 
         // Handle file upload for questionFile
@@ -630,6 +580,7 @@ exports.getStudentExamMarks = async (req, res) => {
                 maximumMark: exam.maximumMark,
                 markObtained: mark.mark,
                 isPass: mark.isPass,
+                teacherId: exam.teacherId,
             };
         });
 
@@ -695,9 +646,9 @@ exports.submitExamApplication = async (req, res) => {
 
 exports.getMonthlyAttendance = async (req, res) => {
     try {
-        const { degree, department, semester, month } = req.query;
+        const { degree, department, semester, month, teacherId } = req.query;
 
-        if (!degree || !department || !semester || !month) {
+        if (!degree || !department || !semester || !month || !teacherId) {
             return res.status(400).json({ message: "Missing required parameters" });
         }
 
@@ -706,7 +657,8 @@ exports.getMonthlyAttendance = async (req, res) => {
             degree,
             department,
             semester,
-            date: { $regex: `^${month}` } // Match dates starting with the month (e.g., "2025-04")
+            date: { $regex: `^${month}` }, // Match dates starting with the month (e.g., "2025-04")
+            teacherId,
         }).populate("studentId", "studentid studentname degree department");
 
         if (attendance.length === 0) {
@@ -738,3 +690,17 @@ exports.getMonthlyAttendance = async (req, res) => {
 // };
 
 // updateAttendanceRecords();
+
+exports.getAssignedClasses = async (req, res) => {
+    try {
+        const { teacherid } = req.params;
+        const assignedClasses = await assignedteachermodel.find({ teacherid });
+        if (!assignedClasses || assignedClasses.length === 0) {
+            return res.status(404).json({ message: "No assigned classes found for this teacher." });
+        }
+        res.status(200).json(assignedClasses);
+    } catch (err) {
+        console.error("Error fetching assigned classes:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};

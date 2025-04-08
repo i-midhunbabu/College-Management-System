@@ -157,29 +157,6 @@ function AdminSidebar() {
                                         <span className="text">View Department</span>
                                     </a>
                                 </li>
-                                <li className={location.pathname === "/adminsubjects" ? "active" : ""}>
-                                    <a href="/adminsubjects">
-                                        <i className='bx bxs-book-add'></i>                                        <span className="text">Add Subjects</span>
-                                    </a>
-                                </li>
-                                <li className={location.pathname === "/adminviewsubjects" ? "active" : ""}>
-                                    <a href="/adminviewsubjects">
-                                        <i className='bx bxs-book-open'></i>
-                                        <span className="text">View Subjects</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        )}
-                    </li>
-
-                    <li className={location.pathname.startsWith("#") ? "active" : ""}>
-                        <a href="#" onClick={() => toggleSubMenu('semester')}>
-                            <i class='bx bx-columns'></i>
-                            <span className="text">Semester</span>
-                            <i className={`bx bx-caret-${openSubMenu === 'semester' ? 'up' : 'down'}`}></i>
-                        </a>
-                        {openSubMenu === 'semester' && (
-                            <ul className="sub-menu">
                                 <li className={location.pathname === "/adminsemester" ? "active" : ""}>
                                     <a href="/adminsemester">
                                         <i className='bx bxs-plus-square'></i>
@@ -193,6 +170,32 @@ function AdminSidebar() {
                                     </a>
                                 </li>
 
+
+
+
+                            </ul>
+                        )}
+                    </li>
+
+                    <li className={location.pathname.startsWith("#") ? "active" : ""}>
+                        <a href="#" onClick={() => toggleSubMenu('subjects')}>
+                            <i class='bx bx-book'></i>
+                            <span className="text">Subjects</span>
+                            <i className={`bx bx-caret-${openSubMenu === 'subjects' ? 'up' : 'down'}`}></i>
+                        </a>
+                        {openSubMenu === 'subjects' && (
+                            <ul className="sub-menu">
+                                <li className={location.pathname === "/adminsubjects" ? "active" : ""}>
+                                    <a href="/adminsubjects">
+                                        <i className='bx bxs-book-add'></i><span className="text">Add Subjects</span>
+                                    </a>
+                                </li>
+                                <li className={location.pathname === "/adminviewsubjects" ? "active" : ""}>
+                                    <a href="/adminviewsubjects">
+                                        <i className='bx bxs-book-open'></i>
+                                        <span className="text">View Subjects</span>
+                                    </a>
+                                </li>
                             </ul>
                         )}
                     </li>
@@ -219,7 +222,7 @@ function AdminSidebar() {
                                 </li>
                                 <li className={location.pathname === "/examapprove" ? "active" : ""}>
                                     <a href="/examapprove">
-                                        <i className='bx bxs-check-square'/>
+                                        <i className='bx bxs-check-square' />
                                         <span className="text">Approve or Reject </span>
                                     </a>
                                 </li>

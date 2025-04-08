@@ -145,7 +145,7 @@ function MarkAttendance() {
                     draggable: true,
                     progress: undefined,
                 });
-                
+
             } else {
                 console.log("Failed to mark attendance");
                 // alert('Failed to mark attendance');
@@ -171,10 +171,10 @@ function MarkAttendance() {
                 draggable: true,
                 progress: undefined,
             });
-            
+
         }
     };
-    
+
 
     return (
         <>
@@ -287,7 +287,7 @@ function MarkAttendance() {
                     </div>
                 </main>
             </section>
-            <ToastContainer/>
+            <ToastContainer />
         </>
     );
 }

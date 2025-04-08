@@ -89,7 +89,7 @@ function Adminreg() {
                                             </form>
                                         </div>
                                         <div className="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
-                                            <img src="admin3.png" className="img-fluid" alt="Sample" style={{ width: '100%', maxWidth: '370px', height: 'auto' }} />
+                                            <img src="admin2.png" className="img-fluid" alt="Sample" style={{ width: '100%', maxWidth: '370px', height: 'auto' }} />
                                         </div>
                                     </div>
                                 </div>

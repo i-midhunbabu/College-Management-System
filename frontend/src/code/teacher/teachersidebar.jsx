@@ -82,7 +82,7 @@ function TeacherSidebar() {
                         )}
                     </li>
                     
-                    {/* Class Sidemenu- Attendance, Course Material */}
+                    {/* Class Sidemenu- Attendance*/}
                     <li className={location.pathname.startsWith("#") ? "active" : ""}>
                         <a href="#" onClick={() => toggleSubMenu('class')}>
                             <i className='bx bxs-graduation'></i>

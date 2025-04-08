@@ -12,7 +12,7 @@ function Admindashboard() {
         fetch("http://localhost:8000/adminrouter/adminteacherview")
             .then((res) => res.json())
             .then((data) => {
-                setTeacherCount(data.length); // Assuming the API returns an array of teachers
+                setTeacherCount(data.length); 
             })
             .catch((err) => {
                 console.error("Error fetching teacher count:", err);
@@ -22,7 +22,7 @@ function Admindashboard() {
         fetch("http://localhost:8000/adminrouter/adminstudentview")
             .then((res) => res.json())
             .then((data) => {
-                setStudentCount(data.length); // Assuming the API returns an array of students
+                setStudentCount(data.length); 
             })
             .catch((err) => {
                 console.error("Error fetching student count:", err);
@@ -37,60 +37,47 @@ function Admindashboard() {
                 <AdminNav />
                 {/* Main */}
                 <main>
-                    <ul className="box-info">
-                        <li>
-                            <Link to="/adminteacherview" style={{ textDecoration: 'none', color: 'inherit' }}>
-                                <div className="icon">
-                                    <i className='bx bxs-chalkboard'></i>
-                                </div>
-                                <br />
-                                <div className="text">
-                                    <h3>{teacherCount}</h3>
-                                    <p>Teacher</p>
-                                </div>
+                    <div className="add-parent2-container">
+                        <div className="add-parent2-box">
+                            <Link to="/adminaddteacher" className="add-parent2-link">
+                                <i class='bx bxs-user-plus'></i>
+                                <span>Add Teacher</span>
                             </Link>
-                        </li>
-
-                        <li>
-                            <Link to="/adminstudentview" style={{ textDecoration: 'none', color: 'none' }}>
-                                <div className="icon">
-                                    <i class='bx bxs-graduation'></i>
-                                </div>
-                                <br />
-                                <div className="text">
-                                    <h3>{studentCount}</h3>
-                                    <p>Student</p>
-                                </div>
+                        </div>
+                        <div className="add-parent2-box">
+                            <Link to="/adminaddteacher" className="add-parent2-link">
+                                <i class='bx bxs-user-plus'></i>
+                                <span>Add Student</span>
                             </Link>
-                        </li>
-
-                        <li>
-                            <Link to="/adminExaminationlist" style={{ textDecoration: 'none', color: 'none' }}>
-                                <div className="icon">
-                                    <i class='bx bxs-notepad'></i>
-                                </div>
-                                <br />
-                                <div className="text">
-                                    <h3>{studentCount}</h3>
-                                    <p>Exam</p>
-                                </div>
+                        </div>
+                        <div className="add-parent2-box">
+                            <Link to="/adminlistteachers" className="add-parent2-link">
+                                <i class='bx bxs-user-check' ></i>
+                                <span>Assign Teacher</span>
                             </Link>
-                        </li>
-
-                        {/* <li onClick={() => {
+                        </div>
+                        <div className="add-parent2-box">
+                            <Link to="/examapprove" className="add-parent2-link">
+                                <i class='bx bxs-check-square'></i>
+                                <span>Approve Exam</span>
+                            </Link>
+                        </div>
+                        <div className="add-parent2-box">
+                            <Link to="/adminparentview" className="add-parent2-link">
+                                <i class='bx bx-block' ></i>
+                                <span>Block Parent</span>
+                            </Link>
+                        </div>
+                        <div className="add-parent2-box" onClick={() => {
                             localStorage.clear();
                             window.location.href = '/';
                         }} style={{ cursor: 'pointer' }}>
-                            <div className="icon">
-                                <i class='bx bx-power-off'></i>
+                            <div className="add-parent2-link">
+                                <i className='bx bx-power-off'></i>
+                                <span>Logout</span>
                             </div>
-                            <br />
-                            <div className="text">
-                                <p>Logout</p>
-                            </div>
-                        </li> */}
-                        
-                    </ul>
+                        </div>
+                    </div>
                 </main>
                 {/* Main */}
             </section>

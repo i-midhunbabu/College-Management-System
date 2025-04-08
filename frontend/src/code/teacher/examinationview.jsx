@@ -7,11 +7,20 @@ import "react-toastify/dist/ReactToastify.css";
 
 function ExaminationView() {
     const [examData, setExamData] = useState([]);
+    const [filteredExams, setFilteredExams] = useState([]);
 
     useEffect(() => {
+        const userData = JSON.parse(localStorage.getItem("get"));
+        const teacherId = userData?.teacherDetails?._id;
+
         fetch("http://localhost:8000/teacherrouter/getexams")
             .then((res) => res.json())
-            .then((data) => setExamData(data))
+            .then((data) => {
+                // Filter exams based on the logged-in teacher's teacherId
+                const filtered = data.filter((exam) => exam.teacherId === teacherId);
+                setExamData(data);
+                setFilteredExams(filtered);
+            })
             .catch((err) => console.error("Error fetching exam data:", err));
     }, []);
 
@@ -25,13 +34,13 @@ function ExaminationView() {
 
     const handleDelete = async (examId) => {
         try {
-            const examToDelete = examData.find((exam) => exam._id === examId); 
+            const examToDelete = filteredExams.find((exam) => exam._id === examId);
             const response = await fetch(`http://localhost:8000/teacherrouter/deleteexam/${examId}`, {
                 method: "DELETE",
             });
 
             if (response.ok) {
-                setExamData(examData.filter((exam) => exam._id !== examId));
+                setFilteredExams(filteredExams.filter((exam) => exam._id !== examId));
 
                 // Show success toast based on exam type
                 if (examToDelete.examType === "internal") {
@@ -108,7 +117,7 @@ function ExaminationView() {
                             </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                            {examData.map((exam, index) => (
+                            {filteredExams.map((exam, index) => (
                                 <tr key={index}>
                                     <td>{exam.examType}</td>
                                     <td>{exam.mode}</td>
@@ -123,14 +132,14 @@ function ExaminationView() {
                                     <td>
                                         <Link to={`/exammark/${exam._id}`}>
                                             <button type="button" className="btn btn-success">
-                                                <i class="fa fa-eye" aria-hidden="true"></i> View
+                                                <i className="fa fa-eye" aria-hidden="true"></i> View
                                             </button>
                                         </Link>
                                     </td>
                                     <td>
                                         <Link to={`/editexam/${exam._id}`}>
                                             <button type="button" className="btn btn-primary">
-                                                <i class='bx bxs-edit' undefined ></i>
+                                                <i className="bx bxs-edit"></i>
                                             </button>
                                         </Link>
                                         &nbsp;
@@ -139,7 +148,7 @@ function ExaminationView() {
                                             className="btn btn-danger"
                                             onClick={() => handleDelete(exam._id)}
                                         >
-                                            <i class='bx bx-trash' undefined ></i>
+                                            <i className="bx bx-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -148,7 +157,7 @@ function ExaminationView() {
                     </table>
                 </main>
             </section>
-            <ToastContainer/>
+            <ToastContainer />
         </>
     );
 }

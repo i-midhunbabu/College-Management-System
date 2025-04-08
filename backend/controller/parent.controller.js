@@ -1,6 +1,5 @@
 const { parentlogmodel, Chat } = require('../model/parent.model');
 const { addparentmodel } = require('../model/student.model');
-const { teachernotificationmodel1 } = require('../model/teacher.model');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 
@@ -174,14 +173,6 @@ exports.sendMessage = async (req, res) => {
 
         await newMessage.save();
 
-        // Create a notification for the receiver
-        const notification = new teachernotificationmodel1({
-            teacherid: receiverId,
-            message: `You have a new message from ${senderId}`,
-        });
-
-        await notification.save();
-
         res.status(200).json({ message: 'Message sent successfully' });
     } catch (err) {
         console.error('Error sending message:', err);
@@ -200,19 +191,5 @@ exports.getMessages = async (req, res) => {
     } catch (err) {
         console.error('Error fetching messages:', err);
         res.status(500).json({ error: 'Failed to fetch messages' });
-    }
-};
-
-exports.getNotifications = async (req, res) => {
-    try {
-        const { userId } = req.params;
-
-        // Fetch notifications for the user
-        const notifications = await teachernotificationmodel1.find({ teacherid: userId }).sort({ createdAt: -1 });
-
-        res.status(200).json(notifications);
-    } catch (err) {
-        console.error('Error fetching notifications:', err);
-        res.status(500).json({ error: 'Failed to fetch notifications' });
     }
 };

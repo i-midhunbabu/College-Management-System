@@ -5,7 +5,7 @@ nav {
     padding: 10px 20px;
     background-color: #f9f9f9;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-    
+
 }
 
 .nav-items {
@@ -13,37 +13,7 @@ nav {
     align-items: center;
     gap: 15px;
     margin-left: auto;
-    
-}
 
-.notification {
-    position: relative;
-    text-decoration: none;
-    color: #333;
-    font-size: 20px;
-}
-
-.notification .num {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: red;
-    color: white;
-    font-size: 12px;
-    padding: 2px 6px;
-    border-radius: 50%;
-}
-
-.notification-item {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    font-size: 14px;
-    color: #333;
-    background-color: #fff;
-}
-
-.notification-item:hover {
-    background-color: #f1f1f1;
 }
 
 .profile-container {
@@ -98,9 +68,12 @@ nav {
     list-style: none;
     padding-left: 20px;
     /* background-color: #fff; Solid background color */
-    position: absolute; /* Position it above other items */
-    width: 100%; /* Ensure it takes the full width */
-    z-index: 1; /* Ensure it appears on top */
+    position: absolute;
+    /* Position it above other items */
+    width: 100%;
+    /* Ensure it takes the full width */
+    z-index: 1;
+    /* Ensure it appears on top */
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
     right: 0;
     border-radius: 25px;
@@ -111,45 +84,32 @@ nav {
     border-bottom: 0px solid #ddd;
 }
 
-.box-info {
-    display: flex;
-    gap: 20px;
-}
-
-.box-info li {
+.add-parent2-box {
+    /* margin: 20px; */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    text-align: center;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    width: 200px;
+    height: 100px;
     display: flex;
     align-items: center;
-    background: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 200px;
-    height: 190px;
+
 }
 
-.box-info .icon {
-    font-size: 30px;
-    color: #ff6b6b;
-    margin-bottom: 10px;
-}
-
-.box-info .text {
+.add-parent2-link {
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
-.box-info .text h3 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: bold;
+.add-parent2-link i {
+    font-size: 24px;
+    color: #007bff;
 }
-
-.box-info .text p {
-    margin: 0;
-    font-size: 14px;
-    color: #666;
-}
-
-
-

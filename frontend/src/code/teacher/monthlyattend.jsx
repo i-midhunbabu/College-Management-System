@@ -101,8 +101,24 @@ function MonthlyAttendance() {
         }
 
         try {
+            // Retrieve teacherId from localStorage
+            const teacherData = JSON.parse(localStorage.getItem("get"));
+            const teacherId = teacherData?.teacherDetails?._id;
+
+            if (!teacherId) {
+                toast.error("Teacher ID not found. Please log in again.", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                return;
+            }
+
             const response = await fetch(
-                `http://localhost:8000/teacherrouter/monthlyattendance?degree=${degree}&department=${department}&semester=${semester}&month=${month}`
+                `http://localhost:8000/teacherrouter/monthlyattendance?degree=${degree}&department=${department}&semester=${semester}&month=${month}&teacherId=${teacherId}`
             );
 
             if (!response.ok) {

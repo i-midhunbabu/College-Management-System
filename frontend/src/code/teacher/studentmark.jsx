@@ -39,6 +39,7 @@ function StudentMark() {
     const [departments, setDepartments] = useState([]);
     const [semesters, setSemesters] = useState([]);
     const [students, setStudents] = useState([]);
+    const [filteredStudents, setFilteredStudents] = useState([]);
     const [selectedDegree, setSelectedDegree] = useState('');
     const [selectedDepartment, setSelectedDepartment] = useState('');
     const [selectedSemester, setSelectedSemester] = useState('');
@@ -67,6 +68,12 @@ function StudentMark() {
                 .then((data) => {
                     console.log('Fetched Exam Marks Data:', data);
                     setStudents(data);
+
+                    const userData = JSON.parse(localStorage.getItem("get"));
+                    const teacherId = userData?.teacherDetails?._id;
+
+                    const filtered = data.filter((student) => student.teacherId === teacherId);
+                    setFilteredStudents(filtered);
                 })
                 .catch((err) => console.error('Error fetching student exam marks:', err));
         }
@@ -151,7 +158,7 @@ function StudentMark() {
                             </select>
                         </div>
 
-                        {students.length > 0 ? (
+                        {filteredStudents.length > 0 ? (
                             <div>
                                 <h3 style={{ textAlign: "center", color: "white", marginBottom: "20px", fontWeight: "bolder" }}>
                                     Students
@@ -174,7 +181,7 @@ function StudentMark() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {students.map((student, index) => (
+                                        {filteredStudents.map((student, index) => (
                                             <tr key={index}>
                                                 <td>{student.studentid}</td>
                                                 <td>{student.studentName}</td>

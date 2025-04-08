@@ -231,7 +231,7 @@ function AdminAddStudent() {
 
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="bloodgroup">Blood Group</label>
-                                    <input type="text" id="bloodgroup" value={bloodgroup} onChange={(e) => setBloodgroup(e.target.value)} placeholder="Enter the Blood Group" style={inputStyle} />
+                                    <input type="text" id="bloodgroup" value={bloodgroup} onChange={(e) => setBloodgroup(e.target.value)} placeholder="Enter Student Blood Group" style={inputStyle} />
                                 </div>
 
                                 {/* <div style={formGroupStyle}>
