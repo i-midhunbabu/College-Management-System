@@ -221,7 +221,7 @@ exports.getStudentExams = async (req, res) => {
         if (!degree || !department || !semester || !studentId) {
             return res.status(400).json({ message: "Degree, department, semester, and studentId are required" });
         }
-        
+
 
         //fetch exams corresponding to the students degree, dept, semester
         const exams = await Exam.find({ degree, department, semester });
@@ -329,19 +329,36 @@ exports.getStudentExamResults = async (req, res) => {
     try {
         const { studentId } = req.query;
 
+        // Debugging: Log the studentId received
+        console.log("Received studentId:", studentId);
+
         if (!studentId || !mongoose.Types.ObjectId.isValid(studentId)) {
-            return res.status(400).json({ message: "Student ID is required" });
+            return res.status(400).json({ message: "Invalid or missing student ID" });
         }
 
-         // Convert studentId to ObjectId
-         const studentObjectId = new mongoose.Types.ObjectId(studentId);
+        // Fetch the student's degree, department, and semester using loginid
+        const student = await adminaddstudentmodel.findOne({ loginid: studentId });
 
-         
-        // Fetch all exams for the student
-        const exams = await Exam.find();
+        // Debugging: Log the student details fetched
+        console.log("Fetched student details:", student);
+
+        if (!student) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+
+        const { degree } = student;
+
+        // Fetch exams for the student's degree
+        const exams = await Exam.find({ degree });
+
+        // Debugging: Log the exams fetched
+        console.log("Fetched exams:", exams);
 
         // Fetch marks for the student
-        const marks = await Mark.find({ studentId: studentObjectId });
+        const marks = await Mark.find({ studentId });
+
+        // Debugging: Log the marks fetched
+        console.log("Fetched marks:", marks);
 
         // Merge exams with marks
         const examResults = exams.map((exam) => {

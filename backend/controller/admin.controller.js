@@ -583,7 +583,13 @@ exports.addSubject = async (req, res) => {
 
 exports.viewSubjects = async (req, res) => {
     try {
-        const subjects = await subjectmodel.find();
+        const { degree, department } = req.query;
+
+        const query = {};
+        if (degree) query.degree = degree;
+        if (department) query.department = { $in: department.split(",") };
+
+        const subjects = await subjectmodel.find(query);
         res.json(subjects);
     } catch (err) {
         console.error("Error fetching subjects:", err);
@@ -626,7 +632,10 @@ exports.getStudents = async (req, res) => {
 
 exports.getPendingExamApplications = async (req, res) => {
     try {
-        const pendingExams = await Exam.find({ examType: 'semester', approvalStatus: 'Pending' });
+        const pendingExams = await Exam.find({
+            examType: 'semester',
+            approvalStatus: { $in: ['Pending', 'Approved'] }, // Include both Pending and Approved exams
+        });
         res.status(200).json(pendingExams);
     } catch (err) {
         console.error('Error fetching pending exam applications:', err);

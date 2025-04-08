@@ -233,6 +233,15 @@ function Parentdashboard() {
                                                         >
                                                             {msg.message}
                                                         </p>
+                                                        <small style={{ color: 'gray', fontSize: '10px' }}>
+                                                            {new Date(msg.createdAt).toLocaleString('en-US', {
+                                                                hour: 'numeric',
+                                                                minute: 'numeric',
+                                                                hour12: true,
+                                                                month: 'short',
+                                                                day: 'numeric',
+                                                            })}
+                                                        </small>
                                                     </div>
                                                 ))
                                             ) : (

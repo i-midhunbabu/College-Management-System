@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import AdminSidebar from './adminsidebar';
 import AdminNav from './adminnavbar';
 
@@ -21,13 +23,37 @@ function AdminExamReview() {
             });
 
             if (response.ok) {
-                setPendingExams(pendingExams.filter((exam) => exam._id !== examId));
-                alert(`Exam ${approvalStatus.toLowerCase()} successfully`);
+                setPendingExams((prevExams) =>
+                    prevExams.map((exam) =>
+                        exam._id === examId
+                            ? { ...exam, approvalStatus } // Update the status for approved exams
+                            : exam
+                    ).filter((exam) => exam.approvalStatus !== 'Rejected') // Remove rejected exams
+                );
+
+                if (approvalStatus === 'Approved') {
+                    toast.success("Exam approved successfully!", {
+                        position: "top-right",
+                        autoClose: 3000,
+                    });
+                } else if (approvalStatus === 'Rejected') {
+                    toast.error("Exam rejected successfully!", {
+                        position: "top-right",
+                        autoClose: 3000,
+                    });
+                }
             } else {
-                alert('Failed to review exam');
+                toast.error("Failed to review exam. Please try again.", {
+                    position: "top-right",
+                    autoClose: 3000,
+                });
             }
         } catch (err) {
             console.error('Error reviewing exam:', err);
+            toast.error("An error occurred while reviewing the exam.", {
+                position: "top-right",
+                autoClose: 3000,
+            });
         }
     };
 
@@ -61,22 +87,30 @@ function AdminExamReview() {
                                         <td>{exam.subject}</td>
                                         <td>{exam.teachername}</td>
                                         <td>
-                                            <button
-                                                onClick={() => handleReview(exam._id, 'Approved')}
-                                                className='btn btn-success'
-                                            >
-                                                Approve
-                                            </button>
-                                            &nbsp;
-                                            <button
-                                                onClick={() => {
-                                                    const remarks = prompt('Enter remarks for rejection:');
-                                                    if (remarks) handleReview(exam._id, 'Rejected', remarks);
-                                                }}
-                                                className='btn btn-danger'
-                                            >
-                                                Reject
-                                            </button>
+                                            {exam.approvalStatus === 'Approved' ? (
+                                                <button className="btn btn-secondary" disabled>
+                                                    Approved
+                                                </button>
+                                            ) : (
+                                                <>
+                                                    <button
+                                                        onClick={() => handleReview(exam._id, 'Approved')}
+                                                        className="btn btn-success"
+                                                    >
+                                                        Approve
+                                                    </button>
+                                                    &nbsp;
+                                                    <button
+                                                        onClick={() => {
+                                                            const remarks = prompt('Enter remarks for rejection:');
+                                                            if (remarks) handleReview(exam._id, 'Rejected', remarks);
+                                                        }}
+                                                        className="btn btn-danger"
+                                                    >
+                                                        Reject
+                                                    </button>
+                                                </>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}
@@ -85,6 +119,7 @@ function AdminExamReview() {
                     </div>
                 </main>
             </section>
+            <ToastContainer />
         </>
     );
 }
