@@ -194,3 +194,44 @@ exports.getMessages = async (req, res) => {
     }
 };
 
+// Get unread message counts
+exports.getUnreadCounts = async (req, res) => {
+    try {
+        const { parentId } = req.params;
+
+        const unreadCounts = await Chat.aggregate([
+            { $match: { receiverId: parentId, isRead: false } },
+            { $group: { _id: "$senderId", count: { $sum: 1 } } },
+        ]);
+
+        const counts = {};
+        unreadCounts.forEach((item) => {
+            counts[item._id] = item.count;
+        });
+
+        res.status(200).json(counts);
+    } catch (err) {
+        console.error('Error fetching unread counts:', err);
+        res.status(500).json({ error: 'Failed to fetch unread counts' });
+    }
+};
+
+exports.markMessagesAsRead = async (req, res) => {
+    try {
+        const { requestId, receiverId } = req.body;
+
+        if (!requestId || !receiverId) {
+            return res.status(400).json({ error: 'Request ID and Receiver ID are required' });
+        }
+
+        await Chat.updateMany(
+            { requestId, receiverId, isRead: false },
+            { $set: { isRead: true } }
+        );
+
+        res.status(200).json({ message: 'Messages marked as read' });
+    } catch (err) {
+        console.error('Error marking messages as read:', err);
+        res.status(500).json({ error: 'Failed to mark messages as read' });
+    }
+};

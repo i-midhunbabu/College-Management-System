@@ -7,13 +7,14 @@ import './teacher.css';
 function Teacherdashboard() {
     const [isChatboxOpen, setIsChatboxOpen] = useState(false);
     const [parents, setParents] = useState([]);
-    const [selectedUser, setSelectedUser] = useState(null);
+    const [selectedParent, setSelectedParent] = useState(null);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    const [teacherid, setTeacherId] = useState('');
-    const [assignedClasses, setAssignedClasses] = useState([]);
+    const [teacherId, setTeacherId] = useState('');
     const [teacherName, setTeacherName] = useState("");
-    const lastMessageRef = useRef(null); // Ref for the last message
+    const [assignedClasses, setAssignedClasses] = useState([]);
+    const [unreadCounts, setUnreadCounts] = useState({});
+    const lastMessageRef = useRef(null);
 
     useEffect(() => {
         const storedUser = localStorage.getItem('get');
@@ -32,7 +33,6 @@ function Teacherdashboard() {
         const name = teacherDetails?.teacherDetails?.teachername || "Teacher";
         setTeacherName(name);
 
-        // Fetch assigned classes for the teacher
         fetch(`http://localhost:8000/teacherrouter/assignedclasses/${teacherId}`)
             .then((res) => res.json())
             .then((result) => {
@@ -47,12 +47,20 @@ function Teacherdashboard() {
 
     const toggleChatbox = () => {
         setIsChatboxOpen(!isChatboxOpen);
-        setSelectedUser(null);
+        setSelectedParent(null);
+    };
+
+    const handleParentClick = (parent) => {
+        setSelectedParent(parent);
+        resetUnreadCount(parent.parentid);
+    };
+
+    const handleBackClick = () => {
+        setSelectedParent(null);
     };
 
     useEffect(() => {
         if (isChatboxOpen) {
-            // Fetch parents
             fetch("http://localhost:8000/adminrouter/admingetparent")
                 .then((response) => response.json())
                 .then((data) => setParents(data))
@@ -60,31 +68,13 @@ function Teacherdashboard() {
         }
     }, [isChatboxOpen]);
 
-    const handleUserClick = (user) => {
-        setSelectedUser(user);
-        fetchMessages();
-    };
-
-    const handleBackClick = () => {
-        setSelectedUser(null);
-    };
-
-    const handleLogout = () => {
-        localStorage.clear();
-        window.location.href = '/'
-    }
-
     const fetchMessages = async () => {
         try {
-            const requestId = `${selectedUser.parentid}_${teacherid}`;
-            // console.log("Fetching messages for Request ID:", requestId);
-
+            const requestId = `${selectedParent.parentid}_${teacherId}`;
             const response = await fetch(`http://localhost:8000/parentrouter/getMessages/${requestId}`);
             const data = await response.json();
-            // console.log("Fetched messages:", data);
-
-            setMessages(data);
-            scrollToLastMessage(); // Scroll to the last message after fetching
+            setMessages(data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)));
+            scrollToLastMessage();
         } catch (error) {
             console.error('Error fetching messages:', error);
         }
@@ -92,29 +82,17 @@ function Teacherdashboard() {
 
     const sendMessage = async () => {
         try {
-            const requestId = `${selectedUser.parentid}_${teacherid}`;
-            // console.log("Request ID:", requestId);
-            // console.log("Sender ID:", teacherid);
-            // console.log("Receiver ID:", selectedUser?._id);
-            // console.log("Message:", newMessage);
-
-            const response = await fetch('http://localhost:8000/parentrouter/sendMessage', {
+            const requestId = `${selectedParent.parentid}_${teacherId}`;
+            await fetch('http://localhost:8000/parentrouter/sendMessage', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     requestId,
-                    senderId: teacherid,
-                    receiverId: selectedUser?.id,
+                    senderId: teacherId,
+                    receiverId: selectedParent.parentid,
                     message: newMessage,
                 }),
             });
-            // console.log("Selected User:", selectedUser);
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Error Response:", errorData);
-                alert("Failed to send message: " + errorData.error);
-                return;
-            }
             setNewMessage('');
             fetchMessages();
         } catch (error) {
@@ -123,10 +101,10 @@ function Teacherdashboard() {
     };
 
     useEffect(() => {
-        if (isChatboxOpen && selectedUser) {
+        if (selectedParent) {
             fetchMessages();
         }
-    }, [isChatboxOpen, selectedUser]);
+    }, [selectedParent]);
 
     const scrollToLastMessage = () => {
         if (lastMessageRef.current) {
@@ -135,46 +113,82 @@ function Teacherdashboard() {
     };
 
     useEffect(() => {
-        scrollToLastMessage(); // Scroll when messages are updated
+        scrollToLastMessage();
     }, [messages]);
+
+    const resetUnreadCount = (parentId) => {
+        setUnreadCounts((prev) => ({ ...prev, [parentId]: 0 }));
+    };
+
+    const fetchUnreadCounts = async () => {
+        try {
+            const response = await fetch(`http://localhost:8000/parentrouter/unreadCounts/${teacherId}`);
+            const data = await response.json();
+            setUnreadCounts(data);
+        } catch (error) {
+            console.error('Error fetching unread counts:', error);
+        }
+    };
+
+    useEffect(() => {
+        if (isChatboxOpen) {
+            fetchUnreadCounts();
+        }
+    }, [isChatboxOpen]);
+
+    const markMessagesAsRead = async () => {
+        try {
+            const requestId = `${selectedParent.parentid}_${teacherId}`;
+            await fetch('http://localhost:8000/parentrouter/markMessagesAsRead', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ requestId, receiverId: teacherId }),
+            });
+        } catch (error) {
+            console.error('Error marking messages as read:', error);
+        }
+    };
+
+    useEffect(() => {
+        if (selectedParent) {
+            markMessagesAsRead();
+        }
+    }, [selectedParent]);
 
     return (
         <>
             <TeacherSidebar />
-            {/* Content */}
             <section id="content">
                 <TeacherNav />
-                {/* Main */}
                 <main style={{ paddingBottom: "100px" }}>
-
                     <div className="add-parent2-container">
                         <div className="add-parent2-box">
                             <Link to="/markattendance" className="add-parent2-link">
-                                <i class='bx bxs-check-square'></i>
+                                <i className='bx bxs-check-square'></i>
                                 <span>Mark Attendance</span>
                             </Link>
                         </div>
                         <div className="add-parent2-box">
                             <Link to="/monthlyattendance" className="add-parent2-link">
-                                <i class='bx bxs-download'></i>
+                                <i className='bx bxs-download'></i>
                                 <span>Monthly Attendance</span>
                             </Link>
                         </div>
                         <div className="add-parent2-box">
                             <Link to="/teacherexam" className="add-parent2-link">
-                                <i class='bx bx-timer'></i>
+                                <i className='bx bx-timer'></i>
                                 <span>Schedule Exam</span>
                             </Link>
                         </div>
                         <div className="add-parent2-box">
                             <Link to="/examinationlist" className="add-parent2-link">
-                                <i class='bx bx-list-ul'></i>
+                                <i className='bx bx-list-ul'></i>
                                 <span>Exam List</span>
                             </Link>
                         </div>
                         <div className="add-parent2-box">
                             <Link to="/studentmark" className="add-parent2-link">
-                                <i class='bx bx-search'></i>
+                                <i className='bx bx-search'></i>
                                 <span>View Mark</span>
                             </Link>
                         </div>
@@ -209,11 +223,10 @@ function Teacherdashboard() {
                         </div>
                     </div>
 
-                    {/* Chatbox */}
                     {isChatboxOpen && (
-                        <div className="chatbox1">
+                        <div className="chatbox">
                             <div className="chatbox-header">
-                                {selectedUser ? (
+                                {selectedParent ? (
                                     <>
                                         <button
                                             className="chatbox-back"
@@ -236,7 +249,6 @@ function Teacherdashboard() {
                                                 gap: "10px",
                                             }}
                                         >
-                                            {/* Profile Picture */}
                                             <div
                                                 style={{
                                                     width: "40px",
@@ -251,9 +263,9 @@ function Teacherdashboard() {
                                                     fontWeight: "bold",
                                                 }}
                                             >
-                                                {selectedUser.name.charAt(0).toUpperCase()}
+                                                {selectedParent.parentname.charAt(0).toUpperCase()}
                                             </div>
-                                            <h4 style={{ margin: 0 }}>{selectedUser.name}</h4>
+                                            <h4 style={{ margin: 0 }}>{selectedParent.parentname}</h4>
                                         </div>
                                     </>
                                 ) : (
@@ -262,66 +274,75 @@ function Teacherdashboard() {
                                 <button
                                     className="chatbox-close"
                                     onClick={toggleChatbox}
+                                    style={{
+                                        background: "none",
+                                        border: "none",
+                                        color: "white",
+                                        fontSize: "16px",
+                                        cursor: "pointer",
+                                    }}
                                 >
                                     ✖
                                 </button>
                             </div>
                             <div className="chatbox-body">
-                                {selectedUser ? (
-                                    <>
+                                {selectedParent ? (
+                                    <div>
                                         <p style={{ textAlign: "center", fontSize: "12px", color: "GrayText" }}>
-                                            Conversation with {selectedUser.name}
+                                            Conversation with {selectedParent.parentname}
                                         </p>
                                         <div>
-                                            {messages.map((msg, index) => (
-                                                <div key={index} style={{ textAlign: msg.senderId === teacherid ? 'right' : 'left', marginBottom: '10px' }}>
-                                                    <p
+                                            {messages.length > 0 ? (
+                                                messages.map((msg, index) => (
+                                                    <div
+                                                        key={index}
                                                         style={{
-                                                            backgroundColor: msg.senderId === teacherid ? '#d1e7dd' : '#f8d7da',
-                                                            padding: '10px',
-                                                            borderRadius: '10px',
-                                                            display: 'inline-block',
-                                                            maxWidth: '80%',
+                                                            textAlign: msg.senderId === teacherId ? 'right' : 'left',
+                                                            marginBottom: '10px',
                                                         }}
                                                     >
-                                                        {msg.message}
-                                                    </p>
-                                                    <small style={{ color: 'gray', fontSize: '10px' }}>
-                                                        {new Date(msg.createdAt).toLocaleString('en-US', {
-                                                            hour: 'numeric',
-                                                            minute: 'numeric',
-                                                            hour12: true,
-                                                            month: 'short',
-                                                            day: 'numeric',
-                                                        })}
-                                                    </small>
-                                                </div>
-                                            ))}
-                                            {/* Add a div with the ref at the end of the messages */}
+                                                        <p
+                                                            style={{
+                                                                backgroundColor: msg.senderId === teacherId ? '#d1e7dd' : '#f8d7da',
+                                                                padding: '10px',
+                                                                borderRadius: '10px',
+                                                                display: 'inline-block',
+                                                                maxWidth: '80%',
+                                                            }}
+                                                        >
+                                                            {msg.message}
+                                                        </p>
+                                                        <small style={{ color: 'gray', fontSize: '10px' }}>
+                                                            {new Date(msg.createdAt).toLocaleString('en-US', {
+                                                                hour: 'numeric',
+                                                                minute: 'numeric',
+                                                                hour12: true,
+                                                                month: 'short',
+                                                                day: 'numeric',
+                                                            })}
+                                                        </small>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <p style={{ textAlign: "center", color: "GrayText", fontSize: "12px" }}>No messages yet.</p>
+                                            )}
                                             <div ref={lastMessageRef}></div>
                                         </div>
-                                    </>
+                                    </div>
                                 ) : (
                                     <>
-                                        <p>Available Users:</p>
+                                        <p>Available Parents:</p>
                                         <ul style={{ listStyleType: "none", padding: 0 }}>
-                                            {parents.map((user) => (
+                                            {parents.map((parent) => (
                                                 <li
-                                                    key={user._id}
+                                                    key={parent.parentid}
                                                     style={{
                                                         display: "flex",
                                                         alignItems: "center",
                                                         marginBottom: "10px",
                                                         cursor: "pointer",
                                                     }}
-                                                    onClick={() =>
-                                                        handleUserClick({
-                                                            parentid: user.parentid,
-                                                            name: user.parentname,
-                                                            id: user._id,
-                                                            role: "Parent",
-                                                        })
-                                                    }
+                                                    onClick={() => handleParentClick(parent)}
                                                 >
                                                     <div
                                                         style={{
@@ -338,13 +359,27 @@ function Teacherdashboard() {
                                                             fontWeight: "bold",
                                                         }}
                                                     >
-                                                        {user.parentname.charAt(0).toUpperCase()}
+                                                        {parent.parentname.charAt(0).toUpperCase()}
                                                     </div>
                                                     <div>
-                                                        <strong>{user.parentname}</strong>{" "}
-                                                        <span style={{ color: "#888", fontSize: "12px" }}>
+                                                        <strong>{parent.parentname}</strong>{" "}
+                                                        <span style={{ color: "#888", fontSize: "10px" }}>
                                                             (Parent)
                                                         </span>
+                                                        {unreadCounts[parent.parentid] > 0 && (
+                                                            <span
+                                                                style={{
+                                                                    backgroundColor: "red",
+                                                                    color: "white",
+                                                                    borderRadius: "50%",
+                                                                    padding: "2px 6px",
+                                                                    marginLeft: "10px",
+                                                                    fontSize: "12px",
+                                                                }}
+                                                            >
+                                                                {unreadCounts[parent.parentid]}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </li>
                                             ))}
@@ -352,30 +387,28 @@ function Teacherdashboard() {
                                     </>
                                 )}
                             </div>
-                            {selectedUser && (
+                            {selectedParent && (
                                 <div className="chatbox-footer">
                                     <input
                                         type="text"
                                         value={newMessage}
                                         onChange={(e) => setNewMessage(e.target.value)}
-                                        placeholder={`Message ${selectedUser?.name || ''}...`}
+                                        placeholder={`Message ${selectedParent.parentname || ''}...`}
                                     />
                                     <button onClick={sendMessage}>
-                                        <i class='bx bxs-send' />
+                                        <i className='bx bxs-send'></i>
                                     </button>
                                 </div>
                             )}
                         </div>
                     )}
                 </main>
-                {/* Main */}
             </section>
-            {/* Content */}
-
-            <a a href="#" className="message-icon" onClick={toggleChatbox} >
-                < img src="chat1.png" alt="chat" style={{ width: '40px', height: '40px' }} />
+            <a href="#" className="message-icon" onClick={toggleChatbox}>
+                <img src="chat1.png" alt="chat" style={{ width: '40px', height: '40px' }} />
             </a>
         </>
-    )
+    );
 }
+
 export default Teacherdashboard;

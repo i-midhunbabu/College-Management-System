@@ -10,7 +10,8 @@ function Parentdashboard() {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [parentid, setParentId] = useState('');
-    const lastMessageRef = useRef(null); // Ref for the last message
+    const [unreadCounts, setUnreadCounts] = useState({});
+    const lastMessageRef = useRef(null);
 
     useEffect(() => {
         const storedUser = localStorage.getItem('get');
@@ -28,8 +29,8 @@ function Parentdashboard() {
     };
 
     const handleTeacherClick = (teacher) => {
-        // console.log("Selected Teacher:", teacher); 
         setSelectedTeacher(teacher);
+        resetUnreadCount(teacher._id);
     };
 
     const handleBackClick = () => {
@@ -52,12 +53,10 @@ function Parentdashboard() {
     const fetchMessages = async () => {
         try {
             const requestId = `${parentid}_${selectedTeacher?._id}`;
-            // console.log("Fetching messages for Request ID:", requestId);
             const response = await fetch(`http://localhost:8000/parentrouter/getMessages/${requestId}`);
             const data = await response.json();
-            // console.log("Fetched Messages:", data);
-            setMessages(data);
-            scrollToLastMessage(); // Scroll to the last message after fetching
+            setMessages(data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)));
+            scrollToLastMessage();
         } catch (error) {
             console.error('Error fetching messages:', error);
         }
@@ -66,10 +65,6 @@ function Parentdashboard() {
     const sendMessage = async () => {
         try {
             const requestId = `${parentid}_${selectedTeacher?._id}`;
-            // console.log("Request ID:", requestId);
-            // console.log("Sender ID:", parentid);
-            // console.log("Receiver ID:", selectedTeacher?._id);
-            // console.log("Message:", newMessage);
             await fetch('http://localhost:8000/parentrouter/sendMessage', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -87,12 +82,6 @@ function Parentdashboard() {
         }
     };
 
-    // useEffect(() => {
-    //     if (isChatboxOpen) {
-    //         fetchMessages();
-    //     }
-    // }, [isChatboxOpen]);
-
     useEffect(() => {
         if (selectedTeacher) {
             fetchMessages();
@@ -106,32 +95,67 @@ function Parentdashboard() {
     };
 
     useEffect(() => {
-        scrollToLastMessage(); // Scroll when messages are updated
+        scrollToLastMessage();
     }, [messages]);
+
+    const resetUnreadCount = (teacherId) => {
+        setUnreadCounts((prev) => ({ ...prev, [teacherId]: 0 }));
+    };
+
+    const fetchUnreadCounts = async () => {
+        try {
+            const response = await fetch(`http://localhost:8000/parentrouter/unreadCounts/${parentid}`);
+            const data = await response.json();
+            setUnreadCounts(data);
+        } catch (error) {
+            console.error('Error fetching unread counts:', error);
+        }
+    };
+
+    useEffect(() => {
+        if (isChatboxOpen) {
+            fetchUnreadCounts();
+        }
+    }, [isChatboxOpen]);
+
+    const markMessagesAsRead = async () => {
+        try {
+            const requestId = `${parentid}_${selectedTeacher._id}`;
+            await fetch('http://localhost:8000/parentrouter/markMessagesAsRead', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ requestId, receiverId: parentid }),
+            });
+        } catch (error) {
+            console.error('Error marking messages as read:', error);
+        }
+    };
+    
+    useEffect(() => {
+        if (selectedTeacher) {
+            markMessagesAsRead();
+        }
+    }, [selectedTeacher]);
 
     return (
         <>
             <ParentSidebar />
-            {/* Content */}
             <section id="content">
                 <ParentNav />
-                {/* Main */}
                 <main style={{ paddingBottom: "100px" }}>
                     <div className="add-parent1-container">
                         <div className="add-parent1-box">
                             <Link to="/studentprogresscard" className="add-parent1-link">
-                                <i class='bx bx-file'></i>
+                                <i className='bx bx-file'></i>
                                 <span>Student Progress Report</span>
                             </Link>
                         </div>
-
                         <div className="add-parent1-box">
                             <Link to="/parentprofile" className="add-parent1-link">
-                                <i class='bx bx-user' ></i>
+                                <i className='bx bx-user'></i>
                                 <span>Profile</span>
                             </Link>
                         </div>
-
                         <div className="add-parent1-box" onClick={() => {
                             localStorage.clear();
                             window.location.href = '/';
@@ -143,7 +167,6 @@ function Parentdashboard() {
                         </div>
                     </div>
 
-                    {/* Chatbox */}
                     {isChatboxOpen && (
                         <div className="chatbox">
                             <div className="chatbox-header">
@@ -247,7 +270,6 @@ function Parentdashboard() {
                                             ) : (
                                                 <p style={{ textAlign: "center", color: "GrayText", fontSize: "12px" }}>No messages yet.</p>
                                             )}
-                                            {/* Add a div with the ref at the end of the messages */}
                                             <div ref={lastMessageRef}></div>
                                         </div>
                                     </div>
@@ -286,8 +308,22 @@ function Parentdashboard() {
                                                     <div>
                                                         <strong>{teacher.teachername}</strong>{" "}
                                                         <span style={{ color: "#888", fontSize: "10px" }}>
-                                                            ({(teacher.designation)})
+                                                            ({teacher.designation})
                                                         </span>
+                                                        {unreadCounts[teacher._id] > 0 && (
+                                                            <span
+                                                                style={{
+                                                                    backgroundColor: "red",
+                                                                    color: "white",
+                                                                    borderRadius: "50%",
+                                                                    padding: "2px 6px",
+                                                                    marginLeft: "10px",
+                                                                    fontSize: "12px",
+                                                                }}
+                                                            >
+                                                                {unreadCounts[teacher._id]}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </li>
                                             ))}
@@ -310,15 +346,13 @@ function Parentdashboard() {
                             )}
                         </div>
                     )}
-                </main >
-                {/* Main */}
-            </section >
-            {/* Content */}
-            {/* Chat Icon */}
-            <a a href="#" className="message-icon" onClick={toggleChatbox} >
-                < img src="chat1.png" alt="chat" style={{ width: '40px', height: '40px' }} />
+                </main>
+            </section>
+            <a href="#" className="message-icon" onClick={toggleChatbox}>
+                <img src="chat1.png" alt="chat" style={{ width: '40px', height: '40px' }} />
             </a>
         </>
-    )
+    );
 }
+
 export default Parentdashboard;

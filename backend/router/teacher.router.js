@@ -29,7 +29,6 @@ router.get('/getmarks/:examId', teacherController.getMarks);
 router.get('/download/:fileName', teacherController.downloadAnswerSheet);
 router.get('/getStudentExamMarks', teacherController.getStudentExamMarks);
 router.post('/submitExamApplication', teacherController.submitExamApplication);
-
 router.get('/assignedclasses/:teacherid', teacherController.getAssignedClasses);
 
 
