@@ -20,8 +20,8 @@ function Teacherdashboard() {
         const storedUser = localStorage.getItem('get');
         if (storedUser) {
             const userData = JSON.parse(storedUser);
-            if (userData.teacherDetails?._id) {
-                setTeacherId(userData.teacherDetails._id);
+            if (userData.teacherDetails?.teacherid) {
+                setTeacherId(userData.teacherDetails.teacherid);
             }
         }
     }, []);
@@ -71,8 +71,10 @@ function Teacherdashboard() {
     const fetchMessages = async () => {
         try {
             const requestId = `${selectedParent.parentid}_${teacherId}`;
+            console.log("Fetching messages for requestId:", requestId); // Debug log
             const response = await fetch(`http://localhost:8000/parentrouter/getMessages/${requestId}`);
             const data = await response.json();
+            
             setMessages(data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)));
             scrollToLastMessage();
         } catch (error) {
@@ -144,6 +146,7 @@ function Teacherdashboard() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ requestId, receiverId: teacherId }),
             });
+            fetchUnreadCounts();
         } catch (error) {
             console.error('Error marking messages as read:', error);
         }
@@ -155,7 +158,31 @@ function Teacherdashboard() {
         }
     }, [selectedParent]);
 
-    return (
+    const fetchParents = async () => {
+        try {
+            console.log("Fetching parents for teacherId:", teacherId); // Debug log
+            const response = await fetch(`http://localhost:8000/teacherrouter/filteredparents/${teacherId}`);
+            const data = await response.json();
+    
+            if (data.message) {
+                console.log("No parents found:", data.message); // Debug log
+                setParents([]); // No parents found
+            } else {
+                console.log("Fetched Parents:", data); // Debug log
+                setParents(data);
+            }
+        } catch (error) {
+            console.error("Error fetching filtered parents:", error);
+        }
+    };
+    
+    useEffect(() => {
+        if (isChatboxOpen) {
+            fetchParents();
+        }
+    }, [isChatboxOpen]);
+
+        return (
         <>
             <TeacherSidebar />
             <section id="content">
@@ -364,7 +391,7 @@ function Teacherdashboard() {
                                                     <div>
                                                         <strong>{parent.parentname}</strong>{" "}
                                                         <span style={{ color: "#888", fontSize: "10px" }}>
-                                                            (Parent)
+                                                            ({parent.department}, Semester: {parent.semester})
                                                         </span>
                                                         {unreadCounts[parent.parentid] > 0 && (
                                                             <span
@@ -383,8 +410,7 @@ function Teacherdashboard() {
                                                     </div>
                                                 </li>
                                             ))}
-                                        </ul>
-                                    </>
+                                        </ul>                                    </>
                                 )}
                             </div>
                             {selectedParent && (

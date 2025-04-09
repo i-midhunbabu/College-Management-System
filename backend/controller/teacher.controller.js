@@ -1,5 +1,6 @@
 const { teacherlogmodel, teachernotificationmodel, Attendance, Exam, Mark } = require('../model/teacher.model');
 const { adminaddteachermodel, adminaddstudentmodel, departmentmodel, semestermodel, subjectmodel, assignedteachermodel } = require('../model/admin.model');
+const { addparentmodel } = require('../model/student.model');
 const { Submission } = require('../model/student.model');
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Types.ObjectId;
@@ -702,5 +703,33 @@ exports.getAssignedClasses = async (req, res) => {
     } catch (err) {
         console.error("Error fetching assigned classes:", err);
         res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.getFilteredParents = async (req, res) => {
+    try {
+        const { teacherId } = req.params;
+
+        // Fetch the assigned class and department for the teacher
+        const assignedTeacher = await assignedteachermodel.findOne({ teacherid: teacherId });
+        console.log("Assigned Teacher:", assignedTeacher); // Debug log
+
+        if (!assignedTeacher) {
+            return res.status(404).json({ message: "No assigned classes found for this teacher" });
+        }
+
+        const { assignedclass, department } = assignedTeacher;
+
+        // Fetch parents whose students match the assigned class and department
+        const parents = await addparentmodel.find({
+            department: { $in: department },
+            semester: { $in: assignedclass },
+        });
+        console.log("Filtered Parents:", parents); // Debug log
+
+        res.status(200).json(parents);
+    } catch (error) {
+        console.error("Error fetching filtered parents:", error);
+        res.status(500).json({ error: "Failed to fetch filtered parents" });
     }
 };

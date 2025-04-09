@@ -52,7 +52,8 @@ function Parentdashboard() {
 
     const fetchMessages = async () => {
         try {
-            const requestId = `${parentid}_${selectedTeacher?._id}`;
+            const requestId = `${parentid}_${selectedTeacher?.teacherid}`;
+            console.log("Fetching messages for requestId:", requestId); //Debug Log
             const response = await fetch(`http://localhost:8000/parentrouter/getMessages/${requestId}`);
             const data = await response.json();
             setMessages(data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)));
@@ -64,14 +65,14 @@ function Parentdashboard() {
 
     const sendMessage = async () => {
         try {
-            const requestId = `${parentid}_${selectedTeacher?._id}`;
+            const requestId = `${parentid}_${selectedTeacher?.teacherid}`;
             await fetch('http://localhost:8000/parentrouter/sendMessage', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     requestId,
                     senderId: parentid,
-                    receiverId: selectedTeacher?._id,
+                    receiverId: selectedTeacher?.teacherid,
                     message: newMessage,
                 }),
             });
@@ -120,12 +121,13 @@ function Parentdashboard() {
 
     const markMessagesAsRead = async () => {
         try {
-            const requestId = `${parentid}_${selectedTeacher._id}`;
+            const requestId = `${parentid}_${selectedTeacher.teacherid}`;
             await fetch('http://localhost:8000/parentrouter/markMessagesAsRead', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ requestId, receiverId: parentid }),
             });
+            fetchUnreadCounts();
         } catch (error) {
             console.error('Error marking messages as read:', error);
         }
@@ -310,7 +312,7 @@ function Parentdashboard() {
                                                         <span style={{ color: "#888", fontSize: "10px" }}>
                                                             ({teacher.designation})
                                                         </span>
-                                                        {unreadCounts[teacher._id] > 0 && (
+                                                        {unreadCounts[teacher.teacherid] > 0 && (
                                                             <span
                                                                 style={{
                                                                     backgroundColor: "red",
@@ -321,7 +323,7 @@ function Parentdashboard() {
                                                                     fontSize: "12px",
                                                                 }}
                                                             >
-                                                                {unreadCounts[teacher._id]}
+                                                                {unreadCounts[teacher.teacherid]}
                                                             </span>
                                                         )}
                                                     </div>

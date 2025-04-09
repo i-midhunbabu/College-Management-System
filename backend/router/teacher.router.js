@@ -30,6 +30,7 @@ router.get('/download/:fileName', teacherController.downloadAnswerSheet);
 router.get('/getStudentExamMarks', teacherController.getStudentExamMarks);
 router.post('/submitExamApplication', teacherController.submitExamApplication);
 router.get('/assignedclasses/:teacherid', teacherController.getAssignedClasses);
+router.get('/filteredparents/:teacherId', teacherController.getFilteredParents);
 
 
 module.exports = router;

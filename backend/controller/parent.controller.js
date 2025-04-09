@@ -183,10 +183,10 @@ exports.sendMessage = async (req, res) => {
 exports.getMessages = async (req, res) => {
     try {
         const { requestId } = req.params;
-        // console.log("Fetching messages for Request ID:", requestId);
+        console.log("Fetching messages for Request ID:", requestId);
 
         const messages = await Chat.find({ requestId }).sort({ createdAt: 1 });
-        // console.log("Fetched messages:", messages);
+        console.log("Fetched messages:", messages);
         res.status(200).json(messages);
     } catch (err) {
         console.error('Error fetching messages:', err);
