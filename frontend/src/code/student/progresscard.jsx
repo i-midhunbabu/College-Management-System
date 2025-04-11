@@ -1,18 +1,19 @@
 import React, { useEffect, useState, useRef } from 'react';
 import StudentNavBar from './studentnavbar';
 import { useReactToPrint } from 'react-to-print';
-import { PDFExport } from 'react-to-pdf';
 
-const ProgressCard = ({ studentId  }) => {
+const ProgressCard = () => {
     const [studentDetails, setStudentDetails] = useState({});
     const [subjects, setSubjects] = useState([]);
     const [attendance, setAttendance] = useState({});
-    const [marks, setMarks] = useState([]);
-    const pdfRef = useRef(); // Reference for the PDF content
+    const pdfRef = useRef();
 
     useEffect(() => {
-        // Fetch student details from localStorage
         const studentData = JSON.parse(localStorage.getItem('get'));
+        if (!studentData || !studentData.studentDetails) {
+            console.error("Student data not found in localStorage");
+            return;
+        }
         if (studentData && studentData.studentDetails) {
             setStudentDetails(studentData.studentDetails);
 
@@ -37,12 +38,6 @@ const ProgressCard = ({ studentId  }) => {
                     }
                 })
                 .catch((err) => console.error("Error fetching attendance:", err));
-
-            // Fetch marks
-            fetch(`http://localhost:8000/studentrouter/getstudentexamresults?studentId=${studentData.studentDetails._id}`)
-                .then((res) => res.json())
-                .then((data) => setMarks(data))
-                .catch((err) => console.error("Error fetching marks:", err));
         } else {
             console.error("Student data not found in localStorage");
         }
@@ -55,47 +50,6 @@ const ProgressCard = ({ studentId  }) => {
         },
         documentTitle: 'Progress_Report',
     });
-    useEffect(() => {
-        const fetchExaminationsAndMarks = async () => {
-            try {
-                const studentData = JSON.parse(localStorage.getItem("get"));
-                if (!studentData || !studentData.studentDetails) {
-                    console.error("Student data not found in localStorage");
-                    return;
-                }
-
-                const { degree, department, semester, _id: studentId } = studentData.studentDetails;
-
-                // Fetch examinations for the student's degree, department, and semester
-                const examsResponse = await fetch(
-                    `http://localhost:8000/studentrouter/getstudentexams?degree=${degree}&department=${department}&semester=${semester}&studentId=${studentId}`
-                );
-                const exams = await examsResponse.json();
-
-                // Fetch marks for the student
-                const marksResponse = await fetch(
-                    `http://localhost:8000/studentrouter/getstudentexamresults?studentId=${studentId}`
-                );
-                const marks = await marksResponse.json();
-
-                // Combine examinations with marks
-                const combinedData = exams.map((exam) => {
-                    const markEntry = marks.find((mark) => mark.examId === exam._id);
-                    return {
-                        ...exam,
-                        mark: markEntry ? markEntry.mark : "Not Attempted",
-                        isPass: markEntry ? markEntry.isPass : "Not Attempted",
-                    };
-                });
-
-                setMarks(combinedData);
-            } catch (err) {
-                console.error("Error fetching examinations and marks:", err);
-            }
-        };
-
-        fetchExaminationsAndMarks();
-    }, []);
 
     return (
         <>
@@ -140,28 +94,14 @@ const ProgressCard = ({ studentId  }) => {
                                 <thead>
                                     <tr>
                                         <th>Subjects</th>
-                                        <th>No of Internal Exams</th>
-                                        <th>No of Semester Exams</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {subjects.map((subject) => {
-                                        const internalExamsAttended = marks.filter(
-                                            (mark) => mark.subject === subject.subject && mark.examType === 'internal' && mark.marks !== "Not Attempted"
-                                        ).length;
-
-                                        const semesterExamsAttended = marks.filter(
-                                            (mark) => mark.subject === subject.subject && mark.examType === 'semester' && mark.marks !== "Not Attempted"
-                                        ).length;
-
-                                        return (
-                                            <tr key={subject.subject}>
-                                                <td>{subject.subject}</td>
-                                                <td>{internalExamsAttended || 'N/A'}</td>
-                                                <td>{semesterExamsAttended || 'N/A'}</td>
-                                            </tr>
-                                        );
-                                    })}
+                                    {subjects.map((subject) => (
+                                        <tr key={subject.subject}>
+                                            <td>{subject.subject}</td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>
@@ -207,13 +147,6 @@ const ProgressCard = ({ studentId  }) => {
                             </div>
                             <div style={{ textAlign: "right", marginBottom: "20px" }}>
                                 <img src="/Logo2.png" alt="Logo" style={{ width: "200px", marginBottom: "10px", display: "block" }} />
-                                {/* <button 
-                                onClick={generatePDF} 
-                                className="btn btn-primary download-button" 
-                                style={{ display: "inline-block", padding: "10px 20px", fontSize: "16px" }}
-                                >
-                                    Download Report
-                                </button> */}
                             </div>
                         </div>
                     </div>

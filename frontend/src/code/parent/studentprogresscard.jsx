@@ -8,13 +8,15 @@ import "jspdf-autotable";
 
 function ProgressReport() {
     const [studentDetails, setStudentDetails] = useState({});
-    const [attendance, setAttendance] = useState({});
+    const [subjects, setSubjects] = useState([]);
+    const [attendance, setAttendance] = useState([]);
 
     useEffect(() => {
         const parentData = JSON.parse(localStorage.getItem("get"));
         if (parentData && parentData.parentDetails) {
             const studentId = parentData.parentDetails.studentid;
 
+            // Fetch student details
             fetch(`http://localhost:8000/adminrouter/getstudentdetails/${studentId}`)
                 .then((res) => res.json())
                 .then((data) => {
@@ -26,6 +28,7 @@ function ProgressReport() {
                         studentid: data._id,
                     });
 
+                    // Fetch attendance
                     fetch(`http://localhost:8000/teacherrouter/get?studentId=${data._id}&degree=${data.degree}&department=${data.department}&semester=${data.semester}`)
                         .then((res) => res.json())
                         .then((data) => {
@@ -39,6 +42,14 @@ function ProgressReport() {
                             }
                         })
                         .catch((err) => console.error("Error fetching attendance:", err));
+
+                    // Fetch subjects for the current semester
+                    fetch(`http://localhost:8000/adminrouter/viewSubjects?degree=${data.degree}&department=${data.department}&semester=${data.semester}`)
+                        .then((res) => res.json())
+                        .then((subjectsData) => {
+                            setSubjects(subjectsData.filter((subject) => subject.semester === data.semester));
+                        })
+                        .catch((err) => console.error("Error fetching subjects:", err));
                 })
                 .catch((err) => console.error("Error fetching student details:", err));
         }
@@ -46,30 +57,45 @@ function ProgressReport() {
 
     const generatePDF = () => {
         const doc = new jsPDF();
-    
+
         // Add the logo
         const imgData = "/Logo2.png";
         doc.addImage(imgData, "PNG", 80, 10, 50, 20);
-    
+
         // Add the title
         doc.setFontSize(18);
         doc.setTextColor(40);
         doc.text("Student Progress Report", 105, 40, null, null, "center");
-    
+
         // Add student details
         doc.setFontSize(12);
         doc.setTextColor(0);
         doc.text(`Student's Name: ${studentDetails.studentname || "N/A"}`, 14, 60);
         doc.text(`Degree and Department: ${studentDetails.degree || "N/A"}, ${studentDetails.department || "N/A"}`, 14, 70);
         doc.text(`Semester: ${studentDetails.semester || "N/A"}`, 14, 80);
-    
+
+        // Add subjects section
+        doc.setFontSize(14);
+        doc.setTextColor(40);
+        doc.text("Subjects", 14, 100);
+
+        doc.autoTable({
+            startY: 105,
+            head: [["Subjects"]],
+            body: subjects.map((subject) => [subject.subject]),
+            theme: "grid",
+            headStyles: { fillColor: [0, 51, 153] }, // Blue header
+            styles: { halign: "center" }, // Center align text
+        });
+
+
         // Add attendance section
         doc.setFontSize(14);
         doc.setTextColor(40);
-        doc.text("Attendance", 14, 100);
-    
+        doc.text("Attendance", 14, doc.lastAutoTable.finalY + 10);
+
         doc.autoTable({
-            startY: 105,
+            startY: doc.lastAutoTable.finalY + 15,
             head: [["Total Number of Days", "Days Attended", "Days Absent"]],
             body: [[
                 attendance.totalDays || "N/A",
@@ -80,10 +106,10 @@ function ProgressReport() {
             headStyles: { fillColor: [0, 51, 153] }, // Blue header
             styles: { halign: "center" }, // Center align text
         });
-    
+
         // Save the PDF
         doc.save("Student_Progress_Report.pdf");
-    
+
         // Show Toastify popup
         toast.success("PDF downloaded successfully!", {
             position: "top-right",
@@ -124,6 +150,24 @@ function ProgressReport() {
                             <p><strong>Semester:</strong> {studentDetails.semester}</p>
                         </div>
                         <br />
+                        <h3>Subjects</h3>
+                        <div
+                            style={{
+                                border: "1px solid #ddd",
+                                padding: "15px",
+                                borderRadius: "8px",
+                                backgroundColor: "#f9f9f9",
+                                marginBottom: "20px",
+                                boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                            }}
+                        >
+                            <ul>
+                                {subjects.map((subject, index) => (
+                                    <li key={index}>{subject.subject}</li>
+                                ))}
+                            </ul>
+                        </div>
+                        <br />
                         <h3>Attendance</h3>
                         <div
                             style={{
@@ -160,7 +204,7 @@ function ProgressReport() {
                     </div>
                 </main>
             </section>
-            <ToastContainer/>
+            <ToastContainer />
         </>
     );
 }

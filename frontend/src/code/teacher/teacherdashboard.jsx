@@ -71,7 +71,7 @@ function Teacherdashboard() {
     const fetchMessages = async () => {
         try {
             const requestId = `${selectedParent.parentid}_${teacherId}`;
-            console.log("Fetching messages for requestId:", requestId); // Debug log
+            // console.log("Fetching messages for requestId:", requestId); // Debug log
             const response = await fetch(`http://localhost:8000/parentrouter/getMessages/${requestId}`);
             const data = await response.json();
             
@@ -160,22 +160,35 @@ function Teacherdashboard() {
 
     const fetchParents = async () => {
         try {
-            console.log("Fetching parents for teacherId:", teacherId); // Debug log
             const response = await fetch(`http://localhost:8000/teacherrouter/filteredparents/${teacherId}`);
             const data = await response.json();
     
-            if (data.message) {
-                console.log("No parents found:", data.message); // Debug log
-                setParents([]); // No parents found
-            } else {
-                console.log("Fetched Parents:", data); // Debug log
-                setParents(data);
-            }
+            // Fetch the latest messages for sorting
+            const latestMessages = await Promise.all(
+                data.map(async (parent) => {
+                    const requestId = `${parent.parentid}_${teacherId}`;
+                    const res = await fetch(`http://localhost:8000/parentrouter/getMessages/${requestId}`);
+                    const messages = await res.json();
+                    const latestMessage = messages.length > 0 ? messages[messages.length - 1] : null;
+                    return { parent, latestMessage };
+                })
+            );
+    
+            // Sort parents by the latest message time
+            const sortedParents = latestMessages
+                .sort((a, b) => {
+                    const timeA = a.latestMessage ? new Date(a.latestMessage.createdAt) : new Date(0);
+                    const timeB = b.latestMessage ? new Date(b.latestMessage.createdAt) : new Date(0);
+                    return timeB - timeA; // Sort in descending order
+                })
+                .map((item) => item.parent);
+    
+            setParents(sortedParents);
         } catch (error) {
             console.error("Error fetching filtered parents:", error);
         }
     };
-    
+        
     useEffect(() => {
         if (isChatboxOpen) {
             fetchParents();
@@ -390,9 +403,9 @@ function Teacherdashboard() {
                                                     </div>
                                                     <div>
                                                         <strong>{parent.parentname}</strong>{" "}
-                                                        <span style={{ color: "#888", fontSize: "10px" }}>
+                                                        {/* <span style={{ color: "#888", fontSize: "10px" }}>
                                                             ({parent.department}, Semester: {parent.semester})
-                                                        </span>
+                                                        </span> */}
                                                         {unreadCounts[parent.parentid] > 0 && (
                                                             <span
                                                                 style={{

@@ -22,7 +22,7 @@ function StudentExamResult() {
                     `http://localhost:8000/studentrouter/getstudentexamresults?studentId=${studentData._id}`
                 );
                 const data = await response.json();
-
+                console.log("Fetched Exam Results:", data); // Debug log
                 if (response.ok) {
                     setExamResults(data);
                 } else {
@@ -37,13 +37,15 @@ function StudentExamResult() {
     }, []);
 
     const formatTime = (time) => {
+        if (!time) {
+            return "N/A";
+        }
         const [hour, minute] = time.split(":");
         const hourInt = parseInt(hour, 10);
         const ampm = hourInt >= 12 ? "PM" : "AM";
         const formattedHour = hourInt % 12 || 12;
         return `${formattedHour}:${minute} ${ampm}`;
     };
-
     return (
         <>
             <section id="content" className="student-module">
@@ -76,15 +78,15 @@ function StudentExamResult() {
                                 <tbody>
                                     {examResults.map((exam, index) => (
                                         <tr key={index}>
-                                            <td>{exam.examType}</td>
-                                            <td>{exam.mode}</td>
-                                            <td>{exam.subject}</td>
-                                            <td>{new Date(exam.dateOfExamination).toLocaleDateString()}</td>
+                                            <td>{exam.examType || "N/A"}</td>
+                                            <td>{exam.mode || "N/A"}</td>
+                                            <td>{exam.subject || "N/A"}</td>
+                                            <td>{exam.dateOfExamination ? new Date(exam.dateOfExamination).toLocaleDateString() : "N/A"}</td>
                                             <td>{formatTime(exam.startTime)}</td>
                                             <td>{formatTime(exam.endTime)}</td>
-                                            <td>{exam.maximumMark}</td>
-                                            <td>{exam.passMark}</td>
-                                            <td>{exam.mark}</td>
+                                            <td>{exam.maximumMark || "N/A"}</td>
+                                            <td>{exam.passMark || "N/A"}</td>
+                                            <td>{exam.mark !== undefined ? exam.mark : "N/A"}</td>
                                             <td>
                                                 {exam.isPass === "Not Attempted"
                                                     ? "Not Attempted"
@@ -94,8 +96,7 @@ function StudentExamResult() {
                                             </td>
                                         </tr>
                                     ))}
-                                </tbody>
-                            </table>
+                                </tbody>                            </table>
                         )}
                     </div>
                 </main>

@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import StudentNavBar from "./studentnavbar";
+import { toast, ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css";
+
 
 const formStyle = {
     maxWidth: "600px",
@@ -83,6 +86,7 @@ function StudentAddParent() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [guardianName, setGuardianName] = useState('');
+    const [degree, setDegree] = useState('');
 
     const generateNumber = () => {
         const constantPart = 'PAR';
@@ -118,6 +122,9 @@ function StudentAddParent() {
                 if (userData.studentDetails.semester) {
                     setSemester(userData.studentDetails.semester || ''); //fill semester from localstorage
                 }
+                if (userData.studentDetails.degree) {
+                    setDegree(userData.studentDetails.degree || ''); //fill degree from localstorage||
+                }
 
             }
         }
@@ -131,6 +138,7 @@ function StudentAddParent() {
             parentname,
             studentid,
             studentname,
+            degree,
             department,
             semester,
             relation,
@@ -151,13 +159,22 @@ function StudentAddParent() {
             .then((res) => res.json())
             .then((result) => {
                 console.log(result);
-                alert("Parent added successfully!");
+                toast.success(`Parent added successfully!`,{
+                    position: 'top-right',
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                }) ;               
                 window.location.reload(); // Refresh the page
                 setParentId('');
                 // generateNumber();
                 setParentname('');
                 setStudentId('');
                 setStudentname('');
+                setDegree('');
                 setDepartment('');
                 setSemester('');
                 setRelation('');
@@ -170,7 +187,15 @@ function StudentAddParent() {
             })
             .catch((error) => {
                 console.error('Error:', error);
-                alert("Failed to add parent. Try again.");
+                toast.error(`Failed to add parent. Try again.`,{
+                    position: 'top-right',
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
             });
     };
 
@@ -202,6 +227,11 @@ function StudentAddParent() {
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="studentname">Student Name</label>
                                     <input type="text" id="studentname" value={studentname} onChange={(e) => setStudentname(e.target.value)} placeholder="Enter Student Name" style={inputStyle} />
+                                </div>
+                                
+                                <div style={formGroupStyle}>
+                                    <label style= {labelStyle} htmlFor="degree">Degree</label>
+                                    <input type="text"  id="degree" value={degree} onChange={(e) => setDegree(e.target.value)} placeholder="Enter Degree" style={inputStyle} />
                                 </div>
 
                                 <div style={formGroupStyle}>
@@ -265,6 +295,7 @@ function StudentAddParent() {
                     </div>
                 </main>
             </section>
+            <ToastContainer/>
         </>
     );
 }

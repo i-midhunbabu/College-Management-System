@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import AdminSidebar from "./adminsidebar";
 import AdminNav from "./adminnavbar";
 
@@ -187,8 +189,31 @@ function AdminStudentEdit() {
             body: JSON.stringify(params)
         }).then((res) => res.json()).then((result) => {
             console.log(result);
-            navigate('/adminstudentview')
+                        toast.success("Student updated successfully!", {
+                            position: "top-right",
+                            autoClose: 3000,
+                            hideProgressBar: true,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                        });
+            setTimeout(() => {
+                navigate('/adminstudentview')
+            }, 3000)
         })
+        .catch((error) => {
+            console.error("Error updating student:", error);
+
+            // Show error notification
+            toast.error("Failed to update student. Try again.", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        });
     }
 
     return (
@@ -357,6 +382,7 @@ function AdminStudentEdit() {
                     </div>
                 </main>
             </section>
+            <ToastContainer />
         </>
     )
 }

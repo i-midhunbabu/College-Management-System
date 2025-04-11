@@ -163,6 +163,7 @@ exports.addParentCreate = async (req, res) => {
             parentname: req.body.parentname,
             studentid: req.body.studentid,
             studentname: req.body.studentname,
+            degree: req.body.degree,
             department: req.body.department,
             semester: req.body.semester,
             relation: req.body.relation,
@@ -329,48 +330,35 @@ exports.getStudentExamResults = async (req, res) => {
     try {
         const { studentId } = req.query;
 
-        // Debugging: Log the studentId received
-        console.log("Received studentId:", studentId);
-
         if (!studentId || !mongoose.Types.ObjectId.isValid(studentId)) {
             return res.status(400).json({ message: "Invalid or missing student ID" });
         }
 
-        // Fetch the student's degree, department, and semester using loginid
-        const student = await adminaddstudentmodel.findOne({ loginid: studentId });
-
-        // Debugging: Log the student details fetched
-        console.log("Fetched student details:", student);
-
-        if (!student) {
-            return res.status(404).json({ message: "Student not found" });
-        }
-
-        const { degree } = student;
-
-        // Fetch exams for the student's degree
-        const exams = await Exam.find({ degree });
-
-        // Debugging: Log the exams fetched
-        console.log("Fetched exams:", exams);
-
-        // Fetch marks for the student
-        const marks = await Mark.find({ studentId });
-
-        // Debugging: Log the marks fetched
-        console.log("Fetched marks:", marks);
-
-        // Merge exams with marks
-        const examResults = exams.map((exam) => {
-            const markEntry = marks.find((mark) => mark.examId.toString() === exam._id.toString());
-            return {
-                ...exam._doc,
-                mark: markEntry ? markEntry.mark : "Not Attempted",
-                isPass: markEntry ? markEntry.isPass : "Not Attempted",
-            };
+        // Fetch marks and populate exam details
+        const marks = await Mark.find({ studentId }).populate({
+            path: 'examId', // Populate the examId field
+            select: 'examType mode subject dateOfExamination startTime endTime maximumMark passMark', // Select specific fields
         });
 
-        res.status(200).json(examResults);
+        if (!marks || marks.length === 0) {
+            return res.status(404).json({ message: "No marks found for the student" });
+        }
+
+        // Format the response to include both marks and exam details
+        const results = marks.map((mark) => ({
+            examType: mark.examId?.examType || "N/A",
+            mode: mark.examId?.mode || "N/A",
+            subject: mark.examId?.subject || "N/A",
+            dateOfExamination: mark.examId?.dateOfExamination || "N/A",
+            startTime: mark.examId?.startTime || "N/A",
+            endTime: mark.examId?.endTime || "N/A",
+            maximumMark: mark.examId?.maximumMark || "N/A",
+            passMark: mark.examId?.passMark || "N/A",
+            mark: mark.mark,
+            isPass: mark.isPass,
+        }));
+
+        res.status(200).json(results);
     } catch (err) {
         console.error("Error fetching student exam results:", err);
         res.status(500).json({ message: "Internal server error" });

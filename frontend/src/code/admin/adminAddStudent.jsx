@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import AdminSidebar from "../admin/adminsidebar";
 import AdminNav from "../admin/adminnavbar";
 
@@ -162,7 +164,14 @@ function AdminAddStudent() {
             .then((res) => res.json())
             .then((result) => {
                 console.log(result);
-                alert("Student added successfully!");
+                toast.success("Student added successfully!", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
 
                 setStudentId('');
                 setStudentname('');
@@ -180,7 +189,14 @@ function AdminAddStudent() {
             })
             .catch((error) => {
                 console.error('Error:', error);
-                alert("Failed to add student. Try again.");
+                toast.error("Failed to add student. Try again.", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
             });
     };
 
@@ -234,39 +250,6 @@ function AdminAddStudent() {
                                     <input type="text" id="bloodgroup" value={bloodgroup} onChange={(e) => setBloodgroup(e.target.value)} placeholder="Enter Student Blood Group" style={inputStyle} />
                                 </div>
 
-                                {/* <div style={formGroupStyle}>
-                                    <label style={labelStyle} htmlFor="bloodgroup">Blood Group</label>
-                                    <select
-                                        id="bloodgroup"
-                                        value={bloodgroup}
-                                        onChange={(e) => setBloodgroup(e.target.value)}
-                                        style={inputStyle}
-                                    >
-                                        <option value="">Select Blood Group</option>
-                                        <option value="A+">A+</option>
-                                        <option value="A-">A-</option>
-                                        <option value="B+">B+</option>
-                                        <option value="B-">B-</option>
-                                        <option value="AB+">AB+</option>
-                                        <option value="AB-">AB-</option>
-                                        <option value="O+">O+</option>
-                                        <option value="O-">O-</option>
-                                    </select>
-                                </div> */}
-
-                                {/* <div style={formGroupStyle}>
-                                    <label style={labelStyle} htmlFor="degree">Degree</label>
-                                    <select
-                                        id="degree"
-                                        value={degree}
-                                        onChange={(e) => setDegree(e.target.value)}
-                                        style={inputStyle}
-                                    >
-                                        <option value="">Select Degree</option>
-                                        <option value="B.Tech">B.Tech</option>
-                                    </select>
-                                </div> */}
-
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="degree">Degree</label>
                                     <select
@@ -284,23 +267,6 @@ function AdminAddStudent() {
                                         ))}
                                     </select>
                                 </div>
-
-                                {/* <div style={formGroupStyle}>
-                                    <label style={labelStyle} htmlFor="department">Department</label>
-                                    <select
-                                        id="department"
-                                        value={department}
-                                        onChange={(e) => setDepartment(e.target.value)}
-                                        style={inputStyle}
-                                    >
-                                        <option value="">Select Department</option>
-                                        <option value="Civil Engineering">Civil Engineering</option>
-                                        <option value="Computer Science Engineering">Computer Science Engineering</option>
-                                        <option value="Electrical and Electronics Engineering">Electrical and Electronics Engineering</option>
-                                        <option value="Electronics and Communication Engineering">Electronics and Communication Engineering</option>
-                                        <option value="Mechanical Engineering">Mechanical Engineering</option>
-                                    </select>
-                                </div> */}
 
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="department">Department</label>
@@ -370,6 +336,7 @@ function AdminAddStudent() {
                     </div>
                 </main>
             </section>
+            <ToastContainer />
         </>
     )
 }

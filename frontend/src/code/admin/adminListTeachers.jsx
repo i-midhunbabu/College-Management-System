@@ -5,8 +5,6 @@ import AdminSidebar from "./adminsidebar";
 import AdminNav from "./adminnavbar";
 import Modal from "react-modal";
 
-Modal.setAppElement("#root");
-
 function ListTeachers() {
     const [viewdata, setViewdata] = useState([]);
     const [refresh, setRefresh] = useState('');
@@ -132,6 +130,7 @@ function ListTeachers() {
             assignedclass: selectedSemesters,
             subject: [selectedSubject],
             department: selectedDepartment,
+            degree: selectedDegree,
         };
 
         fetch("http://localhost:8000/adminrouter/assignteacher", {

@@ -712,7 +712,7 @@ exports.getFilteredParents = async (req, res) => {
 
         // Fetch the assigned class and department for the teacher
         const assignedTeacher = await assignedteachermodel.findOne({ teacherid: teacherId });
-        console.log("Assigned Teacher:", assignedTeacher); // Debug log
+        // console.log("Assigned Teacher:", assignedTeacher); // Debug log
 
         if (!assignedTeacher) {
             return res.status(404).json({ message: "No assigned classes found for this teacher" });
@@ -725,7 +725,7 @@ exports.getFilteredParents = async (req, res) => {
             department: { $in: department },
             semester: { $in: assignedclass },
         });
-        console.log("Filtered Parents:", parents); // Debug log
+        // console.log("Filtered Parents:", parents); // Debug log
 
         res.status(200).json(parents);
     } catch (error) {

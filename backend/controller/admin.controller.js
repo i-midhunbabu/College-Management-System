@@ -488,7 +488,7 @@ exports.adminGetTeachers = async (req, res) => {
 
 exports.assignTeacher = async (req, res) => {
     try {
-        const { teacherid, teachername, assignedclass, subject, department } = req.body;
+        const { teacherid, teachername, assignedclass, subject, department, degree } = req.body;
 
         const newAssignment = {
             teacherid,
@@ -496,6 +496,7 @@ exports.assignTeacher = async (req, res) => {
             assignedclass,
             subject,
             department,
+            degree,
         };
 
         await assignedteachermodel.create(newAssignment);
@@ -674,6 +675,27 @@ exports.getStudentDetailsById = async (req, res) => {
         res.status(200).json(student);
     } catch (err) {
         console.error("Error fetching student details:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.getMatchingTeachers = async (req, res) => {
+    try {
+        const { degree, department, semester } = req.query;
+
+        if (!degree || !department || !semester) {
+            return res.status(400).json({ message: "Degree, department, and semester are required." });
+        }
+
+        const matchingTeachers = await assignedteachermodel.find({
+            degree,
+            department: { $in: [department] },
+            assignedclass: { $in: [semester] },
+        });
+
+        res.status(200).json(matchingTeachers);
+    } catch (err) {
+        console.error("Error fetching matching teachers:", err);
         res.status(500).json({ message: "Internal server error" });
     }
 };

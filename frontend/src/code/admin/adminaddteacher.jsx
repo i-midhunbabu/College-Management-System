@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import AdminSidebar from "./adminsidebar";
 import AdminNav from "./adminnavbar";
 
@@ -62,9 +64,9 @@ function AdminAddTeacher() {
     const [dateofbirth, setDateofBirth] = useState('');
     const [qualification, setQualification] = useState([]);
     const [salary, setSalary] = useState('');
-    const [email, setEmail] = useState(''); 
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const inputFile= useRef(null)
+    const inputFile = useRef(null)
 
     // Function to generate the number with the first three digits constant
     const generateNumber = () => {
@@ -86,7 +88,7 @@ function AdminAddTeacher() {
     };
 
     // const formattedDateOfBirth = dateofbirth.split('T')[0];
-    
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -100,34 +102,47 @@ function AdminAddTeacher() {
             dateofbirth: formattedDateOfBirth,
             qualification,
             salary,
-            email, 
+            email,
             password,
-            usertype:2,
+            usertype: 2,
         };
 
-        fetch('http://localhost:8000/adminrouter/addteacher', {  
+        fetch('http://localhost:8000/adminrouter/addteacher', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(adminparams),
         })
-        .then((res) => res.json())
-        .then((result) => {
-            console.log(result);
-            alert("Teacher added successfully!");
-            
-            setTeacherId('');
-            setTeachername('');
-            setDesignation('');
-            setDateofBirth('');
-            setQualification([]);
-            setSalary('');
-            setEmail('');
-            setPassword('');
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            alert("Failed to add teacher. Try again.");
-        });
+            .then((res) => res.json())
+            .then((result) => {
+                console.log(result);
+                toast.success("Teacher added successfully!", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                setTeacherId('');
+                setTeachername('');
+                setDesignation('');
+                setDateofBirth('');
+                setQualification([]);
+                setSalary('');
+                setEmail('');
+                setPassword('');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                toast.error("Failed to add teacher. Try again.", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+            });
     };
 
     return (
@@ -138,30 +153,30 @@ function AdminAddTeacher() {
                 <main>
                     <div style={{ paddingTop: "60px" }}>
                         <div style={formStyle}>
-                            <h3 style={{ textAlign: "center", color:'white', marginBottom: "20px", fontWeight: "bolder" }}>Teacher Registration</h3>
+                            <h3 style={{ textAlign: "center", color: 'white', marginBottom: "20px", fontWeight: "bolder" }}>Teacher Registration</h3>
                             <form onSubmit={handleSubmit}>
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="teacherid">Teacher ID</label>
                                     <input type="text" id="teacherid" value={teacherid} onChange={(e) => setTeacherId(e.target.value)} placeholder="Enter Teacher ID" style={inputStyle} />
                                 </div>
-                                
+
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="teachername">Full Name</label>
                                     <input type="text" id="teachername" value={teachername} onChange={(e) => setTeachername(e.target.value)} placeholder="Enter Teacher Name" style={inputStyle} />
                                 </div>
-                                
+
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="designation">Designation</label>
                                     <input type="text" id="designation" value={designation} onChange={(e) => setDesignation(e.target.value)} placeholder="Enter the Designation" style={inputStyle} />
                                 </div>
-                                
+
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="dateofbirth">Date of Birth</label>
                                     <input type="date" id="dateofbirth" value={dateofbirth} onChange={(e) => setDateofBirth(e.target.value)} style={inputStyle} />
                                 </div>
-                                
+
                                 <div style={formGroupStyle}>
-                                    <label style={labelStyle} htmlFor="qualification">Qualification</label> 
+                                    <label style={labelStyle} htmlFor="qualification">Qualification</label>
                                     <label style={checkboxLabelStyle}>
                                         <input type="checkbox" value="UG" checked={qualification.includes("UG")} onChange={handleQualificationChange} /> UG
                                     </label>
@@ -182,18 +197,19 @@ function AdminAddTeacher() {
                                     <label style={labelStyle} htmlFor="email">Email</label>
                                     <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email" style={inputStyle} />
                                 </div>
-                                
+
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle} htmlFor="password">Password</label>
                                     <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" style={inputStyle} />
                                 </div>
-                                
+
                                 <button type="submit" style={buttonStyle}>Submit Application</button>
                             </form>
                         </div>
                     </div>
                 </main>
             </section>
+            <ToastContainer/>
         </>
     );
 }

@@ -53,7 +53,7 @@ function Parentdashboard() {
     const fetchMessages = async () => {
         try {
             const requestId = `${parentid}_${selectedTeacher?.teacherid}`;
-            console.log("Fetching messages for requestId:", requestId); //Debug Log
+            // console.log("Fetching messages for requestId:", requestId); //Debug Log
             const response = await fetch(`http://localhost:8000/parentrouter/getMessages/${requestId}`);
             const data = await response.json();
             setMessages(data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)));
@@ -107,12 +107,34 @@ function Parentdashboard() {
         try {
             const response = await fetch(`http://localhost:8000/parentrouter/unreadCounts/${parentid}`);
             const data = await response.json();
+    
+            // Fetch the latest messages for sorting
+            const latestMessages = await Promise.all(
+                teachers.map(async (teacher) => {
+                    const requestId = `${parentid}_${teacher.teacherid}`;
+                    const res = await fetch(`http://localhost:8000/parentrouter/getMessages/${requestId}`);
+                    const messages = await res.json();
+                    const latestMessage = messages.length > 0 ? messages[messages.length - 1] : null;
+                    return { teacher, latestMessage };
+                })
+            );
+    
+            // Sort teachers by the latest message time
+            const sortedTeachers = latestMessages
+                .sort((a, b) => {
+                    const timeA = a.latestMessage ? new Date(a.latestMessage.createdAt) : new Date(0);
+                    const timeB = b.latestMessage ? new Date(b.latestMessage.createdAt) : new Date(0);
+                    return timeB - timeA; // Sort in descending order
+                })
+                .map((item) => item.teacher);
+    
+            setTeachers(sortedTeachers);
             setUnreadCounts(data);
         } catch (error) {
             console.error('Error fetching unread counts:', error);
         }
     };
-
+    
     useEffect(() => {
         if (isChatboxOpen) {
             fetchUnreadCounts();
@@ -138,6 +160,30 @@ function Parentdashboard() {
             markMessagesAsRead();
         }
     }, [selectedTeacher]);
+
+    useEffect(() => {
+        const fetchMatchingTeachers = async () => {
+            try {
+                const storedUser = localStorage.getItem('get');
+                if (storedUser) {
+                    const userData = JSON.parse(storedUser);
+                    const { degree, department, semester } = userData.parentDetails;
+    
+                    const response = await fetch(
+                        `http://localhost:8000/adminrouter/getMatchingTeachers?degree=${degree}&department=${department}&semester=${semester}`
+                    );
+                    const data = await response.json();
+                    setTeachers(data);
+                }
+            } catch (error) {
+                console.error("Error fetching matching teachers:", error);
+            }
+        };
+    
+        if (isChatboxOpen) {
+            fetchMatchingTeachers();
+        }
+    }, [isChatboxOpen]);
 
     return (
         <>
@@ -309,9 +355,9 @@ function Parentdashboard() {
                                                     </div>
                                                     <div>
                                                         <strong>{teacher.teachername}</strong>{" "}
-                                                        <span style={{ color: "#888", fontSize: "10px" }}>
-                                                            ({teacher.designation})
-                                                        </span>
+                                                        {/* <span style={{ color: "#888", fontSize: "12px" }}>
+                                                            (Assigned Class: {teacher.assignedclass}, {teacher.department})
+                                                        </span> */}
                                                         {unreadCounts[teacher.teacherid] > 0 && (
                                                             <span
                                                                 style={{
