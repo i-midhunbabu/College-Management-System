@@ -45,7 +45,7 @@ function Admindashboard() {
                             </Link>
                         </div>
                         <div className="add-parent2-box">
-                            <Link to="/adminaddteacher" className="add-parent2-link">
+                            <Link to="/adminaddstudent" className="add-parent2-link">
                                 <i class='bx bxs-user-plus'></i>
                                 <span>Add Student</span>
                             </Link>
