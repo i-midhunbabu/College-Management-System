@@ -1,5 +1,16 @@
 <h1>College Management System</h1>
-<br>
+<p>This project is designed to streamline and digitize the academic and administrative processes of educational institutions. It features a React-based frontend for the user interface and a backend powered by Node.js and Express.js. </p>
+
+<h3>Features</h3>
+
+* **Real Time Communication** with teachers and parents.
+* **Conduct Examination** for students.
+* **Mark Attendance** of students and maintain accurate and real-time attendance records.
+<h3>Technologies Used</h3>
+
+* **Frontend:** React.js
+* **Backend:** Node.js, Express.js
+* **Database:** MongoDB
 <h3>Screenshots</h3>
 
 ![Image](https://github.com/user-attachments/assets/05d2df1c-e968-4686-882f-1223e05e9e4b)
