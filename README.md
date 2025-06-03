@@ -3,9 +3,11 @@
 
 <h3>Features</h3>
 
-* **Real Time Communication** with teachers and parents.
-* **Conduct Examination** for students.
-* **Mark Attendance** of students and maintain accurate and real-time attendance records.
+* **Real-time communication** with teachers and parents.
+* **Conduct examinations** for students.
+* **Review and upload** examination marks.
+* **Mark student attendance** and maintain accurate, real-time attendance records.
+* **Monitor the academic performance** of their children.
 <h3>Technologies Used</h3>
 
 * **Frontend:** React.js
